@@ -11,9 +11,7 @@
       <component :is="nav.icon" />
 
       <!-- NAV TEXT -->
-      <div class="nav-text secondary-2-text grey-600 smooth-transition">
-        {{ nav.title }}
-      </div>
+      <div class="nav-text secondary-2-text grey-600 smooth-transition">{{ nav.title }}</div>
     </div>
   </router-link>
 </template>
@@ -48,6 +46,10 @@ export default {
     SettingsIcon: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/settings-icon"
+      ),
+    FileIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/file-icon"
       ),
   },
 
@@ -121,6 +123,8 @@ export default {
 
   svg {
     margin-right: toRem(16);
+    min-width: toRem(35);
+    max-width: toRem(35);
 
     .light-theme {
       @include transition(0.325s);

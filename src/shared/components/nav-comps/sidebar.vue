@@ -1,20 +1,13 @@
 <template>
   <div class="sidebar teal-50-bg">
     <!-- BRAND LOGO -->
-    <router-link
-      :to="{ name: 'VesicashDashboard' }"
-      class="brand-logo mgb-40 d-block"
-    >
+    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo mgb-40 d-block">
       <VesicashBrandLogo />
     </router-link>
 
     <!-- SIDE NAV ITEMS -->
     <div class="sidebar-item-list">
-      <SidebarItem
-        v-for="(nav, index) in sidebar_routes"
-        :key="index"
-        :nav="nav"
-      />
+      <SidebarItem v-for="(nav, index) in sidebar_routes" :key="index" :nav="nav" />
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
@@ -74,7 +67,9 @@ export default {
 .sidebar {
   padding: toRem(22) toRem(16);
   @include stretch-area;
+  min-height: 100%;
   position: relative;
+  z-index: 4;
 
   @include breakpoint-down(lg) {
     width: 60%;
