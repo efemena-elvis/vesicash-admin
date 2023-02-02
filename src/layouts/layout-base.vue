@@ -68,7 +68,7 @@ export default {
 
   .sidebar-build {
     width: 19%;
-    min-height: 100vh;
+    height: 100vh;
     top: 0;
     left: 0;
 
@@ -100,9 +100,9 @@ export default {
 
   .body-build {
     @include stretch-area;
-    min-height: 100vh;
+    height: 100vh;
     width: 81%;
-    // overflow: auto;
+    overflow: auto;
 
     @include breakpoint-down(xl) {
       width: 78%;
