@@ -103,6 +103,7 @@ export default {
     height: 100vh;
     width: 81%;
     overflow: auto;
+    background: rgba(#f5f5f5, 0.7);
 
     @include breakpoint-down(xl) {
       width: 78%;
@@ -113,19 +114,19 @@ export default {
     }
 
     .content-build {
-      padding: toRem(32) toRem(32) 0;
+      padding: toRem(32) toRem(32);
 
       @include breakpoint-down(lg) {
-        padding: toRem(32) toRem(24) 0;
+        padding: toRem(32) toRem(24);
         top: toRem(56);
       }
 
       @include breakpoint-down(sm) {
-        padding: toRem(32) toRem(16) 0;
+        padding: toRem(32) toRem(16);
       }
 
       @include breakpoint-down(xs) {
-        padding: toRem(32) toRem(13) 0;
+        padding: toRem(32) toRem(13);
       }
     }
   }

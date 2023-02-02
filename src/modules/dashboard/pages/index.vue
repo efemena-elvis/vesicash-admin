@@ -1,35 +1,48 @@
 <template>
   <div>
-    <UserNavbar />
-
     <div class="metric-container">
-      <div class="top-row">
-        <div class="h4-text">Your metrics</div>
-        <div class="date-wrapper"></div>
-      </div>
+      <!-- METRICS CONTAINER -->
+      <template>
+        <div class="mgb-30">
+          <div class="top-row mgb-20">
+            <div class="page-title">Overview</div>
 
-      <div class="metric-cards-container pdy-30">
-        <MetricCard v-for="metric in metrics" :key="metric.title" :metric="metric" />
-      </div>
+            <div class="date-wrapper"></div>
+          </div>
 
-      <div class="h4-text">Graphical metrics</div>
-
-      <div class="metric-graphs-container pdy-20">
-        <div class="neutral-10-bg pd-15">
-          <div class="mgb-20 secondary-2-text">Transaction Volume</div>
-          <MetricGraph />
+          <div class="metric-cards-container pdy-30">
+            <MetricCard
+              v-for="metric in metrics"
+              :key="metric.title"
+              :metric="metric"
+            />
+          </div>
         </div>
-        <div class="neutral-10-bg pd-15">
-          <div class="mgb-20 secondary-2-text">No. of users</div>
-          <MetricGraph barColor="#0B618F" label="Users" />
+      </template>
+
+      <!-- GRAPH CONTAINER -->
+      <template>
+        <div>
+          <div class="page-title mgb-25">Graphical metrics</div>
+
+          <div class="metric-graphs-container pdy-20">
+            <div class="neutral-10-bg pd-15">
+              <div class="mgb-20 secondary-2-text">Transaction Volume</div>
+              <MetricGraph />
+            </div>
+
+            <div class="neutral-10-bg pd-15">
+              <div class="mgb-20 secondary-2-text">No. of users</div>
+              <MetricGraph barColor="#0B618F" label="Users" />
+            </div>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-import UserNavbar from "@/shared/components/nav-comps/user-navbar";
 import MetricCard from "@/modules/dashboard/components/metric-card";
 import MetricGraph from "@/modules/dashboard/components/metric-graph";
 
@@ -37,7 +50,6 @@ export default {
   name: "Dashbooard",
 
   components: {
-    UserNavbar,
     MetricCard,
     MetricGraph,
   },
@@ -71,7 +83,7 @@ export default {
         },
         {
           title: "Naira balance",
-          value: "N234M",
+          value: "₦234M",
         },
         {
           title: "Pounds balance",
@@ -96,7 +108,7 @@ export default {
         },
         {
           title: "Naira exchange balance",
-          value: "N490M",
+          value: "₦490M",
         },
         {
           title: "Active keys",
@@ -110,12 +122,6 @@ export default {
 
 <style lang="scss" scoped>
 .metric-container {
-  padding-top: toRem(60);
-
-  @include breakpoint-down(lg) {
-    padding-top: 0;
-  }
-
   .top-row {
     @include flex-row-between-nowrap;
 
@@ -136,14 +142,6 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: toRem(30);
-  }
-}
-</style>
-
-<style lang="scss">
-.layout-base {
-  .content-build {
-    background: getColor("grey-10");
   }
 }
 </style>

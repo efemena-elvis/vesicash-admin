@@ -1,17 +1,25 @@
 <template>
-  <div class="sidebar teal-50-bg">
+  <div class="sidebar neutral-10-bg">
     <!-- BRAND LOGO -->
-    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo mgb-40 d-block">
+    <router-link
+      :to="{ name: 'VesicashDashboard' }"
+      class="brand-logo mgb-40 d-block"
+    >
       <VesicashBrandLogo />
     </router-link>
 
     <!-- SIDE NAV ITEMS -->
     <div class="sidebar-item-list">
-      <SidebarItem v-for="(nav, index) in sidebar_routes" :key="index" :nav="nav" />
+      <SidebarItem
+        v-for="(nav, index) in sidebar_routes"
+        :key="index"
+        :nav="nav"
+        @toggleNavDropdown="toggleDropdown"
+      />
     </div>
 
     <!-- LOG OUT ACCOUNT SECTION -->
-    <div class="wrapper position-absolute wt-100" v-if="false">
+    <div class="wrapper position-absolute wt-100">
       <ProfileMenu @exit="handleUserlogOut" />
 
       <div
@@ -30,7 +38,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import navRoutes from "@/shared/nav-routes";
+import navRoutes from "@/shared/constants/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import SidebarItem from "@/shared/components/nav-comps/sidebar-item";
@@ -59,6 +67,18 @@ export default {
       this.togglePageLoader();
       setTimeout(() => this.logOutUser(), 2000);
     },
+
+    toggleDropdown($event) {
+      this.sidebar_routes.map((item) => {
+        if (item.id !== $event.id) item.show_more = false;
+        else {
+          $event.show_more = !$event.show_more;
+          !$event.children.length
+            ? this.$router.push({ name: $event.link })
+            : null;
+        }
+      });
+    },
   },
 };
 </script>
@@ -71,6 +91,7 @@ export default {
   position: relative;
   z-index: 4;
   overflow-y: auto;
+  border: 1px solid #e8e8e8;
 
   &::-webkit-scrollbar {
     width: 0;

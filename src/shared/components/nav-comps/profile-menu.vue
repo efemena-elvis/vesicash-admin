@@ -1,17 +1,16 @@
 <template>
-  <div
-    class="profile-menu-wrapper"
-    :class="show_profile_menu ? 'tour-index' : null"
-  >
+  <div class="profile-menu-wrapper">
     <div class="user-icon-wrapper">
       <UserIcon profileMenu />
     </div>
 
     <div>
       <div class="grey-900 primary-2-text mgb-4">
-        {{ getUser.fullname || getUser.email }}
+        {{ getUser.fullname || getUser.email || "Efemena Elvis" }}
       </div>
-      <div class="tertiary-3-text green-500">ID: {{ getAccountId }}</div>
+      <div class="tertiary-3-text green-600">
+        ID: {{ getAccountId || 12345678 }}
+      </div>
     </div>
 
     <div class="menu-icon-wrapper">
@@ -99,7 +98,7 @@ export default {
   position: relative;
   @include flex-row-start-nowrap;
   gap: 0 toRem(16);
-  background: getColor("neutral-10");
+  background: getColor("teal-50");
   padding: toRem(8);
   border-radius: toRem(8);
   cursor: pointer;
@@ -110,7 +109,27 @@ export default {
     @include flex-column-center;
     border: toRem(0.715) solid getColor("teal-200");
     border-radius: toRem(8.57);
-    background: getColor("teal-50");
+    background: getColor("neutral-10");
+
+    // svg {
+    //   .light-theme {
+    //     fill: getColor("teal-200") !important;
+    //   }
+
+    //   .dark-theme {
+    //     fill: getColor("teal-800") !important;
+    //   }
+    // }
+
+    svg {
+      .light-theme {
+        fill: getColor("grey-300");
+      }
+
+      .dark-theme {
+        fill: getColor("grey-500");
+      }
+    }
   }
 
   .menu-icon-wrapper {

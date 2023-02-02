@@ -1,19 +1,74 @@
 <template>
-  <router-link :to="nav.link" class="d-block mgb-14">
-    <div
-      class="sidebar-item smooth-transition rounded-8 position-relative"
-      :class="[
-        isActive && 'sidebar-item-active',
-        ongoingTour && nav.tour_id.includes(getTourData.count) && 'tour-index',
-      ]"
-    >
-      <!-- ICON COMPONENT -->
-      <component :is="nav.icon" />
+  <div class="nav-wrapper" :class="isActive && 'nav-wrapper-active'">
+    <!-- ROUTE WITH CHILDREN -->
+    <template v-if="nav.children.length">
+      <router-link
+        v-if="checkAuthorizedRoute"
+        to
+        class="nav-item-row"
+        @click.native="$emit('toggleNavDropdown', nav)"
+      >
+        <!-- ICON COMPONENT -->
+        <div class="icon">
+          <component :is="nav.icon" />
+        </div>
 
-      <!-- NAV TEXT -->
-      <div class="nav-text secondary-2-text grey-600 smooth-transition">{{ nav.title }}</div>
+        <div class="nav-text">
+          {{ nav.title }}
+        </div>
+
+        <!-- CARET -->
+        <div class="caret">
+          <div
+            class="icon icon-caret-left f-size-28"
+            :class="nav.show_more ? 'rotate-180' : null"
+          ></div>
+        </div>
+      </router-link>
+    </template>
+
+    <!-- ROUTE WITHOUT CHILDREN -->
+    <template v-else>
+      <router-link
+        v-if="checkAuthorizedRoute"
+        :to="nav.link"
+        class="nav-item-row"
+      >
+        <div class="icon">
+          <component :is="nav.icon" />
+        </div>
+        <div class="nav-text">
+          {{ nav.title }}
+        </div>
+      </router-link>
+    </template>
+
+    <!-- CHILDREN LIST -->
+    <div class="inner-wrapper" v-if="nav.show_more">
+      <div class="spacer"></div>
+
+      <div class="wrapper">
+        <router-link
+          :to="item.link"
+          class="nav-item-row nav-sub-row smooth-transition"
+          :class="path_list.includes(item.slug) && 'active-sub-row'"
+          v-for="(item, index) in nav.children"
+          :key="index"
+        >
+          <div class="text-row">
+            <div class="bullet smooth-transition mgr-8 rounded-circle"></div>
+
+            <div
+              class="nav-text"
+              :class="!path_list.includes(item.slug) && 'inactive-text'"
+            >
+              {{ item.title }}
+            </div>
+          </div>
+        </router-link>
+      </div>
     </div>
-  </router-link>
+  </div>
 </template>
 
 <script>
@@ -34,6 +89,14 @@ export default {
     PaymentIcon: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/payment-icon"
+      ),
+    CreditCardIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/credit-card-icon"
+      ),
+    VerificationIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/verification-icon"
       ),
     TransactionIcon: () =>
       import(
@@ -60,22 +123,35 @@ export default {
         title: "Dashboard",
         icon: "DashboardIcon",
         link: "/dashboard",
+        show_more: false,
+        children: [],
+        authorize: ["open"],
       }),
     },
   },
 
   computed: {
-    ...mapGetters({ getTourData: "general/getTourData" }),
-
     isActive() {
       return this.path_list.includes(this.nav.slug) ? true : false;
     },
 
-    ongoingTour() {
-      const { count, ongoing } = this.getTourData;
+    // isChildLinkActive() {
+    //   let child_routes = [];
+    //   let current_route = this.$route.name;
+    //   this.nav.children.map((item) => child_routes.push(item.link));
 
-      if (ongoing) return [1, 5, 6, 7].includes(count) ? true : false;
-      else return false;
+    //   return child_routes.includes(current_route) ||
+    //     this.nav.link === current_route
+    //     ? true
+    //     : false;
+    // },
+
+    // CHECK IF CURRENT ROUTE ON LIST IS AUTHORIZED
+    checkAuthorizedRoute() {
+      return this.nav.authorize.includes(this?.getAuthType) ||
+        this.nav.authorize.includes("open")
+        ? true
+        : false;
     },
   },
 
@@ -96,44 +172,68 @@ export default {
 
 <style lang="scss">
 %active-side-bar-state {
-  background: getColor("neutral-10");
+  background: getColor("teal-50");
 
-  .nav-text {
-    color: getColor("teal-800");
-  }
-
-  svg {
-    .light-theme {
-      fill: getColor("teal-200") !important;
+  .nav-item-row {
+    .nav-text {
+      color: getColor("teal-800");
     }
 
-    .dark-theme {
-      fill: getColor("teal-800") !important;
+    svg {
+      .light-theme {
+        fill: getColor("teal-200") !important;
+      }
+
+      .dark-theme {
+        fill: getColor("teal-800") !important;
+      }
     }
   }
 }
 
-.sidebar-item {
-  @include flex-row-start-nowrap;
-  padding: toRem(8);
+.nav-wrapper {
+  margin-bottom: toRem(12);
+  @include transition(0.4s);
+  position: relative;
 
-  &:last-of-type {
-    margin-bottom: 0;
-  }
+  .nav-item-row {
+    @include generate-font-type("secondary-2");
+    @include flex-row-start-nowrap;
+    @include transition(0.3s);
+    color: getColor("grey-600");
+    align-items: center;
+    position: relative;
+    padding: toRem(8);
+    text-align: left;
 
-  svg {
-    margin-right: toRem(16);
-    min-width: toRem(35);
-    max-width: toRem(35);
-
-    .light-theme {
-      @include transition(0.325s);
-      fill: getColor("grey-300");
+    &:last-of-type {
+      margin-bottom: 0;
     }
 
-    .dark-theme {
-      @include transition(0.325s);
-      fill: getColor("grey-500");
+    svg {
+      margin-right: toRem(12);
+      min-width: toRem(35);
+      max-width: toRem(35);
+
+      .light-theme {
+        @include transition(0.325s);
+        fill: getColor("grey-300");
+      }
+
+      .dark-theme {
+        @include transition(0.325s);
+        fill: getColor("grey-500");
+      }
+    }
+
+    .caret {
+      @include center-placement("y-axis");
+      transform: translateY(-50%) rotate(-90deg);
+      right: toRem(6);
+
+      .icon {
+        @include transition(0.2s);
+      }
     }
   }
 
@@ -143,6 +243,56 @@ export default {
 
   &-active {
     @extend %active-side-bar-state;
+  }
+
+  .inner-wrapper {
+    @include flex-row-start-nowrap;
+    align-items: flex-start;
+    @include transition(0.4s);
+    position: relative;
+    padding: 0 toRem(8) toRem(8);
+
+    .spacer {
+      width: 20%;
+    }
+
+    .wrapper {
+      width: 80%;
+    }
+
+    .nav-sub-row {
+      padding: toRem(10) toRem(8);
+      margin-bottom: toRem(6);
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .text-row {
+        @include flex-row-start-nowrap;
+
+        .bullet {
+          background: getColor("grey-500");
+          @include draw-shape(7);
+        }
+      }
+
+      &:hover {
+        background-color: getColor("neutral-10");
+      }
+    }
+
+    .active-sub-row {
+      background: getColor("neutral-10");
+
+      .bullet {
+        background: getColor("teal-800") !important;
+      }
+    }
+
+    .inactive-text {
+      color: getColor("grey-600");
+    }
   }
 }
 </style>

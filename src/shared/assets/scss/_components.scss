@@ -1,0 +1,4 @@
+.page-title {
+  @include generate-font-type("h4");
+  color: getColor("grey-900");
+}

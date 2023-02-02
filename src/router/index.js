@@ -9,6 +9,13 @@ Vue.use(VueRouter);
 // =======================================================
 import authRoutes from "@/modules/auth";
 import dashboardRoutes from "@/modules/dashboard";
+import apiRoutes from "@/modules/api";
+import escrowRoutes from "@/modules/escrow";
+import fxRoutes from "@/modules/foreign-exchange";
+import paymentsRoutes from "@/modules/payments";
+import settingsRoutes from "@/modules/settings";
+import usersRoutes from "@/modules/users";
+import verificationsRoutes from "@/modules/verifications";
 
 // =======================================================
 // SETTING UP A ROUTES ARRAY TO HOLD ALL ROUTE MODULES
@@ -17,6 +24,13 @@ import dashboardRoutes from "@/modules/dashboard";
 const routes = [
   ...authRoutes,
   ...dashboardRoutes,
+  ...apiRoutes,
+  ...escrowRoutes,
+  ...fxRoutes,
+  ...paymentsRoutes,
+  ...settingsRoutes,
+  ...usersRoutes,
+  ...verificationsRoutes,
   {
     path: "/*",
     name: "NotFoundError",
