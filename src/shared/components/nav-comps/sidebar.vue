@@ -70,6 +70,11 @@ export default {
   min-height: 100%;
   position: relative;
   z-index: 4;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 
   @include breakpoint-down(lg) {
     width: 60%;
