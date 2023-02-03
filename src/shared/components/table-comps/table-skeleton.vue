@@ -23,14 +23,14 @@ export default {
 }
 
 .table-skeleton {
-  padding: 0 toRem(30) 0;
+  padding: toRem(30);
 
   @include breakpoint-down(lg) {
-    padding: 0 toRem(17) 0;
+    padding: toRem(17);
   }
 
   @include breakpoint-down(sm) {
-    padding: 0 toRem(13.5) 0;
+    padding: toRem(13.5);
   }
   .skeleton-table-header,
   .skeleton-table-body {
