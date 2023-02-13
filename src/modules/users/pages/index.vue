@@ -1,14 +1,11 @@
 <template>
   <div class="position-relative">
-    <div class="top-row mgb-20">
+    <div class="top-row">
       <div class="page-title">Manage Users</div>
 
-      <div
-        class="secondary-2-text"
-        v-if="formattedStartDate && formattedEndDate"
-      >{{ formattedStartDate }} - {{formattedEndDate}}</div>
+      <div class="secondary-2-text" v-if="getDateShortcut">{{getDateShortcut}}</div>
 
-      <div class="secondary-2-text" v-else>{{ date_shortcut }}</div>
+      <div class="secondary-2-text" v-else>{{ formattedDateRange || 'Till Date' }}</div>
     </div>
 
     <div class="filter-row mgb-30">
@@ -41,13 +38,14 @@
           prefix-class="xmx"
           :formatter="{ stringify:()=>'' }"
           :range-separator="'Date range'"
-          placeholder="Date range"
+          :placeholder="'Date range'"
           class="pointer"
           :clearable="false"
           :editable="false"
           :disabled-date="disabledDate"
           :popup-style="{right:'0', top:'40px',left:'auto'}"
           :append-to-body="false"
+          :shortcuts="shortcutConfig"
         >
           <span slot="icon-calendar" class="icon icon-caret-fill-down"></span>
         </DatePicker>
@@ -60,6 +58,7 @@
 <script>
 import UsersTable from "@/modules/users/components/profile/users-table";
 import DatePicker from "vue2-datepicker";
+import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
 import "vue2-datepicker/index.css";
 
 export default {
@@ -70,17 +69,19 @@ export default {
     DatePicker,
   },
 
+  mixins: [MixinDateFilter],
+
   computed: {
     userQueries() {
       const search = this.search;
       const account_type = this.account_type;
       const [start, end] = this.time;
       const start_date = start
-        ? new Date(start).toISOString().split("T")[0]
+        ? this.$date.formatDate(new Date(start), false).getSimpleDate()
         : "";
-      const end_date = end ? new Date(end).toISOString().split("T")[0] : "";
-
-      // will be updated later with date service
+      const end_date = end
+        ? this.$date.formatDate(new Date(end), false).getSimpleDate()
+        : "";
 
       return {
         account_type,
@@ -88,32 +89,6 @@ export default {
         start_date,
         end_date,
       };
-    },
-
-    formattedStartDate() {
-      const date = this.time[0];
-
-      if (!date) return "";
-      const start_date = this.$date.formatDate(new Date(date), false);
-
-      const start_day = start_date?.getDay("d3");
-      const start_month = start_date?.getMonth("m4");
-      const start_year = start_date?.getYear("y1");
-
-      return `${start_day} ${start_month}, ${start_year}`;
-    },
-
-    formattedEndDate() {
-      const date = this.time[1];
-
-      if (!date) return "";
-      const start_date = this.$date.formatDate(new Date(date), false);
-
-      const start_day = start_date?.getDay("d3");
-      const start_month = start_date?.getMonth("m4");
-      const start_year = start_date?.getYear("y1");
-
-      return `${start_day} ${start_month}, ${start_year}`;
     },
   },
 
@@ -146,32 +121,18 @@ export default {
     return {
       search: "",
       account_type: "",
-      time: ["2020-04-19", "2022-08-09"],
       show_date_range: false,
       date_shortcut: "",
     };
   },
 
   methods: {
-    toggleDateRange() {
-      this.show_date_range = !this.show_date_range;
-    },
-
-    disabledDate(a) {
-      return new Date(a).getTime() > new Date().getTime();
-    },
-
-    closeDateRange() {
-      this.show_date_range = false;
-    },
-
     syncFilterInputs() {
       this.search = this.$route?.query?.search || "";
       this.account_type = this.$route?.query?.account_type || "";
       const start_date = this.$route?.query?.start_date || "";
       const end_date = this.$route?.query?.end_date || "";
       this.time = [start_date, end_date];
-      this.date_shortcut = start_date ? "" : "Till Date";
     },
 
     queryStrings(query) {
@@ -186,9 +147,14 @@ export default {
 <style lang="scss" scoped>
 .top-row {
   @include flex-row-between-nowrap;
+  margin-bottom: toRem(20);
 
   @include breakpoint-down(lg) {
-    display: none;
+    margin-bottom: toRem(15);
+    justify-content: flex-end;
+    .page-title {
+      display: none;
+    }
   }
 }
 

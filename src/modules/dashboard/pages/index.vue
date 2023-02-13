@@ -7,7 +7,30 @@
           <div class="top-row mgb-20">
             <div class="page-title">Overview</div>
 
-            <div class="date-wrapper"></div>
+            <div>
+              <div class="secondary-2-text" v-if="getDateShortcut">{{getDateShortcut}}</div>
+
+              <div class="secondary-2-text" v-else>{{ formattedDateRange || 'Till Date' }}</div>
+              <div class="date-wrapper mgt-10">
+                <DatePicker
+                  v-model="time"
+                  range
+                  prefix-class="xmx"
+                  :formatter="{ stringify:()=>'' }"
+                  :range-separator="'Date range'"
+                  :placeholder="'Date range'"
+                  class="pointer"
+                  :clearable="false"
+                  :editable="false"
+                  :disabled-date="disabledDate"
+                  :popup-style="{right:'0', top:'40px',left:'auto'}"
+                  :append-to-body="false"
+                  :shortcuts="shortcutConfig"
+                >
+                  <span slot="icon-calendar" class="icon icon-caret-fill-down"></span>
+                </DatePicker>
+              </div>
+            </div>
           </div>
 
           <div v-if="loading_stats" class="metric-cards-container">
@@ -45,42 +68,53 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import DatePicker from "vue2-datepicker";
+import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
+import "vue2-datepicker/index.css";
 import MetricCard from "@/modules/dashboard/components/metric-card";
 import MetricGraph from "@/modules/dashboard/components/metric-graph";
 
 export default {
   name: "Dashbooard",
 
+  mixins: [MixinDateFilter],
+
   components: {
     MetricCard,
     MetricGraph,
+    DatePicker,
   },
 
   mounted() {
-    this.loading_stats = true;
-    Promise.all([
-      this.fetchDetails(
-        this.fetchTransactionStats,
-        "",
-        "Failed to load transaction stats"
-      ),
+    this.syncDateFilter();
+    this.fetchDashboardMetrics("");
+  },
 
-      this.fetchDetails(
-        this.fetchExchangeRates,
-        "",
-        "Failed to load exchange rates"
-      ),
+  watch: {
+    dateQuery: {
+      handler(query) {
+        let updated_query = { ...this.$route.query, ...query };
 
-      this.fetchDetails(this.fetchUsersCount, "", "Failed to load users stats"),
+        Object.entries(updated_query).forEach(
+          ([k, v]) => !v && delete updated_query[k]
+        );
 
-      this.fetchDetails(
-        this.fetchAPIkeysStats,
-        "",
-        "Failed to load API keys stats"
-      ),
-    ])
-      .then(() => (this.loading_stats = false))
-      .catch(() => (this.loading_stats = false));
+        // THIS CONDITION AVOIDS REDUNDANT NAVIGATION
+
+        this.queryStrings(updated_query) !==
+          this.queryStrings(this.$route?.query) &&
+          this.$router.replace({
+            path: this.$route.path,
+            query: { ...updated_query },
+          });
+      },
+    },
+
+    filterQuery: {
+      handler(query) {
+        this.fetchDashboardMetrics(query);
+      },
+    },
   },
 
   computed: {
@@ -203,6 +237,25 @@ export default {
         },
       ];
     },
+
+    dateQuery() {
+      const [start, end] = this.time;
+      const start_date = start
+        ? this.$date.formatDate(new Date(start), false).getSimpleDate()
+        : "";
+      const end_date = end
+        ? this.$date.formatDate(new Date(end), false).getSimpleDate()
+        : "";
+
+      return {
+        start_date,
+        end_date,
+      };
+    },
+
+    filterQuery() {
+      return this.queryStrings(this.$route?.query);
+    },
   },
 
   data() {
@@ -229,6 +282,49 @@ export default {
         this.pushToast(error_message);
       }
     },
+
+    syncDateFilter() {
+      const start_date = this.$route?.query?.start_date || "";
+      const end_date = this.$route?.query?.end_date || "";
+      this.time = [start_date, end_date];
+    },
+
+    queryStrings(query) {
+      return Object.entries(query)
+        .map(([k, v]) => `${k}=${v}`)
+        .join("&");
+    },
+
+    fetchDashboardMetrics(query = "") {
+      this.loading_stats = true;
+      Promise.all([
+        this.fetchDetails(
+          this.fetchTransactionStats,
+          query,
+          "Failed to load transaction stats"
+        ),
+
+        this.fetchDetails(
+          this.fetchExchangeRates,
+          query,
+          "Failed to load exchange rates"
+        ),
+
+        this.fetchDetails(
+          this.fetchUsersCount,
+          query,
+          "Failed to load users stats"
+        ),
+
+        this.fetchDetails(
+          this.fetchAPIkeysStats,
+          query,
+          "Failed to load API keys stats"
+        ),
+      ])
+        .then(() => (this.loading_stats = false))
+        .catch(() => (this.loading_stats = false));
+    },
   },
 };
 </script>
@@ -239,9 +335,9 @@ export default {
     @include flex-row-between-nowrap;
 
     .date-wrapper {
-      min-width: toRem(170);
-      border: toRem(1) solid getColor("neutral-900");
-      padding: toRem(10);
+      @include flex-row-center-wrap;
+      max-width: toRem(200);
+      position: relative;
     }
   }
 
