@@ -1,11 +1,18 @@
 <template>
-  <router-link :to="`/users/manage-users/${data.account_id}/profile`" v-slot="{ navigate }" custom>
+  <router-link
+    :to="`/users/manage-users/${data.account_id}/profile?name=${getName}`"
+    v-slot="{ navigate }"
+    custom
+  >
     <tr @click="navigate">
       <td class="body-data grey-900 text-capitalize" :class="`${table_name}-1`">{{ index }}</td>
 
       <td class="body-data grey-900" :class="`${table_name}-2`">{{ data.account_id }}</td>
 
-      <td class="body-data grey-900 text-capitalize" :class="`${table_name}-3`">{{ data.account_type }}</td>
+      <td
+        class="body-data grey-900 text-capitalize"
+        :class="`${table_name}-3`"
+      >{{ data.account_type }}</td>
 
       <td class="body-data grey-900" :class="`${table_name}-4`">{{ data.email_address }}</td>
 
@@ -53,7 +60,9 @@ export default {
 
   computed: {
     getName() {
-      return `${this.data?.firstname || this.data?.username || this.data?.email_address} ${this.data?.lastname || ''}`;
+      return `${
+        this.data?.firstname || this.data?.username || this.data?.email_address
+      } ${this.data?.lastname || ""}`;
     },
   },
 };
