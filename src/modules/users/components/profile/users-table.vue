@@ -7,20 +7,18 @@
       :table_header="table_header"
       :is_loading="table_loading"
       :empty_message="empty_message"
-      empty_action_name="Add new user"
       @emptyAction="$emit('emptyAction')"
-      @goToPage="page=$event"
+      @goToPage="updatePage"
       :pagination="getPagination"
       show_paging
     >
-      <template v-for="(user, index) in getPaginatedUser">
-        <UserTableRow
-          :key="user.account_id+index"
-          table_name="user-table"
-          :data="user"
-          :index="index+1"
-        />
-      </template>
+      <UserTableRow
+        v-for="(user, index) in getPaginatedUser"
+        :key="user.account_id+index"
+        table_name="user-table"
+        :data="user"
+        :index="index+1"
+      />
     </TableContainer>
   </div>
 </template>
@@ -28,7 +26,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
-import UserTableRow from "@/modules/users/components/user-table-row";
+import UserTableRow from "@/modules/users/components/profile/user-table-row";
 
 export default {
   name: "UsersTable",
@@ -40,6 +38,10 @@ export default {
 
   computed: {
     ...mapGetters({ getConnectedUsers: "users/getConnectedUsers" }),
+
+    filterQuery() {
+      return this.queryStrings(this.$route?.query);
+    },
 
     getPaginatedUser() {
       const { per_page } = this;
@@ -56,7 +58,9 @@ export default {
       const current_page = this.page;
 
       const index = this.page - 1;
-      const from = per_page * index;
+      const from_page = per_page * index;
+      const _from = Math.ceil([...this.getConnectedUsers]?.length / per_page);
+      const from = Math.min(from_page, _from);
       const to = Math.min(from + per_page, users.length);
 
       return {
@@ -98,13 +102,28 @@ export default {
       },
       paginatedData: {},
       paginationPages: {},
-      empty_message:
-        "You currently don't have any user, click the add new user button to add users.",
+      empty_message: "No match found",
     };
   },
 
   mounted() {
-    this.fetchUsers(1);
+    this.fetchUsers(this.page);
+  },
+
+  watch: {
+    "$route.query.page": {
+      handler(page) {
+        if (page) this.page = Number(page);
+      },
+      immediate: true,
+      deep: true,
+    },
+
+    filterQuery: {
+      handler() {
+        this.fetchUsers(this.page);
+      },
+    },
   },
 
   methods: {
@@ -112,17 +131,35 @@ export default {
       fetchConnectedUsers: "users/fetchConnectedUsers",
     }),
 
+    updatePage(page) {
+      this.page = Number(page);
+      const query = { ...this.$route?.query, page };
+
+      this.$router.replace({
+        path: this.$route.path,
+        query: { ...query },
+      });
+    },
+
+    queryStrings(query) {
+      return Object.entries(query)
+        .map(([k, v]) => `${k}=${v}`)
+        .join("&");
+    },
+
     fetchUsers(page) {
       this.table_loading = true;
       this.page = page;
 
-      // USE PREVIOUSLY SAVED DATA (AVOID UNNECESSARY API CALLS)
-      if (this.getConnectedUsers.length) {
-        this.table_loading = false;
-        return;
-      }
+      // USE PREVIOUSLY SAVED DATA (AVOID UNNECESSARY API CALLS)..
+      // WILL BE UN-COMMENTED LATER
 
-      this.fetchConnectedUsers()
+      // if (this.getConnectedUsers.length) {
+      //   this.table_loading = false;
+      //   return;
+      // }
+
+      this.fetchConnectedUsers(this.filterQuery)
         .then((response) => {
           if (response.code === 200) {
             this.table_data = response?.data;
@@ -149,7 +186,9 @@ export default {
 <style lang="scss">
 .table-container {
   min-height: 65vh;
+  border: toRem(1) solid getColor("grey-100");
 }
+
 .user-table {
   &-1 {
     max-width: toRem(60);
@@ -168,11 +207,23 @@ export default {
   }
 
   .head-data {
-    padding: toRem(10) toRem(22) !important;
+    padding: toRem(13) toRem(22) !important;
   }
 
   .body-data {
     padding: toRem(10) toRem(22) !important;
+  }
+}
+</style>
+
+<style lang="scss">
+.user-table {
+  .app-chip {
+    padding: toRem(2.75) toRem(10) toRem(2) toRem(21);
+    font-size: toRem(11.5);
+    @include breakpoint-down(md) {
+      padding: toRem(2.75) toRem(13) toRem(2) toRem(21);
+    }
   }
 }
 </style>

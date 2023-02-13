@@ -1,10 +1,7 @@
 <template>
   <div class="sidebar neutral-10-bg">
     <!-- BRAND LOGO -->
-    <router-link
-      :to="{ name: 'VesicashDashboard' }"
-      class="brand-logo mgb-40 d-block"
-    >
+    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo mgb-40 d-block">
       <VesicashBrandLogo />
     </router-link>
 

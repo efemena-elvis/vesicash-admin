@@ -1,1 +1,21 @@
-export default () => ({});
+export default () => ({
+    dashboard_stats: {
+        transaction_volume: "",
+        active_transactions: "",
+        completed_transactions: "",
+        registered_users: "",
+        verified_users: "",
+        dollar_balance: "",
+        naira_balance: "",
+        pounds_balance: "",
+        exchange_transactions: "",
+        gbp_usd_rate: "",
+        usd_ngn_rate: "",
+        gbp_ngn_rate: "",
+        dollar_exchange_balance: "",
+        naira_exchange_balance: "",
+        pounds_exchange_balance: "",
+        api_keys: "",
+        active_api_keys: "",
+    },
+});

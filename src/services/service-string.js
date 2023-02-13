@@ -100,6 +100,20 @@ class serviceString {
 
     return formatted_text;
   }
+
+  formattedBulkUnit(text){ 
+    let value = Number(text)
+    // .0[something] regex
+    const zeroDecimals = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    if (isNaN(value)) return "0";
+
+    //format number to K (thousand) or M (million)
+    if (value >= 1e6)
+      return (value / 1e6).toFixed(2).replace(zeroDecimals, "$1") + "M";
+    else if (value >= 1e3)
+      return (value / 1e3).toFixed(2).replace(zeroDecimals, "$1") + "K";
+    else return value.toFixed(2).replace(zeroDecimals, "$1");
+  }
 }
 
 export const $serviceString = new serviceString();

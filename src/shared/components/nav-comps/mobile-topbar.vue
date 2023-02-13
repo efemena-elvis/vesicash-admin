@@ -1,26 +1,23 @@
 <template>
   <div class="mobile-topbar neutral-10-bg w-100 index-9">
     <!-- HAMBURGER ICON -->
-    <div
-      class="icon icon-hamburger grey-500 pointer"
-      @click="toggleSidebar"
-    ></div>
+    <div class="icon icon-hamburger grey-500 pointer" @click="toggleSidebar"></div>
 
     <!-- TITLE TEXT -->
-    <div class="title-text primary-1-text grey-900">Dashboard</div>
+    <div class="title-text primary-1-text grey-900">{{ $route.meta.name || 'Dashboard' }}</div>
   </div>
 </template>
 
 <script>
 export default {
   name: "mobileTopbar",
-  
+
   watch: {
     $route: {
       handler() {
         this.$bus.$emit("close-sidebar");
-      }
-    }
+      },
+    },
   },
 
   methods: {

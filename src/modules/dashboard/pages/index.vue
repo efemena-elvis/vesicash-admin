@@ -10,13 +10,14 @@
             <div class="date-wrapper"></div>
           </div>
 
-          <div class="metric-cards-container pdy-30">
-            <MetricCard
-              v-for="metric in metrics"
-              :key="metric.title"
-              :metric="metric"
-            />
+          <div v-if="loading_stats" class="metric-cards-container">
+            <div class="metric-skeleton skeleton-loader" v-for="i in 12" :key="i"></div>
           </div>
+
+          <div class="metric-cards-container pdy-30" v-else>
+            <MetricCard v-for="metric in dashboardMetrics" :key="metric.title" :metric="metric" />
+          </div>
+          <div></div>
         </div>
       </template>
 
@@ -43,6 +44,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import MetricCard from "@/modules/dashboard/components/metric-card";
 import MetricGraph from "@/modules/dashboard/components/metric-graph";
 
@@ -54,68 +56,179 @@ export default {
     MetricGraph,
   },
 
-  data() {
-    return {
-      metrics: [
+  mounted() {
+    this.loading_stats = true;
+    Promise.all([
+      this.fetchDetails(
+        this.fetchTransactionStats,
+        "",
+        "Failed to load transaction stats"
+      ),
+
+      this.fetchDetails(
+        this.fetchExchangeRates,
+        "",
+        "Failed to load exchange rates"
+      ),
+
+      this.fetchDetails(this.fetchUsersCount, "", "Failed to load users stats"),
+
+      this.fetchDetails(
+        this.fetchAPIkeysStats,
+        "",
+        "Failed to load API keys stats"
+      ),
+    ])
+      .then(() => (this.loading_stats = false))
+      .catch(() => (this.loading_stats = false));
+  },
+
+  computed: {
+    ...mapGetters({ getDashboardStats: "dashboard/getDashboardStats" }),
+
+    dashboardMetrics() {
+      const {
+        transaction_volume,
+        active_transactions,
+        completed_transactions,
+        registered_users,
+        verified_users,
+        dollar_balance,
+        naira_balance,
+        pounds_balance,
+        exchange_transactions,
+        gbp_usd_rate,
+        usd_ngn_rate,
+        gbp_ngn_rate,
+        dollar_exchange_balance,
+        naira_exchange_balance,
+        pounds_exchange_balance,
+        api_keys,
+        active_api_keys,
+      } = this.getDashboardStats;
+
+      return [
         {
           title: "Transaction volume",
-          value: "34.2M",
+          value: this.$string.formattedBulkUnit(transaction_volume),
         },
         {
-          title: "Active transaction ",
-          value: "498",
+          title: "Active transaction",
+          value: this.$string.formattedBulkUnit(active_transactions),
         },
         {
           title: "Completed transaction",
-          value: "201K",
+          value: this.$string.formattedBulkUnit(completed_transactions),
         },
         {
           title: "Registered users",
-          value: "1545",
+          value: this.$string.formattedBulkUnit(registered_users),
         },
         {
           title: "No of verified users",
-          value: "1524",
+          value: this.$string.formattedBulkUnit(verified_users),
         },
         {
           title: "Dollar balance",
-          value: "$670K",
+          value: dollar_balance
+            ? `${this.$money.getSign("dollar")}${this.$money.addComma(
+                dollar_balance
+              )}`
+            : "",
         },
         {
           title: "Naira balance",
-          value: "₦234M",
+          value: naira_balance
+            ? `${this.$money.getSign("naira")}${this.$money.addComma(
+                naira_balance
+              )}`
+            : "",
         },
         {
           title: "Pounds balance",
-          value: "£134M",
+          value: naira_balance
+            ? `${this.$money.getSign("pound")}${this.$money.addComma(
+                pounds_balance
+              )}`
+            : "",
         },
         {
           title: "Exchange transactions",
-          value: "234k",
+          value: this.$string.formattedBulkUnit(exchange_transactions),
         },
         {
           title: "GBP/USD rate",
-          value: "£1/$340",
+          value: `${this.$money.getSign("pound")}1/${this.$money.getSign(
+            "dollar"
+          )}${this.$money.addComma(gbp_usd_rate)}`,
         },
 
         {
-          title: "NGN/USD rate",
-          value: "£1/$340",
+          title: "USD/NGN rate",
+          value: `${this.$money.getSign("dollar")}1/${this.$money.getSign(
+            "naira"
+          )}${this.$money.addComma(usd_ngn_rate)}`,
         },
         {
-          title: "NGN/GBP rate",
-          value: "£1/$340",
+          title: "GBP/NGN rate",
+          value: `${this.$money.getSign("pound")}1/${this.$money.getSign(
+            "naira"
+          )}${this.$money.addComma(gbp_ngn_rate)}`,
         },
         {
           title: "Naira exchange balance",
-          value: "₦490M",
+          value: `${this.$money.getSign(
+            "naira"
+          )}${this.$string.formattedBulkUnit(naira_exchange_balance)}`,
+        },
+        {
+          title: "Dollar exchange balance",
+          value: `${this.$money.getSign(
+            "naira"
+          )}${this.$string.formattedBulkUnit(dollar_exchange_balance)}`,
+        },
+        {
+          title: "Pounds exchange balance",
+          value: `${this.$money.getSign(
+            "pound"
+          )}${this.$string.formattedBulkUnit(pounds_exchange_balance)}`,
+        },
+        {
+          title: "No of API keys generated",
+          value: this.$string.formattedBulkUnit(api_keys),
         },
         {
           title: "Active keys",
-          value: "13",
+          value: this.$string.formattedBulkUnit(active_api_keys),
         },
-      ],
+      ];
+    },
+  },
+
+  data() {
+    return {
+      metrics: [],
+      loading_stats: false,
     };
+  },
+
+  methods: {
+    ...mapActions({
+      fetchTransactionStats: "dashboard/fetchTransactionStats",
+      fetchExchangeRates: "dashboard/fetchExchangeRates",
+      fetchUsersCount: "dashboard/fetchUsersCount",
+      fetchAPIkeysStats: "dashboard/fetchAPIkeysStats",
+    }),
+
+    async fetchDetails(fetcher, query = "", error_message) {
+      try {
+        const response = await fetcher(query);
+        if (response?.code !== 200)
+          this.pushToast(response?.message || error_message, "warning");
+      } catch {
+        this.pushToast(error_message);
+      }
+    },
   },
 };
 </script>
@@ -136,6 +249,11 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: toRem(30);
+
+    .metric-skeleton {
+      height: 60px;
+      width: 100%;
+    }
   }
 
   .metric-graphs-container {
