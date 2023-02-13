@@ -1,5 +1,5 @@
 <template>
-  <div class="table-empty-state">
+  <div class="table-empty-state mgt-40">
     <slot>
       <EmptyEscrowIcon />
     </slot>

@@ -13,33 +13,22 @@
           <component :is="nav.icon" />
         </div>
 
-        <div class="nav-text">
-          {{ nav.title }}
-        </div>
+        <div class="nav-text">{{ nav.title }}</div>
 
         <!-- CARET -->
         <div class="caret">
-          <div
-            class="icon icon-caret-left f-size-28"
-            :class="nav.show_more ? 'rotate-180' : null"
-          ></div>
+          <div class="icon icon-caret-left f-size-28" :class="nav.show_more ? 'rotate-180' : null"></div>
         </div>
       </router-link>
     </template>
 
     <!-- ROUTE WITHOUT CHILDREN -->
     <template v-else>
-      <router-link
-        v-if="checkAuthorizedRoute"
-        :to="nav.link"
-        class="nav-item-row"
-      >
+      <router-link v-if="checkAuthorizedRoute" :to="nav.link" class="nav-item-row">
         <div class="icon">
           <component :is="nav.icon" />
         </div>
-        <div class="nav-text">
-          {{ nav.title }}
-        </div>
+        <div class="nav-text">{{ nav.title }}</div>
       </router-link>
     </template>
 
@@ -61,9 +50,7 @@
             <div
               class="nav-text"
               :class="!path_list.includes(item.slug) && 'inactive-text'"
-            >
-              {{ item.title }}
-            </div>
+            >{{ item.title }}</div>
           </div>
         </router-link>
       </div>
@@ -72,8 +59,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 export default {
   name: "SidebarItem",
 

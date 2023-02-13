@@ -1,0 +1,11 @@
+$namespace: 'xmx'; // change the 'mx' to 'xmx'. then <date-picker prefix-class="xmx" />
+$default-color: getColor("neutral-900");
+$primary-color: getColor("teal-600");
+$input-hover-border-color:getColor("green-500");
+@import '~vue2-datepicker/scss/index.scss';
+.#{$namespace}-input-wrapper input[type="text"].#{$namespace}-input {
+    cursor: pointer;
+    &::placeholder {
+        color: getColor('neutral-900') !important;
+    }
+}
