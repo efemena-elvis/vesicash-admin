@@ -12,7 +12,7 @@
         <div class="column" :class="[escrow && 'escrow-borders' ]" :key="index">
           <!-- LOADING AMOUNT VALUE -->
           <template v-if="loading_wallet">
-            <div class="loading-amount-value rounded-3 skeleton-loader mgb-5"></div>
+            <div class="loading-amount-value rounded-1 skeleton-loader mgb-5"></div>
           </template>
 
           <template v-else>
@@ -21,9 +21,9 @@
               class="amount-value secondary-1-text mgb-4"
               :class="[
                 escrow && 'teal-800',
-                wallet.sign === 'naira' && !escrow && 'text-white',
-                wallet.sign === 'dollar' && !escrow && 'green-400',
-                wallet.sign === 'pound' && !escrow && 'teal-500',
+                ['naira','NGN'].includes(wallet.sign) && !escrow && 'text-white',
+                ['dollar','USD'].includes(wallet.sign) && !escrow && 'green-400',
+                ['pound','GBP'].includes(wallet.sign) && !escrow && 'teal-500',
                
               ]"
             >
@@ -118,7 +118,7 @@ export default {
       }
 
       .loading-amount-value {
-        @include draw-shape(120, 32);
+        @include draw-shape(120, 30);
       }
 
       border-right: toRem(1) solid getColor("teal-800");

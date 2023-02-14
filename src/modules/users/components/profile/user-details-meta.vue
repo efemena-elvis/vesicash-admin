@@ -7,7 +7,7 @@
 
     <div class="meta-block">
       <div class="meta-name">ACCOUNT TYPE</div>
-      <div class="meta-value">{{ details.account_type }}</div>
+      <div class="meta-value text-capitalize">{{ details.account_type }}</div>
     </div>
 
     <div class="meta-block" v-if="details.business_name">

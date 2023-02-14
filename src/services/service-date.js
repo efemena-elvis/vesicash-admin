@@ -143,6 +143,15 @@ class serviceDate {
     else return this.getShortReadableDate(date_param);
   }
 
+  getSimpleDate(){
+    // RETURNS DATE OF FORMAT YYYY-MM-DD
+    const year = this.getYear('y1');
+    const month = this.getMonth('m2');
+    const day = this.getDay('d2');
+    
+    return `${year}-${month}-${day}`
+  }
+
   getMinutesPerSeconds(time) {
     let minutes = Math.trunc(Math.round(time) / 60);
     let minutes_in_secs = minutes * 60;
