@@ -5,7 +5,7 @@
     </div>
 
     <div>
-      <div class="grey-900 primary-2-text mgb-4">
+      <div class="grey-900 primary-2-text mgb-4 text-capitalize">
         {{ getUser.fullname || getUser.email || "Efemena Elvis" }}
       </div>
       <div class="tertiary-3-text green-600">
@@ -27,7 +27,7 @@
         >
           <CopyIcon />
           <span class="tertiary-2-text grey-900" v-if="copied">ID Copied!</span>
-          <span class="tertiary-2-text grey-900" v-else>Copy Merchant ID</span>
+          <span class="tertiary-2-text grey-900" v-else>Copy Account ID</span>
         </div>
 
         <div class="profile-menu-item" @click="$emit('exit')">
@@ -40,7 +40,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import UserIcon from "@/shared/components/icon-comps/user-icon";
 import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import CopyIcon from "@/shared/components/icon-comps/copy-icon";
@@ -52,23 +51,6 @@ export default {
     UserIcon,
     CopyIcon,
     ExitIcon,
-  },
-
-  computed: {
-    ...mapGetters({ getTourData: "general/getTourData" }),
-  },
-
-  watch: {
-    "getTourData.count": {
-      handler(value) {
-        this.show_profile_menu = false;
-
-        if (value === 8) {
-          setTimeout(() => (this.show_profile_menu = true), 300);
-        }
-      },
-      immediate: true,
-    },
   },
 
   data() {
@@ -85,7 +67,7 @@ export default {
     },
 
     async copyMerchantID() {
-      await navigator.clipboard.writeText(this.id);
+      await navigator.clipboard.writeText(this.getAccountId);
       this.copied = true;
       setTimeout(() => (this.copied = false), 2000);
     },

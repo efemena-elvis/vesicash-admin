@@ -1,5 +1,5 @@
 <template>
-  <DetailsCard :card_title="payment_rule.milestone_name" :metas="ruleMetas">
+  <DetailsCard :card_title="payment_rule.title" :metas="ruleMetas">
     <template v-if="payment_rule.multi">
       <DetailsCard v-for="(user,index) in usersMeta" :key="index" :metas="user" />
     </template>
@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import STATUS_COLORS from "@/utilities/status";
 import DetailsCard from "@/shared/components/card-comps/details-card";
 export default {
   name: "EscrowPaymentRuleCard",
@@ -42,45 +43,30 @@ export default {
 
   computed: {
     ruleMetas() {
-      return this.payment_rule?.multi
-        ? [
-            {
-              name: "PAYMENT DUE DATE",
-              value: this.payment_rule?.due_date,
-            },
-            {
-              name: "INSPECTION PERIOD",
-              value: this.payment_rule?.inspection_period,
-            },
-            {
-              name: "TRANSACTION STATUS",
-              value: this.payment_rule?.status,
-              status: "success",
-            },
-          ]
-        : [
-            {
-              name: "USER DETAILS",
-              value: this.payment_rule?.user_email,
-            },
-            {
-              name: "AMOUNT TO PAY",
-              value: this.payment_rule?.amount,
-            },
-            {
-              name: "PAYMENT DUE DATE",
-              value: this.payment_rule?.due_date,
-            },
-            {
-              name: "INSPECTION PERIOD",
-              value: this.payment_rule?.inspection_period,
-            },
-            {
-              name: "TRANSACTION STATUS",
-              value: this.payment_rule?.status,
-              status: "success",
-            },
-          ];
+      return [
+        {
+          name: "USER DETAILS",
+          value: this.payment_rule?.user_email,
+        },
+        {
+          name: "AMOUNT TO PAY",
+          value: this.payment_rule?.amount,
+        },
+        {
+          name: "PAYMENT DUE DATE",
+          value: this.payment_rule?.due_date,
+        },
+        {
+          name: "INSPECTION PERIOD",
+          value: this.payment_rule?.inspection_period,
+        },
+        {
+          name: "TRANSACTION STATUS",
+          value: this.payment_rule?.status,
+          status:
+            STATUS_COLORS[this.payment_rule?.status?.toLowerCase()] || "error",
+        },
+      ];
     },
 
     usersMeta() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-chip" :class="`app-chip-${card_type}`">
+  <div class="app-chip" :class="`app-chip-${card_type}`" :title="card_text">
     <div class="chip-text text-capitalize">{{ card_text }}</div>
   </div>
 </template>

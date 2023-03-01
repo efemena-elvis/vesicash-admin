@@ -41,7 +41,7 @@ const navRoutes = [
     title: "Foreign exchange",
     slug: "foreign-exchange",
     icon: "ExchangeIcon",
-    link: "/foreign-exchange",
+    link: "/foreign-exchange/transactions",
     show_more: false,
     children: [],
     authorize: ["open"],

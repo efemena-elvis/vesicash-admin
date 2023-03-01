@@ -3,9 +3,13 @@
     <div class="top-row">
       <div class="page-title">Manage Users</div>
 
-      <div class="secondary-2-text" v-if="getDateShortcut">{{getDateShortcut}}</div>
+      <div class="secondary-2-text" v-if="getDateShortcut">
+        {{ getDateShortcut }}
+      </div>
 
-      <div class="secondary-2-text" v-else>{{ formattedDateRange || 'Till Date' }}</div>
+      <div class="secondary-2-text" v-else>
+        {{ formattedDateRange || "Till Date" }}
+      </div>
     </div>
 
     <div class="filter-row mgb-30">
@@ -17,18 +21,17 @@
       />
 
       <select name id class="form-control pointer" v-model="account_type">
-        <option value>
-          Account
-          type
-        </option>
+        <option value disabled>Account type</option>
+        <option value="">All</option>
         <option value="individual">Individual</option>
         <option value="business">Business</option>
       </select>
 
-      <select name id class="form-control pointer">
-        <option value="1" disabled selected>Status</option>
-        <option value="2">Verified</option>
-        <option value="3">Pending</option>
+      <select name id class="form-control pointer" v-model="status">
+        <option value="" disabled selected>Status</option>
+        <option value="">All</option>
+        <option value="verified">Verified</option>
+        <option value="pending">Pending</option>
       </select>
 
       <div class="date-wrapper">
@@ -36,14 +39,14 @@
           v-model="time"
           range
           prefix-class="xmx"
-          :formatter="{ stringify:()=>'' }"
+          :formatter="{ stringify: () => '' }"
           :range-separator="'Date range'"
           :placeholder="'Date range'"
           class="pointer"
           :clearable="false"
           :editable="false"
           :disabled-date="disabledDate"
-          :popup-style="{right:'0', top:'40px',left:'auto'}"
+          :popup-style="{ right: '0', top: '40px', left: 'auto' }"
           :append-to-body="false"
           :shortcuts="shortcutConfig"
         >
@@ -51,11 +54,12 @@
         </DatePicker>
       </div>
     </div>
-    <UsersTable />
+    <UsersTable :users="getUsers" />
   </div>
 </template>
 
 <script>
+import { mapMutations, mapGetters } from "vuex";
 import UsersTable from "@/modules/users/components/profile/users-table";
 import DatePicker from "vue2-datepicker";
 import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
@@ -72,6 +76,16 @@ export default {
   mixins: [MixinDateFilter],
 
   computed: {
+    ...mapGetters({ getConnectedUsers: "users/getAllConnectedUsers" }),
+
+    getUsers() {
+      let users = [...this.getConnectedUsers];
+      if (!this.status) return users;
+      if (this.status === "verified")
+        return users?.filter((user) => user.is_verified);
+      return users?.filter((user) => !user.is_verified);
+    },
+
     userQueries() {
       const search = this.search;
       const account_type = this.account_type;
@@ -121,12 +135,15 @@ export default {
     return {
       search: "",
       account_type: "",
+      status: "",
       show_date_range: false,
       date_shortcut: "",
     };
   },
 
   methods: {
+    ...mapMutations({ SAVE_ALL_USERS: "users/SAVE_ALL_USERS" }),
+
     syncFilterInputs() {
       this.search = this.$route?.query?.search || "";
       this.account_type = this.$route?.query?.account_type || "";

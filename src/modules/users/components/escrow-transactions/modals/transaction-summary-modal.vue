@@ -2,7 +2,7 @@
   <ModalCover
     show_close_btn
     @closeModal="$emit('closeTriggered')"
-    :modal_style="{ size: 'modal-lg' }"
+    :modal_style="modal_style"
     class="transaction-summary-modal"
   >
     <template slot="modal-cover-header">
@@ -40,6 +40,11 @@ export default {
   },
 
   props: {
+    modal_style: {
+      type: Object,
+      default: () => ({ size: "modal-sm" }),
+    },
+
     summary: {
       type: Object,
       default: () => ({

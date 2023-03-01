@@ -5,23 +5,30 @@
     custom
   >
     <tr @click="navigate">
-      <td class="body-data grey-900 text-capitalize" :class="`${table_name}-1`">{{ index }}</td>
+      <td class="body-data grey-900 text-capitalize" :class="`${table_name}-1`">
+        {{ index }}
+      </td>
 
-      <td class="body-data grey-900" :class="`${table_name}-2`">{{ data.account_id }}</td>
+      <td class="body-data grey-900" :class="`${table_name}-2`">
+        {{ data.account_id }}
+      </td>
 
-      <td
-        class="body-data grey-900 text-capitalize"
-        :class="`${table_name}-3`"
-      >{{ data.account_type }}</td>
+      <td class="body-data grey-900 text-capitalize" :class="`${table_name}-3`">
+        {{ data.account_type || "--------" }}
+      </td>
 
-      <td class="body-data grey-900" :class="`${table_name}-4`">{{ data.email_address }}</td>
+      <td class="body-data grey-900" :class="`${table_name}-4`">
+        {{ data.email_address }}
+      </td>
 
-      <td class="body-data grey-900" :class="`${table_name}-5`">{{ getName }}</td>
+      <td class="body-data grey-900" :class="`${table_name}-5`">
+        {{ getName }}
+      </td>
 
       <td class="body-data grey-900" :class="`${table_name}-6`">
         <TagCard
-          :card_text="data.authorization_required ? 'pending':'verified'"
-          :card_type="data.authorization_required ? 'progress':'success'"
+          :card_text="data.is_verified ? 'verified' : 'pending'"
+          :card_type="data.is_verified ? 'success' : 'progress'"
         />
       </td>
 
@@ -68,10 +75,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-td {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>
+<style lang="scss" scoped></style>

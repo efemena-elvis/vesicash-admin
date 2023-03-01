@@ -3,24 +3,27 @@
     <!-- TABLE CONTAINER -->
     <TableContainer
       table_name="transaction-tb"
-      :table_data="table_data"
+      :table_data="getPaginatedTransaction"
       :table_header="table_header"
       :is_loading="table_loading"
       :empty_message="getEmptyMessage"
-      :empty_action_name="getEmptyActionName"
       show_paging
-      :pagination="pagination"
-      @goToPage="getUserTransactions"
+      :pagination="getPagination"
+      @goToPage="updatePage"
     >
-      <template v-for="(data, index) in 10">
-        <TransactionTableRow :key="index" table_name="transaction-tb" :data="data" />
+      <template v-for="(data, index) in getPaginatedTransaction">
+        <TransactionTableRow
+          :key="index"
+          table_name="transaction-tb"
+          :data="data"
+        />
       </template>
     </TableContainer>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
 
 export default {
@@ -28,6 +31,7 @@ export default {
 
   components: {
     TableContainer,
+
     TransactionTableRow: () =>
       import(
         /* webpackChunkName: "transactions-module" */ "@/modules/users/components/escrow-transactions/transaction-table-row"
@@ -42,12 +46,62 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getUserTxn: "users/getUserTxn" }),
+
     getEmptyMessage() {
       return "User has not performed any escrow transaction";
     },
 
     getEmptyActionName() {
-      return this.$route?.name === "AllTransactions" ? "Create escrow" : "";
+      return "";
+    },
+
+    filterQuery() {
+      return this.queryStrings(this.$route?.query);
+    },
+
+    getPaginatedTransaction() {
+      const { per_page } = this;
+      const index = this.page - 1;
+      const start_range = per_page * index;
+      const end_range = start_range + per_page;
+      const transactions = [...this.getUserTxn];
+      return transactions.slice(start_range, end_range);
+    },
+
+    getPagination() {
+      const transactions = [...this.getUserTxn];
+      const { per_page } = this;
+      const current_page = this.page;
+
+      const index = this.page - 1;
+      const from = per_page * index;
+      const to = Math.min(from + per_page, transactions.length);
+
+      return {
+        current_page,
+        per_page,
+        last_page: Math.ceil(transactions.length / per_page),
+        from: from + 1,
+        to,
+        total: transactions.length,
+      };
+    },
+  },
+
+  watch: {
+    "$route.query.page": {
+      handler(page) {
+        if (page) this.page = Number(page);
+      },
+      immediate: true,
+      deep: true,
+    },
+
+    filterQuery: {
+      handler() {
+        this.getUserTransactions(this.page);
+      },
     },
   },
 
@@ -67,6 +121,8 @@ export default {
       table_loading: true,
       paginatedData: {},
       paginationPages: {},
+      page: 1,
+      per_page: 15,
       pagination: {
         current_page: 1,
         per_page: 10,
@@ -81,7 +137,7 @@ export default {
   },
 
   mounted() {
-    this.getUserTransactions(1);
+    this.getUserTransactions(this.page);
   },
 
   methods: {
@@ -89,22 +145,37 @@ export default {
       fetchUserTransactions: "users/fetchUserTransactions",
     }),
 
+    updatePage(page) {
+      this.page = Number(page);
+      const query = { ...this.$route?.query, page };
+
+      this.$router.replace({
+        path: this.$route.path,
+        query: { ...query },
+      });
+    },
+
+    queryStrings(query) {
+      return Object.entries(query)
+        .map(([k, v]) => `${k}=${v}`)
+        .join("&");
+    },
+
     // ====================================
     // FETCH ALL USER TRANSACTIONS
     // ====================================
     getUserTransactions(page) {
+      this.table_loading = true;
+      this.page = page;
+
       // USE PREVIOUSLY SAVED DATA FOR THAT PAGE NUMBER (AVOID UNNECESSARY API CALLS)
-      if (this.paginatedData[page] && this.paginationPages[page]) {
-        this.table_data = this.paginatedData[page];
-        this.pagination = this.paginationPages[page];
-        this.table_loading = false;
-        return;
-      }
+      // if (this.getUserTxn?.length) {
+      //   this.table_loading = false;
+      //   return;
+      // }
 
       const payload = {
-        payload: { account_id: this.getAccountId },
-        page,
-        limit: this.$route?.name === "AllTransactions" ? 20 : 3,
+        business_id: this.$route?.params?.userID,
       };
 
       this.table_loading = true;
@@ -112,7 +183,7 @@ export default {
       this.fetchUserTransactions(payload)
         .then((response) => {
           if (response.code === 200) {
-            // this.table_data = response.data;
+            this.table_data = response.data;
             this.table_loading = false;
 
             // this.saveTransactionDataAndPagination(
@@ -160,7 +231,7 @@ export default {
 <style lang="scss">
 .transaction-tb {
   &-1 {
-    min-width: toRem(80);
+    min-width: toRem(50);
     max-width: toRem(90);
   }
 
@@ -171,9 +242,13 @@ export default {
 
   &-3,
   &-4,
-  &-5,
-  &-6 {
+  &-5 {
     max-width: toRem(200);
+    min-width: toRem(180);
+  }
+
+  &-6 {
+    max-width: toRem(270);
     min-width: toRem(150);
   }
 

@@ -10,7 +10,7 @@
     >
       <!-- SELECTIONS -->
       <div class="selections" v-if="selected_value">
-        <div class="select-text grey-900 tertiary-2-text text-capitalize">
+        <div class="select-text grey-900 tertiary-2-text">
           <span v-html="selected_value"></span>
         </div>
       </div>

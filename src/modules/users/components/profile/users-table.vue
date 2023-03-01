@@ -1,5 +1,5 @@
 <template>
-  <div class="neutral-10-bg table-container">
+  <div class="neutral-10-bg users-table-container">
     <!-- TABLE CONTAINER -->
     <TableContainer
       table_name="user-table"
@@ -14,10 +14,10 @@
     >
       <UserTableRow
         v-for="(user, index) in getPaginatedUser"
-        :key="user.account_id+index"
+        :key="user.account_id + index"
         table_name="user-table"
         :data="user"
-        :index="index+1"
+        :index="index + 1 + (page - 1) * per_page"
       />
     </TableContainer>
   </div>
@@ -31,36 +31,44 @@ import UserTableRow from "@/modules/users/components/profile/user-table-row";
 export default {
   name: "UsersTable",
 
+  props: {
+    users: {
+      type: Array,
+      default: () => [],
+    },
+  },
+
   components: {
     TableContainer,
     UserTableRow,
   },
 
   computed: {
-    ...mapGetters({ getConnectedUsers: "users/getConnectedUsers" }),
+    ...mapGetters({ getConnectedUsers: "users/getAllConnectedUsers" }),
 
     filterQuery() {
-      return this.queryStrings(this.$route?.query);
+      const query = { ...this.$route?.query };
+      return this.queryStrings(query);
     },
 
     getPaginatedUser() {
       const { per_page } = this;
-      const index = this.page - 1;
+      const users = [...this.users];
+      const max_index = Math.max(0, Math.ceil(users.length / per_page));
+      const index = Math.min(this.page - 1, max_index);
       const start_range = per_page * index;
       const end_range = start_range + per_page;
-      const users = [...this.getConnectedUsers];
       return users.slice(start_range, end_range);
     },
 
     getPagination() {
-      const users = [...this.getConnectedUsers];
+      const users = [...this.users];
       const { per_page } = this;
       const current_page = this.page;
 
-      const index = this.page - 1;
-      const from_page = per_page * index;
-      const _from = Math.ceil([...this.getConnectedUsers]?.length / per_page);
-      const from = Math.min(from_page, _from);
+      const max_index = Math.max(0, Math.ceil(users.length / per_page));
+      const index = Math.min(this.page - 1, max_index);
+      const from = per_page * index;
       const to = Math.min(from + per_page, users.length);
 
       return {
@@ -119,16 +127,32 @@ export default {
       deep: true,
     },
 
+    "users.length": {
+      handler(size) {
+        const max_page = Math.max(1, Math.ceil(size / this.per_page));
+        this.page = Math.min(this.page, max_page);
+      },
+      immediate: true,
+      deep: true,
+    },
+
     filterQuery: {
       handler() {
         this.fetchUsers(this.page);
+      },
+    },
+
+    users: {
+      handler() {
+        this.table_loading = true;
+        setTimeout(() => (this.table_loading = false), 500);
       },
     },
   },
 
   methods: {
     ...mapActions({
-      fetchConnectedUsers: "users/fetchConnectedUsers",
+      fetchConnectedUsers: "users/fetchAllConnectedUsers",
     }),
 
     updatePage(page) {
@@ -148,7 +172,12 @@ export default {
     },
 
     fetchUsers(page) {
-      this.table_loading = true;
+      const _query = this.filterQuery
+        ? `?${this.filterQuery}`
+        : this.filterQuery;
+
+      this.table_loading = _query === decodeURIComponent(location.search);
+      // LOAD ONLY WHEN THE EXPECTED/RIGHT API CALL IS HAPPENING
       this.page = page;
 
       // USE PREVIOUSLY SAVED DATA (AVOID UNNECESSARY API CALLS)..
@@ -184,14 +213,14 @@ export default {
 </script>
 
 <style lang="scss">
-.table-container {
+.users-table-container {
   min-height: 65vh;
   border: toRem(1) solid getColor("grey-100");
 }
 
 .user-table {
   &-1 {
-    max-width: toRem(60);
+    max-width: toRem(90);
   }
 
   &-2,
@@ -207,11 +236,11 @@ export default {
   }
 
   .head-data {
-    padding: toRem(13) toRem(22) !important;
+    padding: toRem(14) toRem(22) !important;
   }
 
   .body-data {
-    padding: toRem(10) toRem(22) !important;
+    padding: toRem(12) toRem(22) !important;
   }
 }
 </style>

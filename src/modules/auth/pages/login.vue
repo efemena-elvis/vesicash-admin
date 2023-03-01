@@ -125,9 +125,15 @@ export default {
 
       this.loginUser(request_payload)
         .then((response) => {
+          this.handleClick("loginBtn", "Login to account", false);
           if (response.code === 200) {
+            if (response?.data?.user?.account_type !== "admin") {
+              this.pushToast("Login with an admin account", "warning");
+              return;
+            }
+
             this.pushToast("User login was successful", "success");
-            this.handleClick("loginBtn", "Login to account", false);
+
             // console.log("login response", response);
 
             // REDIRECT TO DASHBOARD
@@ -153,5 +159,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

@@ -1,9 +1,11 @@
 <template>
-  <div>
+  <div class="user-details-layout">
     <PageBackBtn back_link="/users/manage-users" />
 
     <div class="top-row mgb-30">
-      <div class="page-title">{{ $route.query.name || getUserDetails.fullname }}</div>
+      <div class="page-title">
+        {{ $route.query.name || getUserDetails.fullname }}
+      </div>
       <button class="btn btn-md btn-primary">Reset Password</button>
     </div>
 
@@ -14,8 +16,15 @@
     <UserDetailsMeta :details="getUserDetails" v-else />
 
     <div class="balance-row mgt-20 mgb-40">
-      <UserBalanceCard :wallet_balance="mainBalance" :loading_wallet="loading_details" />
-      <UserBalanceCard :wallet_balance="escrowBalance" :loading_wallet="loading_details" escrow />
+      <UserBalanceCard
+        :wallet_balance="mainBalance"
+        :loading_wallet="loading_details"
+      />
+      <UserBalanceCard
+        :wallet_balance="escrowBalance"
+        :loading_wallet="loading_details"
+        escrow
+      />
     </div>
 
     <RouteTabSwitcher :tabs="user_routes" />
@@ -41,6 +50,7 @@ export default {
 
   mounted() {
     this.fetchUserDetails();
+    this.$bus.$on("refresh_users", this.fetchUserDetails);
   },
 
   data() {
@@ -73,12 +83,12 @@ export default {
           routeName: "UserProfile",
         },
         {
-          name: "ESCROW TXN",
+          name: "ESCROW",
           routeName: "UserEscrowTransactions",
         },
         {
-          name: "WALLET TXN",
-          routeName: "UserWalletTransactions",
+          name: "TRANSACTIONS",
+          routeName: "UserWalletFunding",
         },
         {
           name: "VERIFICATION",
@@ -92,6 +102,10 @@ export default {
           name: "BANK INFO",
           routeName: "UserBankAccounts",
         },
+        // {
+        //   name: "CONNECTED USERS",
+        //   routeName: "UserConnectedUsers",
+        // },
         {
           name: "API",
           routeName: "UserAPI",
@@ -107,12 +121,11 @@ export default {
       return {
         userID: this.$route?.params?.userID,
         account_type: this.getUserProfile?.user?.account_type || "-------",
-        business_name:
-          this.getUserProfile?.profile?.business?.business_name || "-------",
+        business_name: this.getUserProfile?.profile?.business?.business_name,
         fullname: `${this.getUserProfile?.user?.firstname || "--------"} ${
           this.getUserProfile?.user?.lastname || "------"
         }`,
-        verified: false,
+        verified: this.getUserProfile?.profile?.is_verified,
       };
     },
 
@@ -132,17 +145,17 @@ export default {
       return [
         {
           sign: "naira",
-          value: naira_balance?.available,
+          value: naira_balance?.available || "0.00",
           description: "Naira balance",
         },
         {
           sign: "dollar",
-          value: dollar_balance?.available,
+          value: dollar_balance?.available || "0.00",
           description: "Dollar balance",
         },
         {
           sign: "pound",
-          value: "0",
+          value: "0.00",
           description: "Pounds balance",
         },
       ];
@@ -164,17 +177,17 @@ export default {
       return [
         {
           sign: "naira",
-          value: naira_balance?.available,
+          value: naira_balance?.available || "0.00",
           description: "Naira balance",
         },
         {
           sign: "dollar",
-          value: dollar_balance?.available,
+          value: dollar_balance?.available || "0.00",
           description: "Dollar balance",
         },
         {
           sign: "pound",
-          value: "0",
+          value: "0.00",
           description: "Pounds balance",
         },
       ];
@@ -215,6 +228,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.user-details-layout {
+  padding-bottom: toRem(100);
+}
+
 .top-row {
   @include flex-row-between-nowrap;
 }
