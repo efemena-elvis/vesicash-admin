@@ -14,7 +14,7 @@ export default (to, from, next) => {
   // VERIFY IF ROUTE NEEDS AUTHENTICATION
   // =========================================
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // verifyAuthRoutes(to, next);
+    verifyAuthRoutes(to, next);
     next();
   }
 
@@ -22,7 +22,7 @@ export default (to, from, next) => {
   // VERIFY IF ROUTE IS A JUST A GUEST
   // =========================================
   else if (to.matched.some((record) => record.meta.guest)) {
-    // verifyGuestRoutes(to, next);
+    verifyGuestRoutes(to, next);
     next();
   }
 

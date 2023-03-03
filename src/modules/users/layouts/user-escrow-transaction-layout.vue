@@ -1,9 +1,13 @@
 <template>
-  <div>
-    <PageBackBtn :back_link="`user/${$route.params.userID}/escrow-transactions`" />
+  <div class="pdb-40">
+    <PageBackBtn :back_link="`/users/manage-users/${$route.params.userID}/escrow-transaction`" />
 
     <div class="d-flex justify-content-between align-items-center">
-      <div class="page-title">Payment for web page</div>
+      <div
+        class="skeleton-loader txn-name-skeleton"
+        v-if="loading_transaction || !transaction_details"
+      ></div>
+      <div class="page-title" v-else>{{transaction_details.title }}</div>
 
       <select name="status" id="status" class="form-control">
         <option value="0">Change status</option>
@@ -14,18 +18,30 @@
     </div>
 
     <div class="details-row mgy-40">
-      <DetailsCard :card_title="disbursement_title" :metas="disbursementDetails" />
+      <template v-if="loading_transaction">
+        <div class="card-skeleton skeleton-loader"></div>
+        <div class="card-skeleton skeleton-loader"></div>
+      </template>
 
-      <DetailsCard :card_title="payment_title" :metas="paymentDetails" />
+      <template v-else>
+        <DetailsCard :card_title="disbursement_title" :metas="disbursementDetails" />
+
+        <DetailsCard :card_title="payment_title" :metas="paymentDetails" />
+      </template>
     </div>
 
     <RouteTabSwitcher :tabs="transactionTabs" />
 
-    <router-view />
+    <router-view
+      :loading="loading_transaction"
+      :payments="payments"
+      :transaction="transaction_details"
+    />
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import PageBackBtn from "@/shared/components/page-back-btn";
 import DetailsCard from "@/shared/components/card-comps/details-card";
 import RouteTabSwitcher from "@/shared/components/route-tab-switcher";
@@ -36,6 +52,10 @@ export default {
     PageBackBtn,
     DetailsCard,
     RouteTabSwitcher,
+  },
+
+  mounted() {
+    this.fetchTransaction();
   },
 
   computed: {
@@ -52,6 +72,10 @@ export default {
           route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/payments`,
         },
         {
+          name: "PARTIES",
+          route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/parties`,
+        },
+        {
           name: "ACTIVITY",
           route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/activity`,
         },
@@ -62,28 +86,39 @@ export default {
       return [
         {
           name: "#",
-          value: "1120331",
+          value: this.transaction_details?.id,
         },
         {
           name: "PAYMENT CREATION DATE",
-          value: "24th Apr 2023",
+          value: this.formattedDate(this.transaction_details?.created_at),
         },
         {
           name: "PAYMENT DUE DATE",
-          value: "1120331",
+          value: this.formattedDate(
+            this.transaction_details?.due_date_formatted
+          ),
         },
         {
           name: "DISBURSMENT TYPE",
-          value: "Multiple disbursment",
+          value:
+            this.transaction_details?.type === "oneoff"
+              ? "One-off disbursement"
+              : "Multiple disbursment",
         },
         {
-          name: "NO OF PARTIES",
-          value: "Multiple parties",
+          name: "NO. OF PARTIES",
+          value:
+            this.transaction_details?.members?.length > 2
+              ? "Multiple parties"
+              : "Two parties",
         },
         {
           name: "TRANSACTION STATUS",
-          value: "Verified",
-          status: "success",
+          value: this.transaction_details?.status,
+          status:
+            this.status_colors[
+              this.transaction_details?.status?.toLowerCase()
+            ] || "error",
         },
       ];
     },
@@ -92,25 +127,39 @@ export default {
       return [
         {
           name: "AMOUNT TO PAY",
-          value: "$34,000",
+          value: `${this.$money?.getSign(
+            this.transaction_details?.currency
+          )}${this.$money?.addComma(
+            this.transaction_details?.amount || "0.00"
+          )}`,
         },
         {
           name: "AMOUNT PAID",
-          value: "$0",
+          value: `${this.$money?.getSign(
+            this.transaction_details?.currency
+          )}${this.$money?.addComma(
+            this.transaction_details?.amount_paid || "0.00"
+          )}`,
         },
+        // {
+        //   name: "PAYMENT CURRENCY",
+        //   value: "Dollar",
+        // },
         {
-          name: "PAYMENT CURRENCY",
-          value: "Dollar",
+          name: "DISPUTE HANDLER",
+          value: this.transaction_details?.dispute_handler || "Vesicash",
         },
-        {
-          name: "DISPUTE TYPE",
-          value: "Vesicash handles",
-        },
-        {
-          name: "ATTACHMENT FILE",
-          value: "imge001.jpg",
-        },
+        // {
+        //   name: "ATTACHMENT FILE",
+        //   value: "imge001.jpg",
+        // },
       ];
+    },
+  },
+
+  filters: {
+    getStatusColor(status, status_colors) {
+      return status_colors[status?.toLowerCase()] || "error";
     },
   },
 
@@ -118,6 +167,27 @@ export default {
     return {
       disbursement_title: "DISBURSMENT DETAILS",
       payment_title: "PAYMENT DETAILS",
+
+      transaction_details: null,
+      payments: [],
+      loading_transaction: false,
+
+      status_colors: {
+        "sent - awaiting confirmation": "progress",
+        "sent - Rejected": "error",
+        "accepted - not funded": "error",
+        "accepted - funded": "okay",
+        draft: "okay",
+        "in progress": "progress",
+        delivered: "okay",
+        "delivered - accepted": "success",
+        "delivered - rejected": "error",
+        "closed - disbursement complete": "success",
+        completed: "success",
+        "closed - refunded": "error",
+        "closed - not funded": "error",
+        closed: "error",
+      },
 
       transaction_tabs: [
         {
@@ -135,12 +205,54 @@ export default {
       ],
     };
   },
+
+  methods: {
+    ...mapActions({ fetchTransactionDetails: "users/fetchTransactionDetails" }),
+
+    formattedDate(date) {
+      if (!date) return "";
+      const _date = this.$date?.formatDate(date);
+      return _date.getSimpleFormatDate();
+    },
+
+    async fetchTransaction() {
+      this.loading_transaction = true;
+      try {
+        const response = await this.fetchTransactionDetails(
+          this.$route?.params?.transactionID
+        );
+
+        this.loading_transaction = false;
+
+        if (response?.code === 200) {
+          this.transaction_details = response?.data?.transactions;
+          this.payments = response?.data?.payments;
+        } else
+          this.pushToast(
+            response?.message || "Failed to load transaction",
+            "warning"
+          );
+      } catch (err) {
+        this.loading_transaction = false;
+        console.log("ERROR FETCHING TRANSACTIONS", err);
+        this.pushToast("Failed to load transaction", "error");
+      }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 select.form-control {
   max-width: toRem(180);
+}
+
+.txn-name-skeleton {
+  @include draw-shape(300, 35);
+}
+
+.card-skeleton {
+  height: toRem(110);
 }
 
 .details-row {

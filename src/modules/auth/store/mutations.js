@@ -20,23 +20,23 @@ export default {
     userData.email = response_payload.user.email_address;
     userData.phone = response_payload.user.phone_number;
     userData.username = response_payload.user.username;
-    userData.flutterwave_merchant_id = response_payload?.profile?.business?.flutterwave_merchant_id;
+    // userData.flutterwave_merchant_id = response_payload?.profile?.business?.flutterwave_merchant_id;
     userData.country = response_payload.profile.user.country ?? "NG";
     userData.currency = response_payload.profile.user.currency ?? "NGN";
     userData.meta = response_payload.user.meta;
     userData.bio = response_payload.profile.user.bio;
-    userData.has_seen_tour = response_payload.user.has_seen_tour;
+    // userData.has_seen_tour = response_payload.user.has_seen_tour;
 
     // BUSINESS ACCOUNT DATA
-    userData.business_name =
-      response_payload.profile?.business?.business_name ?? null;
-    userData.business_charge = response_payload.profile?.business
-      ?.escrow_charge ?? { type: "percentage", value: "0.05" };
+    // userData.business_name =
+    //   response_payload.profile?.business?.business_name ?? null;
+    // userData.business_charge = response_payload.profile?.business
+    //   ?.escrow_charge ?? { type: "percentage", value: "0.05" };
 
     // STRINGIFY BUSINESS CHARGE AND ENCODE IT
-    userData.business_charge = string.encodeString(
-      JSON.stringify(userData.business_charge)
-    );
+    // userData.business_charge = string.encodeString(
+    //   JSON.stringify(userData.business_charge)
+    // );
 
     // ENDCODED LOGIN COUNT ACCOUNT TYPE, ACCOUNT ID AND BUSINESS ID
     userData.total_entry = string.encodeString(response_payload.login_count);
@@ -47,9 +47,9 @@ export default {
     userData.account_token = string.encodeString(
       response_payload.user.account_id
     );
-    userData.business_token = string.encodeString(
-      response_payload.user.business_id
-    );
+    // userData.business_token = string.encodeString(
+    //   response_payload.user.business_id
+    // );
 
     // UPDATE AUTH STATE
     state.authUser = userData;

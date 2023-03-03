@@ -36,6 +36,7 @@ export default {
         if (response.code === 200) {
             const updated_stats = {
                 ...state.dashboard_stats,
+                ...response.data,
                 exchange_transactions: response.data.exchange_transactions,
                 gbp_usd_rate: response.data.pound_dollar,
                 usd_ngn_rate: response.data.dollar_naira,

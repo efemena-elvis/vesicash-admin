@@ -2,41 +2,42 @@
   <router-link
     v-slot="{ navigate }"
     custom
-    :to="`/users/manage-users/${$route.params.userID}/escrow-transaction/13459/payment-rules`"
+    :to="`/users/manage-users/${$route.params.userID}/escrow-transaction/${data.transaction_id}/payment-rules`"
   >
     <tr @click="navigate">
       <td class="body-data" :class="`${table_name}-1`">
-        <div class="text mgb-6 text-no-wrap">{{ '13434' || data.id }}</div>
+        <div class="text mgb-6 text-no-wrap">{{ data.id }}</div>
       </td>
 
       <td class="body-data" :class="`${table_name}-2`">
-        <div class="text mgb-6 text-no-wrap">{{ 'Payment for web app page' || data.title }}</div>
+        <div class="text mgb-6 text-no-wrap">{{ data.description }}</div>
       </td>
 
-      <td class="body-data" :class="`${table_name}-3`">{{ '12th Mar 2019' || getCreatedDate }}</td>
+      <td class="body-data" :class="`${table_name}-3`">{{ getCreatedDate }}</td>
 
       <td class="body-data" :class="`${table_name}-4`">
         <div class="text mgb-6 text-no-wrap">
-          {{ $money.getSign( 'dollar' || data.currency)
+          {{ $money.getSign( data.currency)
           }}{{
-          $money.addComma( data.totalAmount ? '4000' || data.totalAmount : '4000' || data.amount)
+          $money.addComma( data.amount || data.totalAmount)
           }}
         </div>
         <div class="meta tertiary-3-text grey-600">
           {{ $money.getSign( 'dollar' || data.currency)
-          }}{{ $money.addComma('0' || getTotalAmountPaid || 0) }} paid
+          }}{{ $money.addComma(getTotalAmountPaid || 0) }} paid
         </div>
       </td>
 
       <td class="body-data" :class="`${table_name}-5`">
-        <div class="text mgb-6 text-no-wrap">{{'Milestone type' || getTransactionType }}</div>
-        <div class="meta tertiary-3-text grey-600">{{ 'Multiple parties' || getPartyType }}</div>
+        <div class="text mgb-6 text-no-wrap">{{ getTransactionType }}</div>
+        <div class="meta tertiary-3-text grey-600">{{ getPartyType }}</div>
       </td>
 
       <td class="body-data" :class="`${table_name}-6`">
         <TagCard
-          :card_text="'Created ' ||getCurrentTransactionStatus"
-          :card_type="'progress' || getCurrentTransactionStatus | getStatusColor(status_colors)"
+          :title="data.status"
+          :card_text="data.status"
+          :card_type="data.status | getStatusColor(status_colors)"
         />
       </td>
 
@@ -71,12 +72,11 @@ export default {
 
   computed: {
     getCreatedDate() {
-      let first_milestone_date =
-        `${
-          this.data?.milestones[0]?.due_date.split(" ")[0] ?? "2022-01-01"
-        } 00:00:00` ?? this.data?.due_date_formatted;
+      let date =
+        `${this.data?.created_at?.split(" ")[0] ?? "2022-01-01"} 00:00:00` ??
+        this.data?.due_date_formatted;
 
-      let { d3, m4, y1 } = this.$date.formatDate(first_milestone_date).getAll();
+      let { d3, m4, y1 } = this.$date.formatDate(date).getAll();
 
       return `${d3} ${m4}, ${y1}`;
     },
