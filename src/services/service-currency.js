@@ -10,7 +10,8 @@ class serviceCurrency {
     let currency_type = "",
       naira = "₦",
       dollar = "$",
-      pound = "£";
+      pound = "£",
+      euro = "€";
 
     switch (currency) {
       case "naira":
@@ -27,6 +28,11 @@ class serviceCurrency {
       case "GBP":
       case "gb":
         currency_type = pound;
+        break;
+      case "euro":
+      case "EUR":
+      case "EURO":
+        currency_type = euro;
         break;
       default:
         console.log("Currency sign not available yet!");

@@ -3,12 +3,34 @@ import $api from "@/services/service-api";
 const routes = {
   connected_users: (query) => `admin/users?${query}`,
   user_profile: (account_id) => `admin/user/fetch/${account_id}`,
+  user_txn: `admin/business/transactions`,
+  txn_details: `admin/business/transactions/listById`,
+  user_fx_txn: "admin/user/exchange-transactions",
+  wallet_withdrawals: (account_id, page) =>
+    `admin/user/fetch/${account_id}/withdrawal/?page=${page}`,
+  wallet_fundings: (account_id, page) =>
+    `admin/user/fetch/${account_id}/funding/?page=${page}`,
+
+  delete_user: "admin/user/delete",
+  approve_doc: "admin/verification/mark/verified",
+  reject_doc:"admin/verification/mark/rejected",
+
+  remove_user_bank:"admin/user/remove/bank",
+  update_dollar_account:"admin/user/update/bank",
+
+  generate_token:"admin/tokens/generate",
+  revoke_token:"admin/tokens/revoke"
 };
 
 export default {
-  fetchConnectedUsers: async ({ commit }, query = "") => {
+  //FETCH ACTIONS
+
+  fetchAllConnectedUsers: async ({ commit }, query = "") => {
     let response = await $api.fetch(routes.connected_users(query));
-    if (response.code === 200) commit("SAVE_CONNECTED_USERS", response.data);
+    const _query = query ? `?${query}` : query;
+    //SAVE ONLY RESPONSE CODE 200 AND DATA THAT MATCHES CURRENT URL (TRICKY _O-O_)
+    if (response.code === 200 && _query === decodeURIComponent(location.search))
+      commit("SAVE_ALL_USERS", response.data);
     return response;
   },
 
@@ -18,11 +40,79 @@ export default {
     return response;
   },
 
-  fetchUserTransactions: async () => {
-    return new Promise((res) => {
-      setTimeout(() => {
-        res({ code: 200 });
-      }, 1500);
-    });
+  fetchUserTransactions: async ({ commit }, payload) => {
+    const response = await $api.push(routes.user_txn, { payload });
+    if (response?.code === 200) commit("SAVE_USER_TXN", response.data);
+    return response;
   },
+
+  fetchTransactionDetails: async (_, transaction_id) => {
+    const response = await $api.push(routes.txn_details, {
+      payload: { transaction_id },
+    });
+    return response;
+  },
+
+  fetchAllFxTransactions: async ({ commit }, payload) => {
+    const response = await $api.push(routes.user_fx_txn, { payload });
+    if (response?.code === 200) commit("SAVE_USER_FX_TXN", response?.data);
+    return response;
+  },
+
+  fetchWalletWithdrawals: async (_, { account_id, page }) => {
+    return await $api.fetch(routes.wallet_withdrawals(account_id, page));
+  },
+
+  fetchWalletFundings: async (_, { account_id, page }) => {
+    return await $api.fetch(routes.wallet_fundings(account_id, page));
+  },
+
+  fetchConnectedUsers: async ({ commit }) => {
+    return new Promise((res) =>
+      setTimeout(() => {
+        const user = {
+          lastname: "Ogedengbe",
+          firstname: "Patrick",
+          email_address: "pat@qa.team",
+          username: "Patty",
+          phone_number: "0908477783",
+        };
+
+        commit("SAVE_CONNECTED_USERS", [user]);
+
+        res({ code: 200, data: [user] });
+      }, 1000)
+    );
+  },
+
+  //UPDATE AND DELETE ACTIONS
+
+  deleteUser: async (_, payload) => {
+    return await $api.push(routes.delete_user, { payload });
+  },
+
+  removeUserBank: async (_, payload) => {
+    return await $api.push(routes.remove_user_bank, { payload });
+  },
+
+  updateUserDollarAccount: async (_, payload)=> {
+    return await $api.push(routes.update_dollar_account, { payload });
+  },
+
+  approveUserDoc: async (_, payload) => {
+    return await $api.push(routes.approve_doc, { payload });
+  },
+
+  rejectUserDoc: async (_, payload) => {
+    return await $api.push(routes.reject_doc, { payload });
+  },
+  
+  generateUserAPIKey: async (_, payload) => {
+    return await $api.push(routes.generate_token, { payload });
+  },
+
+  revokeUserAPIKey: async (_, payload) => {
+    return await $api.push(routes.revoke_token, { payload });
+  },
+
 };

@@ -1,6 +1,16 @@
 <template>
   <div>
-    <div class="plain-tab-switcher" v-if="plain">
+    <div class="button-tab-switcher" v-if="controlled">
+      <div
+        class="tab-item pointer"
+        :class="tab.active ?'tab-item--active':''"
+        v-for="(tab, index) in tabs"
+        :key="index"
+        @click="updatePage(tab.name, query_key)"
+      >{{ tab.name }}</div>
+    </div>
+
+    <div class="plain-tab-switcher" v-else-if="plain">
       <router-link
         class="tab-item secondary-3-text grey-600 fw-500 smooth-transition pointer"
         :active-class="exact ?'':'tab-item--active'"
@@ -39,9 +49,30 @@ export default {
       default: true,
     },
 
+    controlled: {
+      type: Boolean,
+      default: false,
+    },
+
+    query_key: {
+      type: String,
+      default: "currency",
+    },
+
     exact: {
       type: Boolean,
       default: false,
+    },
+  },
+
+  methods: {
+    updatePage(name, key) {
+      const query = { ...this.$route?.query, [key]: name?.toLowerCase() };
+
+      this.$router.replace({
+        path: this.$route.path,
+        query: { ...query },
+      });
     },
   },
 };
@@ -79,16 +110,17 @@ export default {
   @include flex-row-between-nowrap;
   gap: 0 toRem(10);
   width: max-content;
-  padding: toRem(7) toRem(9);
+  padding: toRem(6) toRem(10);
   border-radius: toRem(7);
   background: getColor("grey-100");
   position: relative;
 
   .tab-item {
-    font-size: toRem(14);
+    font-size: toRem(13);
     color: getColor("grey-600");
-    padding: toRem(6) toRem(12);
-    border-radius: toRem(5);
+    padding: toRem(5) toRem(12);
+    border-radius: toRem(6);
+    transition: all ease-in-out 0.3s;
     &:hover {
       background: getColor("neutral-10");
     }
@@ -98,7 +130,6 @@ export default {
   @include custom-scroll-style;
 
   .tab-item--active {
-    transition: all ease-in-out 0.3s;
     box-shadow: toRem(1) toRem(-1) toRem(4) rgba(168, 177, 175, 0.3),
       toRem(-1) toRem(1) toRem(4) rgba(168, 177, 175, 0.3);
     background: getColor("neutral-10");

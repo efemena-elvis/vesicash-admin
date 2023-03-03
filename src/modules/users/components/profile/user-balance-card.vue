@@ -97,22 +97,22 @@ export default {
       }
 
       .amount-value {
-        font-size: toRem(18.5);
+        font-size: toRem(20.5);
 
         @include breakpoint-down(lg) {
           @include generate-font-type("primary-1");
-          font-size: toRem(16.5);
+          font-size: toRem(18.5);
         }
 
         @include breakpoint-custom-down(700) {
-          font-size: toRem(15);
+          font-size: toRem(17);
         }
 
         .amount-zero {
-          font-size: toRem(16);
+          font-size: toRem(17);
 
           @include breakpoint-custom-down(700) {
-            font-size: toRem(14);
+            font-size: toRem(16);
           }
         }
       }

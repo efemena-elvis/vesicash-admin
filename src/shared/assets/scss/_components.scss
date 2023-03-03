@@ -17,8 +17,22 @@
     .app-chip {
         padding: toRem(2.75) toRem(10) toRem(2) toRem(21);
         font-size: toRem(11.5);
+        .chip-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: toRem(170);
+        }
         @include breakpoint-down(md) {
             padding: toRem(2.75) toRem(13) toRem(2) toRem(21);
         }
+    }
+}
+
+tr {
+    td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }

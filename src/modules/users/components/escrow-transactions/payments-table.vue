@@ -1,17 +1,23 @@
 <template>
-  <div class="table-container neutral-10-bg">
+  <div class="payment-table-container neutral-10-bg">
     <!-- TABLE CONTAINER -->
     <TableContainer
       table_name="payment-tb"
-      :table_data="table_data"
+      :table_data="payments"
       :table_header="table_header"
-      :is_loading="table_loading"
-      show_paging
-      :pagination="pagination"
-      @goToPage="fetchPayments"
+      :is_loading="loading"
+      :empty_message="getEmptyMessage"
     >
-      <template v-for="(data, index) in 5">
-        <PaymentTableRow :key="index" table_name="payment-tb" :data="data" @view="$emit('view')" />
+      <template v-for="(data, index) in payments">
+        <PaymentTableRow
+          :key="index"
+          table_name="payment-tb"
+          :index="index + 1"
+          :title="title"
+          :type="type"
+          :data="data"
+          @view="$emit('view')"
+        />
       </template>
     </TableContainer>
   </div>
@@ -20,6 +26,7 @@
 <script>
 import { mapActions } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
+import { escrow_payment_table_empty_states as EMPTY_STATES } from "@/utilities/status";
 
 export default {
   name: "PaymentsTable",
@@ -33,15 +40,38 @@ export default {
   },
 
   props: {
-    dataset: {
+    payments: {
       type: Array,
       default: () => [],
+    },
+
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+
+    title: {
+      type: String,
+      default: "",
+    },
+
+    type: {
+      type: String,
+      default: "",
+    },
+
+    status: {
+      type: String,
+      default: "",
     },
   },
 
   computed: {
     getEmptyMessage() {
-      return "User has not performed any escrow transaction";
+      return (
+        this.EMPTY_STATES[this.status] ||
+        "No payments has been made for this escrow transaction."
+      );
     },
 
     getEmptyActionName() {
@@ -51,18 +81,11 @@ export default {
 
   data() {
     return {
-      table_header: [
-        "#",
-        "Date",
-        "Paid by",
-        "Amount paid",
-        "Payment method",
-        "Status",
-        "Action",
-      ],
+      EMPTY_STATES,
+      table_header: ["#", "Date", "Paid by", "Amount paid", "Status", "Action"],
 
-      table_data: [6],
-      table_loading: true,
+      table_data: [],
+      table_loading: false,
       paginatedData: {},
       paginationPages: {},
       pagination: {
@@ -79,7 +102,7 @@ export default {
   },
 
   mounted() {
-    this.fetchPayments(1);
+    // this.fetchPayments(1);
   },
 
   methods: {
@@ -156,15 +179,15 @@ export default {
 </script>
 
 <style lang="scss">
-.table-container {
+.payment-table-container {
   border: toRem(1) solid getColor("grey-100");
-  min-height: 65vh;
+  min-height: 40vh;
 }
 
 .payment-tb {
   &-1,
   &-7 {
-    min-width: toRem(100);
+    min-width: toRem(50);
   }
 
   &-3 {
@@ -176,7 +199,7 @@ export default {
   &-5,
   &-6 {
     max-width: toRem(180);
-    min-width: toRem(160);
+    min-width: toRem(150);
   }
 
   &-2 {

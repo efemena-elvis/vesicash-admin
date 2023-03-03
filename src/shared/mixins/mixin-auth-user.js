@@ -48,24 +48,24 @@ const MixinAuthUser = {
     // GET USER BUSINESS ID
     // ==============================
     getBusinessId() {
-      return (
-        Object.keys(this.getAuthUser).length &&
-        Number(string.decodeString(this.getAuthUser.business_token))
+      return (''
+        // Object.keys(this.getAuthUser).length &&
+        // Number(string.decodeString(this.getAuthUser.business_token))
       );
     },
 
     getBusinessData() {
-      let business_name =
-        Object.keys(this.getAuthUser).length && this.getAuthUser.business_name;
+      // let business_name =
+      //   Object.keys(this.getAuthUser).length && this.getAuthUser.business_name;
 
-      let escrow_charge =
-        Object.keys(this.getAuthUser).length &&
-        JSON.parse(string.decodeString(this.getAuthUser.business_charge));
+      // let escrow_charge =
+      //   Object.keys(this.getAuthUser).length &&
+      //   JSON.parse(string.decodeString(this.getAuthUser.business_charge));
 
       return {
-        business_id: this.getBusinessId,
-        business_name,
-        escrow_charge,
+        business_id: '',
+        business_name:'',
+        escrow_charge:"",
       };
     },
   },

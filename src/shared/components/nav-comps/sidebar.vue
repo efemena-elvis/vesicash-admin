@@ -1,7 +1,10 @@
 <template>
   <div class="sidebar neutral-10-bg">
     <!-- BRAND LOGO -->
-    <router-link :to="{ name: 'VesicashDashboard' }" class="brand-logo mgb-40 d-block">
+    <router-link
+      :to="{ name: 'VesicashDashboard' }"
+      class="brand-logo mgb-40 d-block"
+    >
       <VesicashBrandLogo />
     </router-link>
 
@@ -18,17 +21,6 @@
     <!-- LOG OUT ACCOUNT SECTION -->
     <div class="wrapper position-absolute wt-100">
       <ProfileMenu @exit="handleUserlogOut" />
-
-      <div
-        v-if="false"
-        class="log-out-section smooth-transition rounded-8 pointer w-100"
-        @click="handleUserlogOut"
-      >
-        <!-- ICON COMPONENT -->
-        <ExitIcon />
-
-        <div class="nav-text secondary-2-text red-500">Logout</div>
-      </div>
     </div>
   </div>
 </template>
@@ -37,7 +29,6 @@
 import { mapActions } from "vuex";
 import navRoutes from "@/shared/constants/nav-routes";
 import VesicashBrandLogo from "@/shared/components/icon-comps/vesicash-brand-logo";
-import ExitIcon from "@/shared/components/icon-comps/exit-icon";
 import SidebarItem from "@/shared/components/nav-comps/sidebar-item";
 import ProfileMenu from "@/shared/components/nav-comps/profile-menu";
 
@@ -47,7 +38,6 @@ export default {
   components: {
     VesicashBrandLogo,
     SidebarItem,
-    ExitIcon,
     ProfileMenu,
   },
 
@@ -87,12 +77,7 @@ export default {
   min-height: 100%;
   position: relative;
   z-index: 4;
-  overflow-y: auto;
   border: 1px solid #e8e8e8;
-
-  &::-webkit-scrollbar {
-    width: 0;
-  }
 
   @include breakpoint-down(lg) {
     width: 60%;
@@ -104,6 +89,15 @@ export default {
 
   @include breakpoint-down(xs) {
     width: 75%;
+  }
+
+  .sidebar-item-list {
+    overflow-y: auto;
+    max-height: 85%;
+    padding-bottom: toRem(60);
+    &::-webkit-scrollbar {
+      width: 0;
+    }
   }
 
   .brand-logo {
