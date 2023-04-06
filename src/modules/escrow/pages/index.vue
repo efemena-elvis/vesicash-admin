@@ -101,7 +101,7 @@ export default {
         },
         {
           name: "Multiple Parties",
-          value: "_multiple",
+          value: "_multiples",
         },
         {
           name: "One-off & Two parties",
@@ -109,7 +109,7 @@ export default {
         },
         {
           name: "One-off & Multiple Parties",
-          value: "oneoff_multiple",
+          value: "oneoff_multiples",
         },
         {
           name: "Milestone & Two parties",
@@ -117,7 +117,7 @@ export default {
         },
         {
           name: "Milestone & Multiple parties",
-          value: "milestone_multiple",
+          value: "milestone_multiples",
         },
       ];
     },

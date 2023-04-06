@@ -38,14 +38,18 @@ export default {
       };
 
       return this.transaction?.members?.map((member) => {
-        const access = Object.entries(member?.access_level)
-          ?.map(([k, v]) => (v ? accessMap[k] : ""))
-          .filter((item) => item)
-          .join("/");
+        const access = Array.isArray(member?.access_level)
+          ? member?.access_level
+              ?.map((level) => level?.split("_")?.join(" "))
+              ?.join("/")
+          : Object.entries(member?.access_level)
+              ?.map(([k, v]) => (v ? accessMap[k] : ""))
+              .filter((item) => item)
+              .join("/");
 
         const email = member?.email || "------";
         const phone = member?.phone_number || "-------";
-        const role = member?.role || "-------";
+        const role = member?.role?.split("_")?.join(" ") || "-------";
         const payout = member?.access_level?.can_receive ? "Yes" : "No";
 
         return {
@@ -61,5 +65,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>
