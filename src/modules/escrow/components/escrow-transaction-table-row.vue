@@ -84,7 +84,7 @@ export default {
     },
 
     getPartyType() {
-      return this.data?.members?.length === 2
+      return this.data?.party_type === "two-parties"
         ? "1 on 1 party"
         : "Multiple parties";
     },
