@@ -85,7 +85,7 @@ export default {
 
     getPartyType() {
       return this.data?.party_type === "two-parties"
-        ? "1 on 1 party"
+        ? "Two parties"
         : "Multiple parties";
     },
 

@@ -10,10 +10,10 @@
     >
       <EscrowMembersTableRow
         v-for="(member, index) in members"
-        :key="member.email+index"
+        :key="member.email + index"
         table_name="escrow-members-table"
         :data="member"
-        :index="index+1"
+        :index="index + 1"
       />
     </TableContainer>
   </div>
@@ -78,17 +78,17 @@ export default {
 
   &-4 {
     min-width: toRem(110);
-    max-width: toRem(110);
+    max-width: toRem(230);
   }
 
   &-6 {
     min-width: toRem(150);
-    max-width: toRem(150);
+    max-width: toRem(170);
   }
 
   &-3,
   &-5 {
-    min-width: toRem(155);
+    min-width: toRem(175);
     max-width: toRem(190);
   }
 
