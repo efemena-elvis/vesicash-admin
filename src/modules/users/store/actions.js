@@ -10,6 +10,10 @@ const routes = {
     `admin/user/fetch/${account_id}/withdrawal/?page=${page}`,
   wallet_fundings: (account_id, page) =>
     `admin/user/fetch/${account_id}/funding/?page=${page}`,
+  vesicash_moderators:'admin/moderators',  
+  moderator_access_types:'admin/access-type',
+
+  approve_decline_txn:'admin/approve-wallet-transaction',  
 
   delete_user: "admin/user/delete",
   approve_doc: "admin/verification/mark/verified",
@@ -19,7 +23,10 @@ const routes = {
   update_dollar_account:"admin/user/update/bank",
 
   generate_token:"admin/tokens/generate",
-  revoke_token:"admin/tokens/revoke"
+  revoke_token:"admin/tokens/revoke",
+  add_moderator:"admin/add-moderator",
+  update_moderator:"admin/update-moderator",
+  delete_moderator:"admin/delete-moderator"
 };
 
 export default {
@@ -85,7 +92,23 @@ export default {
     );
   },
 
+  fetchVesicashModerators: async ({commit}) => {
+    const response = await $api.fetch(routes.vesicash_moderators);
+    if(response?.code === 200) commit('SAVE_VESICASH_MODERATORS',response?.data)
+    return response;
+  },
+
+  fetchModeratorsAccessTypes: async({commit}) => {
+    const response = await $api.fetch(routes.moderator_access_types);
+    if(response?.code === 200) commit('SAVE_MODERATORS_ACCESS_TYPES',response?.data);
+    return response;
+  },
+
   //UPDATE AND DELETE ACTIONS
+
+  approveOrDeclineTransaction:async (_,payload)=> {
+    return await $api.push(routes.approve_decline_txn, { payload });
+  },
 
   deleteUser: async (_, payload) => {
     return await $api.push(routes.delete_user, { payload });
@@ -115,4 +138,15 @@ export default {
     return await $api.push(routes.revoke_token, { payload });
   },
 
+  addModerator: async (_, payload) => {
+    return await $api.push(routes.add_moderator, { payload });
+  },
+
+  updateModerator: async (_, payload) => {
+    return await $api.push(routes.update_moderator, { payload });
+  },
+
+  deleteModerator: async (_, payload) => {
+    return await $api.push(routes.delete_moderator, { payload });
+  },
 };

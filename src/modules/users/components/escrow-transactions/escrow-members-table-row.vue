@@ -2,7 +2,7 @@
   <tr>
     <td class="body-data grey-900" :class="`${table_name}-1`">{{ index }}</td>
 
-    <td class="body-data grey-900" :class="`${table_name}-2`">{{ data.email }}</td>
+    <td class="body-data grey-900" :class="`${table_name}-2`" :title="data.email">{{ data.email }}</td>
 
     <td class="body-data grey-900" :class="`${table_name}-3`">{{ data.phone }}</td>
 

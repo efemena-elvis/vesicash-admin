@@ -1,8 +1,6 @@
 <template>
   <div>
-    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Suscipit accusamus
-    saepe repellendus maxime minus culpa neque ab nam quaerat corrupti modi, at
-    magni mollitia atque vero sint quis
+    <div class="page-title">API Transactions</div>
   </div>
 </template>
 
@@ -12,5 +10,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style lang="scss" scoped></style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="neutral-10-bg escrow-table">
     <!-- TABLE CONTAINER -->
     <TableContainer
       table_name="transaction-tb"
@@ -16,6 +16,12 @@
           :key="index"
           table_name="transaction-tb"
           :data="data"
+          @refresh="fetchTransactions(filterQuery)"
+          :index="
+            index +
+            1 +
+            (getPagination.current_page - 1) * getPagination.per_page
+          "
         />
       </template>
     </TableContainer>
@@ -27,29 +33,26 @@ import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
 
 export default {
-  name: "UserEscrowTransactionTable",
+  name: "PendingTransactionTable",
 
   components: {
     TableContainer,
 
     TransactionTableRow: () =>
       import(
-        /* webpackChunkName: "transactions-module" */ "@/modules/users/components/escrow-transactions/transaction-table-row"
+        /* webpackChunkName: "transactions-module" */ "@/modules/payments/components/pending-transaction-table-row"
       ),
   },
 
-  props: {
-    dataset: {
-      type: Array,
-      default: () => [],
-    },
-  },
+  props: {},
 
   computed: {
-    ...mapGetters({ getUserTxn: "users/getUserTxn" }),
+    ...mapGetters({
+      getTransactions: "transaction/getPendingTransactions",
+    }),
 
     getEmptyMessage() {
-      return "User has not performed any escrow transaction";
+      return "No match found";
     },
 
     getEmptyActionName() {
@@ -61,30 +64,20 @@ export default {
     },
 
     getPaginatedTransaction() {
-      const { per_page } = this;
-      const index = this.page - 1;
-      const start_range = per_page * index;
-      const end_range = start_range + per_page;
-      const transactions = [...this.getUserTxn];
-      return transactions.slice(start_range, end_range);
+      const transactions = this.getTransactions?.data
+        ? [...this.getTransactions?.data]
+        : [];
+      return transactions.map((data) => this.pendingTransactionMap(data));
     },
 
     getPagination() {
-      const transactions = [...this.getUserTxn];
-      const { per_page } = this;
-      const current_page = this.page;
-
-      const index = this.page - 1;
-      const from = per_page * index;
-      const to = Math.min(from + per_page, transactions.length);
-
       return {
-        current_page,
-        per_page,
-        last_page: Math.ceil(transactions.length / per_page),
-        from: from + 1,
-        to,
-        total: transactions.length,
+        current_page: this.getTransactions?.current_page,
+        per_page: this.getTransactions?.per_page,
+        last_page: this.getTransactions?.last_page,
+        from: this.getTransactions?.from,
+        to: this.getTransactions?.to,
+        total: this.getTransactions?.total,
       };
     },
   },
@@ -99,9 +92,10 @@ export default {
     },
 
     filterQuery: {
-      handler() {
-        this.getUserTransactions(this.page);
+      handler(query) {
+        this.fetchTransactions(query);
       },
+      immediate: true,
     },
   },
 
@@ -109,16 +103,17 @@ export default {
     return {
       table_header: [
         "#",
-        "Transaction name",
-        "Due date",
-        "Amount to pay",
-        "Disbursment type",
+        "Date",
+        "Account ID",
+        "Account name",
+        "Payment type",
+        "Amount",
         "Status",
         "Action",
       ],
 
       table_data: [6],
-      table_loading: true,
+      table_loading: false,
       paginatedData: {},
       paginationPages: {},
       page: 1,
@@ -137,13 +132,53 @@ export default {
   },
 
   mounted() {
-    this.getUserTransactions(this.page);
+    // this.fetchTransactions(this.page, this.payload);
   },
 
   methods: {
     ...mapActions({
-      fetchUserTransactions: "users/fetchUserTransactions",
+      fetchAllTransactions: "transaction/fetchPendingTransactions",
     }),
+
+    getCost(currency, cost) {
+      return `${this.$money?.getSign(currency)}${this.$money.addComma(cost)}`;
+    },
+
+    pendingTransactionMap(data) {
+      const date = this.$date
+        .formatDate(new Date(data?.created_at), false)
+        .getSimpleFormatDate();
+      const sender_account_id = data?.sender_account_id || "-------";
+      const receiver_account_id = data?.receiver?.account_id;
+      const sender_name = data?.sender?.firstname
+        ? `${data?.sender?.firstname} ${data?.sender?.lastname}`
+        : "------ -------";
+      const receiver_name = data?.receiver
+        ? `${data?.receiver?.firstname} ${data?.receiver?.lastname}`
+        : "";
+      const type = data?.type?.split("_")?.join(" ") || "--------";
+      const sender_amount = this.getCost(
+        data?.sender_currency,
+        data?.sender_amount
+      );
+      const receiver_amount = data?.receiver_amount
+        ? this.getCost(data?.receiver_currency, data?.receiver_amount)
+        : "";
+      const status = data?.approved;
+
+      return {
+        ...data,
+        date,
+        sender_account_id,
+        receiver_account_id,
+        sender_name,
+        receiver_name,
+        type,
+        sender_amount,
+        receiver_amount,
+        status,
+      };
+    },
 
     updatePage(page) {
       this.page = Number(page);
@@ -164,9 +199,10 @@ export default {
     // ====================================
     // FETCH ALL USER TRANSACTIONS
     // ====================================
-    getUserTransactions(page) {
+    fetchTransactions(query) {
+      const _query = decodeURIComponent(location.search);
+
       this.table_loading = true;
-      this.page = page;
 
       // USE PREVIOUSLY SAVED DATA FOR THAT PAGE NUMBER (AVOID UNNECESSARY API CALLS)
       // if (this.getUserTxn?.length) {
@@ -174,15 +210,14 @@ export default {
       //   return;
       // }
 
-      const payload = {
-        business_id: this.$route?.params?.userID,
-      };
-
       this.table_loading = true;
 
-      this.fetchUserTransactions(payload)
+      this.fetchAllTransactions(query)
         .then((response) => {
-          if (response.code === 200) {
+          if (
+            response.code === 200 &&
+            _query === decodeURIComponent(location.search)
+          ) {
             this.table_data = response.data;
             this.table_loading = false;
 
@@ -194,7 +229,7 @@ export default {
           }
 
           // HANDLE NON 200 RESPONSE
-          else this.handleErrorResponse();
+          else if (response?.code !== 200) this.handleErrorResponse();
         })
         .catch(() => this.handleErrorResponse());
     },
@@ -229,27 +264,28 @@ export default {
 </script>
 
 <style lang="scss">
+.escrow-table {
+  min-height: 65vh;
+  border: toRem(1) solid getColor("grey-100");
+}
+
 .transaction-tb {
   &-1 {
     min-width: toRem(50);
     max-width: toRem(90);
   }
 
-  &-2 {
-    min-width: toRem(200);
-    max-width: toRem(250);
-  }
-
+  &-2,
   &-3,
-  &-4,
-  &-5 {
+  &-5,
+  &-6 {
     max-width: toRem(200);
-    min-width: toRem(180);
+    min-width: toRem(160);
   }
 
-  &-6 {
-    max-width: toRem(270);
-    min-width: toRem(150);
+  &-4 {
+    max-width: toRem(250);
+    min-width: toRem(200);
   }
 
   &-7 {

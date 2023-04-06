@@ -175,8 +175,12 @@ export default {
     nairaDollarRate() {
       const { naira_dollar, dollar_naira } = this.getDashboardStats;
       return this.naira_dollar
-        ? `${this.sign("naira")}1/${this.sign("dollar")}${naira_dollar}`
-        : `${this.sign("dollar")}1/${this.sign("naira")}${dollar_naira}`;
+        ? `${this.sign("naira")}1/${this.sign("dollar")}${
+            naira_dollar || "---"
+          }`
+        : `${this.sign("dollar")}1/${this.sign("naira")}${
+            dollar_naira || "---"
+          }`;
     },
 
     nairaDollarTitle() {
@@ -186,8 +190,8 @@ export default {
     nairaPoundRate() {
       const { naira_pound, pound_naira } = this.getDashboardStats;
       return this.naira_pound
-        ? `${this.sign("naira")}1/${this.sign("pound")}${naira_pound}`
-        : `${this.sign("pound")}1/${this.sign("naira")}${pound_naira}`;
+        ? `${this.sign("naira")}1/${this.sign("pound")}${naira_pound || "---"}`
+        : `${this.sign("pound")}1/${this.sign("naira")}${pound_naira || "---"}`;
     },
 
     nairaPoundTitle() {
@@ -197,8 +201,12 @@ export default {
     dollarPoundRate() {
       const { dollar_pound, pound_dollar } = this.getDashboardStats;
       return this.dollar_pound
-        ? `${this.sign("dollar")}1/${this.sign("pound")}${dollar_pound}`
-        : `${this.sign("pound")}1/${this.sign("dollar")}${pound_dollar}`;
+        ? `${this.sign("dollar")}1/${this.sign("pound")}${
+            dollar_pound || "---"
+          }`
+        : `${this.sign("pound")}1/${this.sign("dollar")}${
+            pound_dollar || "---"
+          }`;
     },
 
     dollarPoundTitle() {

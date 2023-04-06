@@ -115,7 +115,7 @@ export default {
   },
 
   mounted() {
-    this.fetchUsers(this.page);
+    this.fetchUsers(this.page, this.filterQuery);
   },
 
   watch: {
@@ -137,15 +137,15 @@ export default {
     },
 
     filterQuery: {
-      handler() {
-        this.fetchUsers(this.page);
+      handler(query) {
+        this.fetchUsers(this.page, query);
       },
     },
 
     users: {
       handler() {
-        this.table_loading = true;
-        setTimeout(() => (this.table_loading = false), 500);
+        // this.table_loading = true;
+        // setTimeout(() => (this.table_loading = false), 500);
       },
     },
   },
@@ -171,13 +171,11 @@ export default {
         .join("&");
     },
 
-    fetchUsers(page) {
-      const _query = this.filterQuery
-        ? `?${this.filterQuery}`
-        : this.filterQuery;
+    fetchUsers(page, query) {
+      const _query = query ? `?${query}` : query;
 
-      this.table_loading = _query === decodeURIComponent(location.search);
-      // LOAD ONLY WHEN THE EXPECTED/RIGHT API CALL IS HAPPENING
+      this.table_loading = true;
+
       this.page = page;
 
       // USE PREVIOUSLY SAVED DATA (AVOID UNNECESSARY API CALLS)..
@@ -188,15 +186,19 @@ export default {
       //   return;
       // }
 
-      this.fetchConnectedUsers(this.filterQuery)
+      this.fetchConnectedUsers(query)
         .then((response) => {
-          if (response.code === 200) {
+          // SAVE ONLY THE LATEST QUERY CALL
+          if (
+            response.code === 200 &&
+            _query === decodeURIComponent(location.search)
+          ) {
             this.table_data = response?.data;
             this.table_loading = false;
           }
 
           // HANDLE NON 200 RESPONSE
-          else this.handleErrorResponse();
+          else if (response.code !== 200) this.handleErrorResponse();
         })
         .catch(() => this.handleErrorResponse());
     },

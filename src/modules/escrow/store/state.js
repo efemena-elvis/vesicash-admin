@@ -1,1 +1,3 @@
-export default () => ({});
+export default () => ({
+  escrow_transactions: null,
+});

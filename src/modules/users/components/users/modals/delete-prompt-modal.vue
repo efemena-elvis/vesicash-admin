@@ -10,7 +10,7 @@
           <TrashIcon />
         </div>
 
-        <div class="text-center h4-text grey-900">Delete user</div>
+        <div class="text-center h4-text grey-900">{{ title }}</div>
         <div class="text-center tertiary-1-text mgb-22 mgt-5 grey-900">
           Are you sure you want to delete
           <b>{{ name ? name : "user" }}</b>
@@ -58,6 +58,11 @@ export default {
     name: {
       type: String,
       default: "",
+    },
+
+    title: {
+      type: String,
+      default: "Delete user",
     },
   },
 

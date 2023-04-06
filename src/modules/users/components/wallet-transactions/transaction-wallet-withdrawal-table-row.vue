@@ -4,24 +4,35 @@
 
     <td class="body-data" :class="`${table_name}-1`">{{ getCreatedDate }}</td>
 
-    <td class="body-data text-no-wrap" :class="`${table_name}-2`">{{ data.payment_id }}</td>
+    <td class="body-data text-no-wrap" :class="`${table_name}-2`">
+      {{ data.payment_id }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-3`">{{ data.user.email_address }}</td>
+    <td class="body-data" :class="`${table_name}-3`">
+      {{ data.user.email_address }}
+    </td>
 
-    <td
-      class="body-data"
-      :class="`${table_name}-4`"
-    >{{ $money.getSign(data.currency) }}{{ $money.addComma(data.total_amount) }}</td>
+    <td class="body-data" :class="`${table_name}-4`">
+      {{ $money.getSign(data.currency)
+      }}{{ $money.addComma(data.total_amount) }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-5`">
       <TagCard
         :card_text="data.is_paid ? 'Completed' : 'Failed'"
-        :card_type="data.is_paid  ? 'success' : 'error'"
+        :card_type="data.is_paid ? 'success' : 'error'"
       />
     </td>
 
     <td class="body-data" :class="`${table_name}-6`">
       <button class="btn btn-secondary btn-sm">View</button>
+      <button
+        class="btn btn-secondary btn-sm"
+        @click.stop="toggleApprovalModal"
+        v-if="false"
+      >
+        Approve
+      </button>
     </td>
 
     <!-- MODALS -->
@@ -30,6 +41,15 @@
         <TransactionSummaryModal
           :summary="getSummaryData"
           @closeTriggered="toggleTransactionSummaryModal"
+        />
+      </transition>
+
+      <transition name="fade" v-if="show_approval_modal">
+        <WithdrawalApprovalPromptModal
+          :id="data.payment_id"
+          @refresh="$emit('refresh')"
+          @closeTriggered="toggleApprovalModal"
+          :message="approvalMessage"
         />
       </transition>
     </portal>
@@ -47,7 +67,12 @@ export default {
 
     TransactionSummaryModal: () =>
       import(
-        /* webpackChunkName: "dashboard-table-module" */ "@/modules/users/components/escrow-transactions/modals/transaction-summary-modal"
+        /* webpackChunkName: "user-module" */ "@/modules/users/components/escrow-transactions/modals/transaction-summary-modal"
+      ),
+
+    WithdrawalApprovalPromptModal: () =>
+      import(
+        /* webpackChunkName: "user-module" */ "@/shared/modals/withdrawal-approval-prompt-modal"
       ),
   },
 
@@ -73,6 +98,14 @@ export default {
       return this.$date
         .formatDate(new Date(this.data?.created_at), false)
         .getSimpleFormatDate();
+    },
+
+    approvalMessage() {
+      const amount = `${this.$money.getSign(
+        this.data?.currency
+      )}${this.$money.addComma(this.data?.total_amount)}`;
+      const wallet = this.$money?.getName(this.data?.currency);
+      return `Approve the withdrawal of <b>${amount}</b> from ${this.data?.user?.email_address} ${wallet} wallet`;
     },
 
     getSummaryData() {
@@ -144,6 +177,7 @@ export default {
 
   data: () => ({
     show_transaction_summary_modal: false,
+    show_approval_modal: false,
   }),
 
   methods: {
@@ -151,9 +185,12 @@ export default {
       this.show_transaction_summary_modal =
         !this.show_transaction_summary_modal;
     },
+
+    toggleApprovalModal() {
+      this.show_approval_modal = !this.show_approval_modal;
+    },
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>

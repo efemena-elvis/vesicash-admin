@@ -2,15 +2,20 @@
   <div class="pagination-row mgt-30">
     <div class="left">
       <!-- PAGINATION TEXT -->
-      <div
-        class="pagination-text text-left tertiary-2-text grey-600"
-      >Showing {{pagination.from}} to {{pagination.to}} of {{pagination.total}} entries.</div>
+      <div class="pagination-text text-left tertiary-2-text grey-600">
+        Showing {{ pagination.from }} to {{ pagination.to }} of
+        {{ pagination.total }} entries.
+      </div>
     </div>
 
     <div class="right mgb-5">
-      <div class="nav" :class="[isPrevDisabled && 'disabled']">
+      <div
+        class="nav"
+        :class="[isPrevDisabled && 'disabled']"
+        @click="isPrevDisabled ? null : updatePage(-1)"
+      >
         <div class="icon icon-caret-left"></div>
-        <div class="nav-text mgl-3 pdr-4" @click="isPrevDisabled ? null : updatePage(-1)">Prev</div>
+        <div class="nav-text mgl-3 pdr-4">Prev</div>
       </div>
 
       <!--PAGING -->
@@ -24,16 +29,22 @@
           v-model.number="page"
         />
         <div class="page-slash">/</div>
-        <div class="page-total mgl-5 mgr-4">{{pagination.last_page}}</div>
+        <div class="page-total mgl-5 mgr-4">{{ pagination.last_page }}</div>
         <button
           class="btn btn-primary btn-sm mgl-4 page-btn"
           :disabled="is_go_disabled"
           @click="navigatePage(page)"
-        >Go</button>
+        >
+          Go
+        </button>
       </div>
 
-      <div class="nav" :class="[isNextDisabled && 'disabled']">
-        <div class="nav-text mgr-3 pdl-5" @click="isNextDisabled ? null : updatePage(1)">Next</div>
+      <div
+        class="nav"
+        :class="[isNextDisabled && 'disabled']"
+        @click="isNextDisabled ? null : updatePage(1)"
+      >
+        <div class="nav-text mgr-3 pdl-5">Next</div>
         <div class="icon icon-caret-right"></div>
       </div>
 
@@ -41,7 +52,9 @@
       <div
         class="error-text smooth-transition primary-3-text red-500"
         v-if="show_error"
-      >Provided page exceeds page size!</div>
+      >
+        Provided page exceeds page size!
+      </div>
     </div>
   </div>
 </template>

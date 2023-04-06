@@ -1,13 +1,13 @@
 <template>
   <div class="pdb-40">
-    <PageBackBtn :back_link="`/users/manage-users/${$route.params.userID}/escrow-transaction`" />
+    <PageBackBtn :back_link="getBackLink" />
 
     <div class="d-flex justify-content-between align-items-center">
       <div
         class="skeleton-loader txn-name-skeleton"
         v-if="loading_transaction || !transaction_details"
       ></div>
-      <div class="page-title" v-else>{{transaction_details.title }}</div>
+      <div class="page-title" v-else>{{ transaction_details.title }}</div>
 
       <select name="status" id="status" class="form-control">
         <option value="0">Change status</option>
@@ -24,7 +24,10 @@
       </template>
 
       <template v-else>
-        <DetailsCard :card_title="disbursement_title" :metas="disbursementDetails" />
+        <DetailsCard
+          :card_title="disbursement_title"
+          :metas="disbursementDetails"
+        />
 
         <DetailsCard :card_title="payment_title" :metas="paymentDetails" />
       </template>
@@ -59,27 +62,53 @@ export default {
   },
 
   computed: {
+    getBackLink() {
+      const { userID } = this.$route?.params;
+      return userID
+        ? `/users/manage-users/${userID}/escrow-transaction`
+        : `/escrow-transactions`;
+    },
+
     transactionTabs() {
       const { userID, transactionID } = this.$route?.params;
 
-      return [
-        {
-          name: "PAYMENT RULES",
-          route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/payment-rules`,
-        },
-        {
-          name: "PAYMENT",
-          route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/payments`,
-        },
-        {
-          name: "PARTIES",
-          route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/parties`,
-        },
-        {
-          name: "ACTIVITY",
-          route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/activity`,
-        },
-      ];
+      return userID
+        ? [
+            {
+              name: "PAYMENT RULES",
+              route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/payment-rules`,
+            },
+            {
+              name: "PAYMENT",
+              route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/payments`,
+            },
+            {
+              name: "PARTIES",
+              route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/parties`,
+            },
+            {
+              name: "ACTIVITY",
+              route: `/users/manage-users/${userID}/escrow-transaction/${transactionID}/activity`,
+            },
+          ]
+        : [
+            {
+              name: "PAYMENT RULES",
+              route: `/escrow-transactions/${transactionID}/payment-rules`,
+            },
+            {
+              name: "PAYMENT",
+              route: `/escrow-transactions/${transactionID}/payments`,
+            },
+            {
+              name: "PARTIES",
+              route: `/escrow-transactions/${transactionID}/parties`,
+            },
+            {
+              name: "ACTIVITY",
+              route: `/escrow-transactions/${transactionID}/activity`,
+            },
+          ];
     },
 
     disbursementDetails() {

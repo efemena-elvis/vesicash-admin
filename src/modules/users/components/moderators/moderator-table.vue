@@ -1,8 +1,8 @@
 <template>
-  <div class="fx-table-container neutral-10-bg">
+  <div class="moderator-table-container neutral-10-bg">
     <!-- TABLE CONTAINER -->
     <TableContainer
-      table_name="exchange-tb"
+      table_name="moderator-tb"
       :table_data="getPaginatedTable"
       :table_header="table_header"
       :is_loading="table_loading"
@@ -12,16 +12,17 @@
       @goToPage="updatePage"
     >
       <template v-for="(data, index) in getPaginatedTable">
-        <FXTableRow
+        <ModeratorTableRow
           :key="index"
           :index="index + 1 + (page - 1) * per_page"
-          table_name="exchange-tb"
           :data="data"
+          table_name="moderator-tb"
+          @refresh="fetchModerarors(filterQuery)"
         />
       </template>
 
       <template slot="emptyIconSlot">
-        <EmptyExchangeIcon />
+        <UserIcon />
       </template>
     </TableContainer>
   </div>
@@ -30,17 +31,17 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
-import EmptyExchangeIcon from "@/shared/components/icon-comps/empty-exchange-icon";
+import UserIcon from "@/shared/components/icon-comps/user-icon";
 
 export default {
-  name: "FXTable",
+  name: "ModeratorsTable",
 
   components: {
     TableContainer,
-    EmptyExchangeIcon,
-    FXTableRow: () =>
+    UserIcon,
+    ModeratorTableRow: () =>
       import(
-        /* webpackChunkName: "exchange-module" */ "@/modules/foreign-exchange/components/fx-table-row"
+        /* webpackChunkName: "moderators-module" */ "@/modules/users/components/moderators/moderator-table-row"
       ),
   },
 
@@ -53,7 +54,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      getFxTable: "fx/getFXTransactions",
+      getVesicashModerators: "users/getVesicashModerators",
     }),
 
     filterQuery() {
@@ -66,7 +67,7 @@ export default {
 
     getPaginatedTable() {
       const { per_page } = this;
-      const tables = [...this.getFxTable];
+      const tables = [...this.getVesicashModerators];
       const max_index = Math.max(0, Math.ceil(tables.length / per_page));
       const index = Math.min(this.page - 1, max_index);
       const start_range = per_page * index;
@@ -76,7 +77,7 @@ export default {
     },
 
     getPagination() {
-      const tables = [...this.getFxTable];
+      const tables = [...this.getVesicashModerators];
       const { per_page } = this;
       const current_page = this.page;
 
@@ -105,7 +106,7 @@ export default {
       deep: true,
     },
 
-    "getFxTable.length": {
+    "getVesicashModerators.length": {
       handler(size) {
         const max_page = Math.max(1, Math.ceil(size / this.per_page));
         this.page = Math.min(this.page, max_page);
@@ -116,25 +117,14 @@ export default {
 
     filterQuery: {
       handler(query) {
-        this.getFxTransactions(query);
+        this.getPastFXRates(query);
       },
     },
   },
 
   data() {
     return {
-      table_header: [
-        "#",
-        "Date",
-        "Transaction ID",
-        "Transaction name",
-        "Email address",
-        "Initial amount",
-        "Final amount",
-        // "Rate",
-        "Status",
-        "Actions",
-      ],
+      table_header: ["#", "Email", "Access type", "Action"],
 
       page: 1,
       per_page: 15,
@@ -151,17 +141,21 @@ export default {
       },
       paginatedData: {},
       paginationPages: {},
-      empty_message: "No fx transactions",
+      empty_message: "No moderators",
     };
   },
 
   mounted() {
-    this.getFxTransactions(this.filterQuery);
+    this.fetchModerarors(this.filterQuery);
+
+    this.$bus.$on("refresh-moderators", () =>
+      this.fetchModerarors(this.filterQuery)
+    );
   },
 
   methods: {
     ...mapActions({
-      fetchAllFxTransactions: "fx/fetchFXTxns",
+      fetchVesicashModerators: "users/fetchVesicashModerators",
     }),
 
     updatePage(page) {
@@ -180,12 +174,14 @@ export default {
         .join("&");
     },
 
-    getFxTransactions(query) {
-      const _query = query ? `?${query}` : query;
+    fetchModerarors(query) {
+      const _query = this.filterQuery
+        ? `?${this.filterQuery}`
+        : this.filterQuery;
 
       this.table_loading = true;
 
-      this.fetchAllFxTransactions(query)
+      this.fetchVesicashModerators(query)
         .then((response) => {
           if (
             response.code === 200 &&
@@ -196,7 +192,7 @@ export default {
           }
 
           // HANDLE NON 200 RESPONSE
-          else if (response.code !== 200) this.handleErrorResponse();
+          else if (response?.code !== 200) this.handleErrorResponse();
         })
         .catch(() => this.handleErrorResponse());
     },
@@ -213,16 +209,32 @@ export default {
 </script>
 
 <style lang="scss">
-.fx-table-container {
+.moderator-table-container {
   min-height: 40vh;
   border: toRem(1) solid getColor("grey-100");
+
+  svg {
+    fill: getColor("teal-800") !important;
+  }
 }
 
-.exchange-tb {
-  &-5 {
-    max-width: toRem(230);
+.moderator-tb {
+  &-1 {
+    min-width: toRem(60);
+    max-width: toRem(60);
   }
-
+  &-2 {
+    min-width: toRem(150);
+    max-width: toRem(250);
+  }
+  &-3 {
+    min-width: toRem(200);
+    max-width: toRem(350);
+  }
+  &-4 {
+    min-width: toRem(190);
+    max-width: toRem(190);
+  }
   .head-data {
     padding: toRem(14) toRem(22) !important;
   }

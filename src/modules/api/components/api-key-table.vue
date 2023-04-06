@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="neutral-10-bg api-table">
     <!-- TABLE CONTAINER -->
     <TableContainer
-      table_name="transaction-tb"
-      :table_data="getPaginatedTransaction"
+      table_name="api-tb"
+      :table_data="getPaginatedAPIkeys"
       :table_header="table_header"
       :is_loading="table_loading"
       :empty_message="getEmptyMessage"
@@ -11,11 +11,17 @@
       :pagination="getPagination"
       @goToPage="updatePage"
     >
-      <template v-for="(data, index) in getPaginatedTransaction">
-        <TransactionTableRow
+      <template v-for="(data, index) in getPaginatedAPIkeys">
+        <ApiKeyTableRow
+          @refresh="fetchkeys(filterQuery)"
           :key="index"
-          table_name="transaction-tb"
+          table_name="api-tb"
           :data="data"
+          :index="
+            index +
+            1 +
+            (getPagination.current_page - 1) * getPagination.per_page
+          "
         />
       </template>
     </TableContainer>
@@ -27,29 +33,26 @@ import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
 
 export default {
-  name: "UserEscrowTransactionTable",
+  name: "APITable",
 
   components: {
     TableContainer,
 
-    TransactionTableRow: () =>
+    ApiKeyTableRow: () =>
       import(
-        /* webpackChunkName: "transactions-module" */ "@/modules/users/components/escrow-transactions/transaction-table-row"
+        /* webpackChunkName: "api-module" */ "@/modules/api/components/api-key-table-row"
       ),
   },
 
-  props: {
-    dataset: {
-      type: Array,
-      default: () => [],
-    },
-  },
+  props: {},
 
   computed: {
-    ...mapGetters({ getUserTxn: "users/getUserTxn" }),
+    ...mapGetters({
+      getAPIKeys: "api/getAPIKeys",
+    }),
 
     getEmptyMessage() {
-      return "User has not performed any escrow transaction";
+      return "No match found";
     },
 
     getEmptyActionName() {
@@ -60,31 +63,18 @@ export default {
       return this.queryStrings(this.$route?.query);
     },
 
-    getPaginatedTransaction() {
-      const { per_page } = this;
-      const index = this.page - 1;
-      const start_range = per_page * index;
-      const end_range = start_range + per_page;
-      const transactions = [...this.getUserTxn];
-      return transactions.slice(start_range, end_range);
+    getPaginatedAPIkeys() {
+      return this.getAPIKeys?.data;
     },
 
     getPagination() {
-      const transactions = [...this.getUserTxn];
-      const { per_page } = this;
-      const current_page = this.page;
-
-      const index = this.page - 1;
-      const from = per_page * index;
-      const to = Math.min(from + per_page, transactions.length);
-
       return {
-        current_page,
-        per_page,
-        last_page: Math.ceil(transactions.length / per_page),
-        from: from + 1,
-        to,
-        total: transactions.length,
+        current_page: this.getAPIKeys?.current_page,
+        per_page: this.getAPIKeys?.per_page,
+        last_page: this.getAPIKeys?.last_page,
+        from: this.getAPIKeys?.from,
+        to: this.getAPIKeys?.to,
+        total: this.getAPIKeys?.total,
       };
     },
   },
@@ -99,9 +89,10 @@ export default {
     },
 
     filterQuery: {
-      handler() {
-        this.getUserTransactions(this.page);
+      handler(query) {
+        this.fetchkeys(query);
       },
+      immediate: true,
     },
   },
 
@@ -109,16 +100,16 @@ export default {
     return {
       table_header: [
         "#",
-        "Transaction name",
-        "Due date",
-        "Amount to pay",
-        "Disbursment type",
-        "Status",
+        "Date generated",
+        "Account ID",
+        "Account name",
+        "Public Key",
+        "Private Key",
         "Action",
       ],
 
       table_data: [6],
-      table_loading: true,
+      table_loading: false,
       paginatedData: {},
       paginationPages: {},
       page: 1,
@@ -136,13 +127,9 @@ export default {
     };
   },
 
-  mounted() {
-    this.getUserTransactions(this.page);
-  },
-
   methods: {
     ...mapActions({
-      fetchUserTransactions: "users/fetchUserTransactions",
+      fetchAPIkeys: "api/fetchAPIkeys",
     }),
 
     updatePage(page) {
@@ -162,27 +149,19 @@ export default {
     },
 
     // ====================================
-    // FETCH ALL USER TRANSACTIONS
+    // FETCH ALL API KEYS
     // ====================================
-    getUserTransactions(page) {
-      this.table_loading = true;
-      this.page = page;
-
-      // USE PREVIOUSLY SAVED DATA FOR THAT PAGE NUMBER (AVOID UNNECESSARY API CALLS)
-      // if (this.getUserTxn?.length) {
-      //   this.table_loading = false;
-      //   return;
-      // }
-
-      const payload = {
-        business_id: this.$route?.params?.userID,
-      };
+    fetchkeys(query) {
+      const _query = decodeURIComponent(location.search);
 
       this.table_loading = true;
 
-      this.fetchUserTransactions(payload)
+      this.fetchAPIkeys(query)
         .then((response) => {
-          if (response.code === 200) {
+          if (
+            response.code === 200 &&
+            _query === decodeURIComponent(location.search)
+          ) {
             this.table_data = response.data;
             this.table_loading = false;
 
@@ -194,7 +173,7 @@ export default {
           }
 
           // HANDLE NON 200 RESPONSE
-          else this.handleErrorResponse();
+          else if (response?.code !== 200) this.handleErrorResponse();
         })
         .catch(() => this.handleErrorResponse());
     },
@@ -229,27 +208,28 @@ export default {
 </script>
 
 <style lang="scss">
-.transaction-tb {
+.api-table {
+  min-height: 65vh;
+  border: toRem(1) solid getColor("grey-100");
+}
+
+.api-tb {
   &-1 {
     min-width: toRem(50);
     max-width: toRem(90);
   }
 
-  &-2 {
-    min-width: toRem(200);
-    max-width: toRem(250);
-  }
-
+  &-2,
   &-3,
-  &-4,
-  &-5 {
+  &-5,
+  &-6 {
     max-width: toRem(200);
-    min-width: toRem(180);
+    min-width: toRem(160);
   }
 
-  &-6 {
-    max-width: toRem(270);
-    min-width: toRem(150);
+  &-4 {
+    max-width: toRem(250);
+    min-width: toRem(200);
   }
 
   &-7 {

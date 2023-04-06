@@ -18,6 +18,7 @@ const paymentsRoutes = [
           ),
         meta: {
           requiresAuth: true,
+          name: "Transactions",
         },
       },
     ],
