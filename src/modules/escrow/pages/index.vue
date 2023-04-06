@@ -187,7 +187,9 @@ export default {
       this.status = this.$route?.query?.status || "";
       this.type =
         this.$route?.query?.disbursement_type || this.$route?.query?.party_type
-          ? `${this.$route?.query?.disbursement_type}_${this.$route?.query?.party_type}`
+          ? `${this.$route?.query?.disbursement_type || ""}_${
+              this.$route?.query?.party_type || ""
+            }`
           : "";
       const start_date = this.$route?.query?.start_date || "";
       const end_date = this.$route?.query?.end_date || "";
