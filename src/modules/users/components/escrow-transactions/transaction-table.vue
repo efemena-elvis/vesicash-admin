@@ -27,7 +27,7 @@ import { mapActions, mapGetters } from "vuex";
 import TableContainer from "@/shared/components/table-comps/table-container";
 
 export default {
-  name: "TransactionTable",
+  name: "UserEscrowTransactionTable",
 
   components: {
     TableContainer,

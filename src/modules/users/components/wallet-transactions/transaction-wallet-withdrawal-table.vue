@@ -19,6 +19,7 @@
           :index="
             index + 1 + (pagination.current_page - 1) * pagination.per_page
           "
+          @refresh="getUserWalletTransactions(pagination.current_page, true)"
         />
       </template>
 
@@ -85,9 +86,9 @@ export default {
       fetchWalletTransactions: "users/fetchWalletWithdrawals",
     }),
 
-    getUserWalletTransactions(page) {
+    getUserWalletTransactions(page, force = false) {
       // USE PREVIOUSLY SAVED DATA FOR THAT PAGE NUMBER (AVOID UNNECESSARY API CALLS)
-      if (this.paginatedData[page] && this.paginationPages[page]) {
+      if (this.paginatedData[page] && this.paginationPages[page] && !force) {
         this.table_data = this.paginatedData[page];
         this.pagination = this.paginationPages[page];
         this.table_loading = false;
@@ -169,8 +170,10 @@ export default {
     max-width: toRem(140);
   }
 
-  //   &-6 {
-  //   }
+  &-6 {
+    display: flex;
+    gap: toRem(10);
+  }
 
   //   &-7 {
   //   }

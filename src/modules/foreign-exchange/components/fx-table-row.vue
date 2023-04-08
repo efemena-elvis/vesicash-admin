@@ -93,7 +93,7 @@ export default {
 
       const date = txn_date?.getSimpleFormatDate();
 
-      const id = this.data?.uid;
+      const id = this.data?.uid || "---------";
 
       const email = this.data?.user?.email_address;
 

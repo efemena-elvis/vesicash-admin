@@ -107,4 +107,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+svg {
+  fill: getColor("teal-800") !important;
+}
 </style>

@@ -382,9 +382,10 @@
     }
 }
 
-@mixin custom-scroll-style($color:"grey-100") {
+@mixin custom-scroll-style($color:"grey-100", $size:5) {
     &::-webkit-scrollbar {
-        height: toRem(5);
+        height: toRem($size);
+        width: toRem($size);
     }
     &::-webkit-scrollbar-track {
         border-radius: toRem(3);

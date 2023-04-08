@@ -1,3 +1,5 @@
+import escrowTransactionRoutes from "./routes/escrow-transaction-routes";
+
 const escrowRoutes = [
   {
     // ====================================
@@ -18,8 +20,11 @@ const escrowRoutes = [
           ),
         meta: {
           requiresAuth: true,
+          name: "Escrow Transactions",
         },
       },
+
+      ...escrowTransactionRoutes,
     ],
   },
 ];

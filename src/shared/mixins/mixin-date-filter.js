@@ -1,7 +1,7 @@
 const MixinDateFilter = {
     data(){
         return {
-            time:["2020-04-19", "2022-08-09"]
+            time:[]
         }
     },
   computed: {
@@ -52,7 +52,7 @@ const MixinDateFilter = {
           {
             text: "Yesterday",
             onClick: () => {
-              return [this.yesterday, today];
+              return [this.yesterday, this.yesterday];
             },
           },
           {
@@ -122,7 +122,7 @@ const MixinDateFilter = {
             name: "Today",
           },
           {
-            id: `${this.yesterday.toDateString()}${today}`,
+            id: `${this.yesterday.toDateString()}${this.yesterday.toDateString()}`,
             name: "Yesterday",
           },
           {

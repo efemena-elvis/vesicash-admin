@@ -1,7 +1,13 @@
 <template>
   <DetailsCard :card_title="payment_rule.title" :metas="ruleMetas">
     <template v-if="payment_rule.multi">
-      <DetailsCard v-for="(user,index) in usersMeta" :key="index" :metas="user" />
+      <div class="slot-wrapper">
+        <DetailsCard
+          v-for="(user, index) in usersMeta"
+          :key="index"
+          :metas="user"
+        />
+      </div>
     </template>
   </DetailsCard>
 </template>
@@ -82,4 +88,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.slot-wrapper {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: toRem(30);
+
+  @include breakpoint-down(xl) {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
 </style>

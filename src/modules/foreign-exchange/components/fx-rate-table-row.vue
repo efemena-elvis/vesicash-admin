@@ -57,7 +57,7 @@ export default {
 
       const date = txn_date?.getSimpleFormatDate();
 
-      const id = this.data?.uid;
+      const id = this.data?.uid || "---------";
 
       const rate = `${this.$money.getSign(
         this.data?.from_currency

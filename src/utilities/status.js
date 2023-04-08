@@ -17,6 +17,29 @@ export default {
   failed: "error",
 };
 
+export const escrow_transaction_status = [
+  "Draft",
+  "Sent - Awaiting Confirmation",
+  "Sent - Rejected",
+  "Accepted - Funded",
+  "Accepted - Not Funded",
+  "Funded - Rejected",
+  "In Progress",
+  "Delivered",
+  "Delivered - Accepted",
+  "Delivered - Rejected",
+  "Closed - Disbursement Pending",
+  "Closed - Manual Disbursement Pending",
+  "Closed - Disbursement Complete",
+  "Closed - Disputed",
+  "Closed - Not Funded",
+  "Closed",
+  "Draft",
+  "Active",
+  "Closed - Refunded",
+  "Deleted",
+];
+
 export const escrow_payment_table_empty_states = {
   "sent - awaiting confirmation":
     "No payment has been made for this escrow transaction.",
@@ -27,7 +50,8 @@ export const escrow_payment_table_empty_states = {
   draft: "No payment has been made for this escrow transaction.",
   "in progress": "No payment has been made for this escrow transaction.",
   delivered: "",
-  "delivered - accepted": "success",
+  "delivered - accepted":
+    "No payment has been made for this escrow transaction.",
   "delivered - rejected":
     "No payment has been made for this escrow transaction.",
   "closed - disbursement complete": "",
@@ -49,7 +73,8 @@ export const escrow_disbursement_table_empty_states = {
   draft: "No disbursement has been made for this escrow transaction.",
   "in progress": "No disbursement has been made for this escrow transaction.",
   delivered: "",
-  "delivered - accepted": "success",
+  "delivered - accepted":
+    "No disbursement has been made for this escrow transaction.",
   "delivered - rejected":
     "No disbursement has been made for this escrow transaction.",
   "closed - disbursement complete": "",

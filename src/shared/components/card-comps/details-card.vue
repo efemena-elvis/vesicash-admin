@@ -82,13 +82,13 @@ export default {
   }
 
   .slot-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: toRem(30);
+    // display: grid;
+    // grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    // gap: toRem(30);
 
-    @include breakpoint-down(xl) {
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    }
+    // @include breakpoint-down(xl) {
+    //   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    // }
   }
 
   .slot-container:empty {

@@ -1,7 +1,16 @@
 <template>
   <div class="mgt-15">
-    <RouteTabSwitcher exact :plain="false" :tabs="tabs" class="mgb-40" />
-    <router-view :loading="loading" :transaction="transaction" :payments="payments" />
+    <RouteTabSwitcher
+      exact
+      :plain="false"
+      :tabs="paymentsTabs"
+      class="mgb-40"
+    />
+    <router-view
+      :loading="loading"
+      :transaction="transaction"
+      :payments="payments"
+    />
   </div>
 </template>
 
@@ -33,17 +42,30 @@ export default {
   },
 
   computed: {
-    paymentsTab() {
-      return [
-        {
-          name: "Payments",
-          route: "",
-        },
-        {
-          name: "Disbursements",
-          route: "disbursements",
-        },
-      ];
+    paymentsTabs() {
+      const { userID } = this.$route?.params;
+
+      return userID
+        ? [
+            {
+              name: "Payments",
+              routeName: "UserEscrowTransactionPayments",
+            },
+            {
+              name: "Disbursements",
+              routeName: "UserEscrowTransactionDisbursements",
+            },
+          ]
+        : [
+            {
+              name: "Payments",
+              routeName: "EscrowTransactionPayments",
+            },
+            {
+              name: "Disbursements",
+              routeName: "EscrowTransactionDisbursements",
+            },
+          ];
     },
   },
 
@@ -64,5 +86,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

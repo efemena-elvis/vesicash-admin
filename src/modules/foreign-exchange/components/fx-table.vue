@@ -181,21 +181,22 @@ export default {
     },
 
     getFxTransactions(query) {
-      const _query = this.filterQuery
-        ? `?${this.filterQuery}`
-        : this.filterQuery;
+      const _query = query ? `?${query}` : query;
 
-      this.table_loading = _query === decodeURIComponent(location.search);
+      this.table_loading = true;
 
       this.fetchAllFxTransactions(query)
         .then((response) => {
-          if (response.code === 200) {
+          if (
+            response.code === 200 &&
+            _query === decodeURIComponent(location.search)
+          ) {
             this.table_data = response.data;
             this.table_loading = false;
           }
 
           // HANDLE NON 200 RESPONSE
-          else this.handleErrorResponse();
+          else if (response.code !== 200) this.handleErrorResponse();
         })
         .catch(() => this.handleErrorResponse());
     },

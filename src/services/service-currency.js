@@ -17,21 +17,25 @@ class serviceCurrency {
       case "naira":
       case "NGN":
       case "ng":
+      case "ESCROW_NGN":
         currency_type = naira;
         break;
       case "dollar":
       case "USD":
       case "us":
+      case "ESCROW_USD":
         currency_type = dollar;
         break;
       case "pound":
       case "GBP":
       case "gb":
+      case "ESCROW_GBP":
         currency_type = pound;
         break;
       case "euro":
       case "EUR":
       case "EURO":
+      case "ESCROW_EUR":
         currency_type = euro;
         break;
       default:
@@ -51,6 +55,41 @@ class serviceCurrency {
       case "naira":
       case "NGN":
       case "ng":
+      case "ESCROW_NGN":
+        currency_type = naira;
+        break;
+      case "dollar":
+      case "USD":
+      case "us":
+      case "ESCROW_USD":
+        currency_type = dollar;
+        break;
+      case "pound":
+      case "GBP":
+      case "gb":
+      case "ESCROW_GBP":
+        currency_type = pound;
+        break;
+      default:
+        currency_type = dialing_code;
+    }
+
+    return currency_type;
+  }
+
+  getName(currency, dialing_code = null) {
+    let currency_type = "",
+      naira = "Naira",
+      dollar = "Dollar",
+      pound = "Pounds",
+      escrow_naira = "Escrow Naira",
+      escrow_dollar = "Escrow Dollar",
+      escrow_pounds = "Escrow Pounds";
+
+    switch (currency) {
+      case "naira":
+      case "NGN":
+      case "ng":
         currency_type = naira;
         break;
       case "dollar":
@@ -62,6 +101,18 @@ class serviceCurrency {
       case "GBP":
       case "gb":
         currency_type = pound;
+        break;
+      case "ESCROW_NGN":
+      case "escrow_ngn":
+        currency_type = escrow_naira;
+        break;
+      case "ESCROW_USD":
+      case "escrow_usd":
+        currency_type = escrow_dollar;
+        break;
+      case "ESCROW_GBP":
+      case "escrow_gbp":
+        currency_type = escrow_pounds;
         break;
       default:
         currency_type = dialing_code;

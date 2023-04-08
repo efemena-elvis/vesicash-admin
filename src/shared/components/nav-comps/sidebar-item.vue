@@ -17,18 +17,26 @@
 
         <!-- CARET -->
         <div class="caret">
-          <div class="icon icon-caret-left f-size-28" :class="nav.show_more ? 'rotate-180' : null"></div>
+          <div
+            class="icon icon-caret-left f-size-28"
+            :class="nav.show_more ? 'rotate-180' : null"
+          ></div>
         </div>
       </router-link>
     </template>
 
     <!-- ROUTE WITHOUT CHILDREN -->
     <template v-else>
-      <router-link v-if="checkAuthorizedRoute" :to="nav.link" class="nav-item-row">
+      <router-link
+        v-if="checkAuthorizedRoute"
+        :to="nav.link"
+        class="nav-item-row"
+      >
         <div class="icon">
           <component :is="nav.icon" />
         </div>
         <div class="nav-text">{{ nav.title }}</div>
+        <!-- <div class="indicator"><span>43</span></div> -->
       </router-link>
     </template>
 
@@ -50,7 +58,9 @@
             <div
               class="nav-text"
               :class="!path_list.includes(item.slug) && 'inactive-text'"
-            >{{ item.title }}</div>
+            >
+              {{ item.title }}
+            </div>
           </div>
         </router-link>
       </div>
@@ -160,6 +170,7 @@ export default {
   background: getColor("teal-50");
 
   .nav-item-row {
+    position: relative;
     .nav-text {
       color: getColor("teal-800");
     }
@@ -193,6 +204,20 @@ export default {
 
     &:last-of-type {
       margin-bottom: 0;
+    }
+
+    .indicator {
+      position: absolute;
+      @include center-placement("y-axis");
+      right: toRem(10);
+      @include draw-shape(21);
+      @include flex-column-center;
+      border-radius: 50%;
+      background: getColor("green-500");
+      color: getColor("neutral-10");
+      font-size: toRem(11.5);
+      animation: blink 1.5s infinite;
+      animation-fill-mode: both;
     }
 
     svg {
@@ -278,6 +303,21 @@ export default {
     .inactive-text {
       color: getColor("grey-600");
     }
+  }
+}
+
+@keyframes blink {
+  0% {
+    transform: scale(1) translateY(-50%);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1) translateY(-50%);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1) translateY(-50%);
+    opacity: 1;
   }
 }
 </style>
