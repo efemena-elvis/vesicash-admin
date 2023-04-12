@@ -31,7 +31,6 @@ export default {
   // FETCH DASHBOARD EXCHANGE RATES
   // ============================================
   async fetchExchangeRates({ state, commit }, query) {
-    console.log("RAERS QUERY", query);
     let response = await $api.fetch(routes.exchange_rates(query));
     if (response.code === 200) {
       const updated_stats = {
