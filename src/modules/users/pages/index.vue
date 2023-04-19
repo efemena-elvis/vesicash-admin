@@ -79,7 +79,9 @@ export default {
     ...mapGetters({ getConnectedUsers: "users/getAllConnectedUsers" }),
 
     getUsers() {
-      let users = [...this.getConnectedUsers];
+      let users = this.getConnectedUsers?.data
+        ? [...this.getConnectedUsers?.data]
+        : [];
       if (!this.status) return users;
       if (this.status === "verified")
         return users?.filter((user) => user.is_verified);
