@@ -141,10 +141,10 @@ export default {
       this.page = page;
 
       // USE PREVIOUSLY SAVED DATA (AVOID UNNECESSARY API CALLS)
-      if (this.getConnectedUsers.length) {
-        this.table_loading = false;
-        return;
-      }
+      // if (this.getConnectedUsers.length) {
+      //   this.table_loading = false;
+      //   return;
+      // }
 
       const payload = {
         page,
