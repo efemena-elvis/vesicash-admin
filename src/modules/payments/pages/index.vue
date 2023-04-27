@@ -18,7 +18,7 @@
         type="text"
         class="form-control search-box"
         placeholder="Search account ID"
-        v-model="search"
+        v-model.trim="search"
         v-if="isPending"
       />
       <select
@@ -163,6 +163,7 @@ export default {
         end_date,
         status,
         search,
+        page: 1,
       };
     },
 

@@ -26,7 +26,7 @@
         type="text"
         class="form-control"
         placeholder="Search by account ID, account name, api key"
-        v-model="search"
+        v-model.trim="search"
       />
 
       <div class="date-wrapper">
@@ -97,6 +97,7 @@ export default {
         start_date,
         end_date,
         search,
+        page: 1,
       };
     },
   },

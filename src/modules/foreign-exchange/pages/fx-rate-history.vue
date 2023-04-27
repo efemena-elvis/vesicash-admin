@@ -5,7 +5,7 @@
         type="text"
         class="form-control"
         placeholder="Search by txn ID"
-        v-model="search"
+        v-model.trim="search"
       />
 
       <select
@@ -114,6 +114,7 @@ export default {
         end_date,
         search,
         currency_type,
+        page: 1,
       };
     },
 

@@ -147,6 +147,6 @@ export default {
   },
 
   deleteModerator: async (_, payload) => {
-    return await $api.push(routes.delete_moderator, { payload });
+    return await $api.remove(routes.delete_moderator, { payload, resolve:true });
   },
 };

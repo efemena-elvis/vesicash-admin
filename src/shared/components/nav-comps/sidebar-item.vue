@@ -36,7 +36,9 @@
           <component :is="nav.icon" />
         </div>
         <div class="nav-text">{{ nav.title }}</div>
-        <!-- <div class="indicator"><span>43</span></div> -->
+        <!-- <div class="indicator" v-if="nav.title === 'Payments'">
+          <span>43</span>
+        </div> -->
       </router-link>
     </template>
 
@@ -210,12 +212,12 @@ export default {
       position: absolute;
       @include center-placement("y-axis");
       right: toRem(10);
-      @include draw-shape(21);
+      @include draw-shape(20);
       @include flex-column-center;
       border-radius: 50%;
       background: getColor("green-500");
       color: getColor("neutral-10");
-      font-size: toRem(11.5);
+      font-size: toRem(11);
       animation: blink 1.5s infinite;
       animation-fill-mode: both;
     }
@@ -312,8 +314,8 @@ export default {
     opacity: 1;
   }
   50% {
-    transform: scale(1.1) translateY(-50%);
-    opacity: 0.85;
+    transform: scale(1.05) translateY(-50%);
+    opacity: 0.8;
   }
   100% {
     transform: scale(1) translateY(-50%);

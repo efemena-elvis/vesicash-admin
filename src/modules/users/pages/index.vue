@@ -17,7 +17,7 @@
         type="text"
         class="form-control"
         placeholder="Search user ID, email, name, phone number"
-        v-model="search"
+        v-model.trim="search"
       />
 
       <select name id class="form-control pointer" v-model="account_type">
@@ -104,6 +104,7 @@ export default {
         search,
         start_date,
         end_date,
+        page: 1,
       };
     },
   },
