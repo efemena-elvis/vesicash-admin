@@ -16,7 +16,7 @@
         type="text"
         class="form-control"
         placeholder="Search by transaction ID"
-        v-model="search"
+        v-model.trim="search"
       />
 
       <select name id class="form-control pointer" v-model="type">
@@ -141,6 +141,7 @@ export default {
         start_date,
         end_date,
         status,
+        page: 1,
       };
     },
   },

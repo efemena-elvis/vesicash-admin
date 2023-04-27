@@ -54,11 +54,11 @@ export default {
     },
 
     getPaginatedUser() {
-      const users = this.getConnectedUsers?.data
-        ? [...this.getConnectedUsers?.data]
-        : [];
+      // const users = this.getConnectedUsers?.data
+      //   ? [...this.getConnectedUsers?.data]
+      //   : [];
 
-      return users;
+      return [...this.users];
     },
 
     // getPaginatedUser() {
