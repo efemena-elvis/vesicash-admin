@@ -59,7 +59,7 @@ export default {
           value: this.payment_rule?.amount,
         },
         {
-          name: "PAYMENT DUE DATE",
+          name: "DUE DATE",
           value: this.payment_rule?.due_date,
         },
         {
