@@ -7,7 +7,7 @@
 
     <template v-else>
       <EscrowPaymentRuleCard
-        v-for="(milestone,index) in getTransactionMilestones"
+        v-for="(milestone, index) in getTransactionMilestones"
         :key="index"
         :payment_rule="milestone"
       />
@@ -42,7 +42,7 @@ export default {
       const milestones = [...this.transaction?.milestones];
       const currency = this.transaction?.currency;
 
-      return milestones?.reverse()?.map((milestone, index) => {
+      return milestones?.map((milestone, index) => {
         const title =
           milestones?.length > 1
             ? milestone?.title || `Milestone ${index + 1}`

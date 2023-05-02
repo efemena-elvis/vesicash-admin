@@ -93,7 +93,7 @@ export default {
         // "Date",
         "Paid to",
         "User role",
-        "Amount paid",
+        "Amount received",
         // "Payment method",
         // "Status",
         "Action",
