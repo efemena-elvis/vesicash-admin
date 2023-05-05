@@ -10,7 +10,7 @@ export default {
   // ============================================
   async loginUser({ commit }, payload) {
     let response = await $api.push(routes.login_user, { payload });
-    if (response.code === 200 && response?.data?.user?.account_type==="admin") commit("AUTH_SUCCESS", response.data);
+    if (response.code === 200 && (response?.data?.user?.account_type==="admin" || response?.data?.user?.permissions?.length)) commit("AUTH_SUCCESS", response.data);
     return response;
   },
 
