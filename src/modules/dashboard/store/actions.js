@@ -6,6 +6,7 @@ const routes = {
   exchange_rates: (query) => `admin/business/rates/statistics?${query}`,
   vesicash_users: (query) => `admin/users/total?${query}`,
   api_keys: (query) => `admin/tokens?${query}`,
+  graph_metrics: (query) => `admin/graphical-metrics?${query}`,
 };
 
 export default {
@@ -82,5 +83,9 @@ export default {
       commit("SAVE_DASHBOARD_STATS", updated_stats);
     }
     return response;
+  },
+
+  async fetchGraphMetrics(_, query = "") {
+    return await $api.fetch(routes.graph_metrics(query));
   },
 };

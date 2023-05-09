@@ -100,14 +100,100 @@
           <div class="page-title mgb-25">Graphical metrics</div>
 
           <div class="metric-graphs-container pdy-20">
-            <div class="neutral-10-bg pd-15">
-              <div class="mgb-20 secondary-2-text">Transaction Volume</div>
-              <MetricGraph />
+            <div
+              class="neutral-10-bg pd-10 position-relative"
+              :class="
+                loading_txn_metric || !getTxnVolumeMetrics.length
+                  ? 'graph-wrapper'
+                  : ''
+              "
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mgb-25 mgt-10"
+              >
+                <div class="secondary-2-text pdl-4">Transaction Volume</div>
+                <div class="year-filter-wrapper position-relative">
+                  <DatePicker
+                    v-model="txn_vol_year"
+                    prefix-class="xmx"
+                    class="pointer"
+                    valueType="format"
+                    formt="YYYY"
+                    type="year"
+                    :disabled-date="disabledDate"
+                    :clearable="false"
+                    :popup-style="{ right: '0', top: '40px', left: 'auto' }"
+                    :append-to-body="false"
+                  >
+                    <span
+                      slot="icon-calendar"
+                      class="icon icon-caret-fill-down h5-text"
+                    ></span>
+                  </DatePicker>
+                </div>
+              </div>
+
+              <div class="graph-loading-container" v-if="loading_txn_metric">
+                <div class="skeleton-loader" v-for="i in 6" :key="i"></div>
+              </div>
+
+              <MetricGraph
+                v-else-if="getTxnVolumeMetrics.length"
+                :dataset="getTxnVolumeMetrics"
+              />
+
+              <div class="h5-text text-center mgt-40" v-else>
+                NO TRANSACTION VOLUME DATA FOR THIS YEAR
+              </div>
             </div>
 
-            <div class="neutral-10-bg pd-15">
-              <div class="mgb-20 secondary-2-text">No. of users</div>
-              <MetricGraph barColor="#0B618F" label="Users" />
+            <div
+              class="neutral-10-bg pd-10 position-relative"
+              :class="
+                loading_users_metric || !getUserVolumeMetrics.length
+                  ? 'graph-wrapper'
+                  : ''
+              "
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mgb-25 mgt-10"
+              >
+                <div class="secondary-2-text pdl-4">No. of users</div>
+                <div class="year-filter-wrapper position-relative">
+                  <DatePicker
+                    v-model="user_vol_year"
+                    prefix-class="xmx"
+                    class="pointer"
+                    valueType="format"
+                    formt="YYYY"
+                    type="year"
+                    :disabled-date="disabledDate"
+                    :clearable="false"
+                    :popup-style="{ right: '0', top: '40px', left: 'auto' }"
+                    :append-to-body="false"
+                  >
+                    <span
+                      slot="icon-calendar"
+                      class="icon icon-caret-fill-down h5-text"
+                    ></span>
+                  </DatePicker>
+                </div>
+              </div>
+
+              <div class="graph-loading-container" v-if="loading_users_metric">
+                <div class="skeleton-loader" v-for="i in 6" :key="i"></div>
+              </div>
+
+              <MetricGraph
+                v-else-if="getUserVolumeMetrics.length"
+                :dataset="getUserVolumeMetrics"
+                barColor="#0B618F"
+                label="Users"
+              />
+
+              <div class="h5-text text-center mgt-40" v-else>
+                NO USER VOLUME DATA FOR THIS YEAR
+              </div>
             </div>
           </div>
         </div>
@@ -140,9 +226,23 @@ export default {
   mounted() {
     this.syncDateFilter();
     this.fetchDashboardMetrics(this.filterQuery);
+    this.fetchTxnMetrics(`${new Date().getFullYear()}`);
+    this.fetchUserMetrics(`${new Date().getFullYear()}`);
   },
 
   watch: {
+    txn_vol_year: {
+      handler(year) {
+        this.fetchTxnMetrics(year);
+      },
+    },
+
+    user_vol_year: {
+      handler(year) {
+        this.fetchUserMetrics(year);
+      },
+    },
+
     dateQuery: {
       handler(query) {
         let updated_query = { ...this.$route.query, ...query };
@@ -171,6 +271,46 @@ export default {
 
   computed: {
     ...mapGetters({ getDashboardStats: "dashboard/getDashboardStats" }),
+
+    getTxnVolumeMetrics() {
+      const year_range = [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+      ];
+      return this.txn_volume_metrics
+        ? year_range.map((index) => this.txn_volume_metrics[index])
+        : [];
+    },
+
+    getUserVolumeMetrics() {
+      const year_range = [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+      ];
+      return this.user_metrics
+        ? year_range.map((index) => this.user_metrics[index])
+        : [];
+    },
 
     nairaDollarRate() {
       const { naira_dollar, dollar_naira } = this.getDashboardStats;
@@ -344,6 +484,12 @@ export default {
       naira_dollar: false,
       naira_pound: false,
       dollar_pound: false,
+      user_metrics: null,
+      txn_volume_metrics: null,
+      loading_txn_metric: false,
+      loading_users_metric: false,
+      txn_vol_year: `${new Date().getFullYear()}`,
+      user_vol_year: `${new Date().getFullYear()}`,
     };
   },
 
@@ -353,7 +499,23 @@ export default {
       fetchExchangeRates: "dashboard/fetchExchangeRates",
       fetchUsersCount: "dashboard/fetchUsersCount",
       fetchAPIkeysStats: "dashboard/fetchAPIkeysStats",
+      fetchGraphMetrics: "dashboard/fetchGraphMetrics",
     }),
+
+    async fetchTxnMetrics(year) {
+      this.loading_txn_metric = true;
+      const response = await this.fetchGraphMetrics(`year=${year}`);
+      this.loading_txn_metric = false;
+      if (response?.code === 200)
+        this.txn_volume_metrics = response?.data?.transaction_volume;
+    },
+
+    async fetchUserMetrics(year) {
+      this.loading_users_metric = true;
+      const response = await this.fetchGraphMetrics(`year=${year}`);
+      this.loading_users_metric = false;
+      if (response?.code === 200) this.user_metrics = response?.data?.users;
+    },
 
     sign(currency) {
       return this.$money?.getSign(currency);
@@ -438,6 +600,37 @@ export default {
     }
   }
 
+  .graph-wrapper {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: toRem(500);
+  }
+
+  .graph-loading-container {
+    @include flex-row-start-nowrap;
+    align-items: flex-end;
+    gap: 0 toRem(35);
+    height: 100%;
+
+    & > div {
+      height: 50%;
+      width: 100%;
+    }
+
+    & > div:nth-child(1) {
+      height: 25%;
+    }
+    & > div:nth-child(3) {
+      height: 90%;
+    }
+    & > div:nth-child(4) {
+      height: 75%;
+    }
+    & > div:nth-child(6) {
+      height: 30%;
+    }
+  }
+
   .swap-icon-wrapper {
     @include draw-shape(42);
     @include flex-column-center;
@@ -447,6 +640,10 @@ export default {
     right: toRem(15);
     cursor: pointer;
     border-radius: 50%;
+  }
+
+  .year-filter-wrapper {
+    width: toRem(170);
   }
 
   .metric-graphs-container {
