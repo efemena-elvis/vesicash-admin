@@ -116,7 +116,7 @@
                   <DatePicker
                     v-model="txn_vol_year"
                     prefix-class="xmx"
-                    class="pointer"
+                    class="pointer year-range"
                     valueType="format"
                     formt="YYYY"
                     type="year"
@@ -163,7 +163,7 @@
                   <DatePicker
                     v-model="user_vol_year"
                     prefix-class="xmx"
-                    class="pointer"
+                    class="pointer year-range"
                     valueType="format"
                     formt="YYYY"
                     type="year"
@@ -643,7 +643,7 @@ export default {
   }
 
   .year-filter-wrapper {
-    width: toRem(170);
+    width: toRem(130);
   }
 
   .metric-graphs-container {
@@ -651,5 +651,11 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: toRem(30);
   }
+}
+</style>
+
+<style lang="scss">
+.year-range.xmx-datepicker {
+  width: auto;
 }
 </style>

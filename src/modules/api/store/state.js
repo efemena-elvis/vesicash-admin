@@ -5,4 +5,5 @@ export default () => ({
   },
 
   api_keys: null,
+  api_requests: null,
 });
