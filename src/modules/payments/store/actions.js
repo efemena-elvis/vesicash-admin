@@ -3,6 +3,7 @@ import $api from "@/services/service-api";
 const routes = {
   transactions: (page) => `admin/transactions/list?page=${page}`,
   pending_transactions: (query) => `admin/list-wallet-transactions?${query}`,
+  pending_transactions_count:'admin/list-wallet-transactions?count=yes&status=pending'
 };
 
 export default {
@@ -23,4 +24,11 @@ export default {
       commit("SAVE_PENDING_TRANSACTIONS", response.data);
     return response;
   },
+
+  fetchPendingTransactionsCount: async ({ commit }) => {
+    commit("SAVE_PENDING_TRANSACTIONS_COUNT", 0);
+    const response = await $api.fetch(routes.pending_transactions_count);
+    if (response.code === 200) commit("SAVE_PENDING_TRANSACTIONS_COUNT", Number(response?.data || 0));
+    return response;
+  }
 };

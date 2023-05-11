@@ -143,7 +143,7 @@ export default {
 
     txnQueries() {
       const wallet_type = this.wallet_type;
-      const tx_type = this.$route?.query?.tx_type || "inflow";
+      const tx_type = this.txn_type;
       const payment_entry = this.payment_entry;
       const status = this.status;
       const [start, end] = this.time;
@@ -211,6 +211,12 @@ export default {
       },
     },
 
+    "$route.query.tx_type": {
+      handler(new_type, old_type) {
+        if (new_type !== old_type) this.txn_type = new_type;
+      },
+    },
+
     txnQueries: {
       handler(query) {
         let updated_query = { ...this.$route.query, ...query };
@@ -243,6 +249,7 @@ export default {
       show_date_range: false,
       date_shortcut: "",
       search: "",
+      txn_type: "inflow",
     };
   },
 

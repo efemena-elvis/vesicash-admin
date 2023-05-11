@@ -36,9 +36,12 @@
           <component :is="nav.icon" />
         </div>
         <div class="nav-text">{{ nav.title }}</div>
-        <!-- <div class="indicator" v-if="nav.title === 'Payments'">
-          <span>43</span>
-        </div> -->
+        <div
+          class="indicator"
+          v-if="nav.title === 'Payments' && getPendingCount"
+        >
+          <span>{{ getPendingCount }}</span>
+        </div>
       </router-link>
     </template>
 
@@ -71,6 +74,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "SidebarItem",
 
@@ -128,6 +132,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters({ getPendingCount: "transaction/getPendingCount" }),
+
     isActive() {
       return this.path_list.includes(this.nav.slug) ? true : false;
     },
