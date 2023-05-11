@@ -138,6 +138,8 @@ export default {
   methods: {
     ...mapActions({
       fetchAllTransactions: "transaction/fetchPendingTransactions",
+      fetchPendingTransactionsCount:
+        "transaction/fetchPendingTransactionsCount",
     }),
 
     getCost(currency, cost) {
@@ -232,6 +234,7 @@ export default {
           else if (response?.code !== 200) this.handleErrorResponse();
         })
         .catch(() => this.handleErrorResponse());
+      this.fetchPendingTransactionsCount();
     },
 
     saveTransactionDataAndPagination(data, pagination, page) {

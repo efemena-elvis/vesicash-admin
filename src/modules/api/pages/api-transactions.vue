@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="page-title">API Transactions</div>
+    <div class="page-title">API Feature Requests</div>
 
     <div class="filter-wrapper mgy-30">
       <input
         type="text"
-        placeholder="Search id"
+        placeholder="Disabled for now..coming soon"
         class="form-control"
         v-model.trim="search"
         disabled
@@ -102,6 +102,12 @@ export default {
 
   select {
     max-width: toRem(150);
+  }
+}
+
+.page-title {
+  @include breakpoint-down(lg) {
+    display: none;
   }
 }
 </style>

@@ -64,11 +64,11 @@ const navRoutes = [
     link: "",
     show_more: false,
     children: [
-      { title: "Overview", slug: "api-overview", link: "/api/api-overview" },
+      { title: "Overview", slug: "api-overview", link: "/api/overview" },
       {
-        title: "Transactions",
+        title: "API Feature Requests",
         slug: "api-transactions",
-        link: "/api/api-transactions",
+        link: "/api/feature-requests",
       },
     ],
     authorize: ["open"],
