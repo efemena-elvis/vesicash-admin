@@ -5,7 +5,7 @@
     <td class="body-data" :class="`${table_name}-1`">{{ getCreatedDate }}</td>
 
     <td class="body-data text-no-wrap" :class="`${table_name}-2`">
-      {{ data.payment_id }}
+      {{ data.reference }}
     </td>
 
     <td class="body-data" :class="`${table_name}-3`">
@@ -13,14 +13,13 @@
     </td>
 
     <td class="body-data" :class="`${table_name}-4`">
-      {{ $money.getSign(data.currency)
-      }}{{ $money.addComma(data.total_amount) }}
+      {{ $money.getSign(data.currency) }}{{ $money.addComma(data.amount) }}
     </td>
 
     <td class="body-data" :class="`${table_name}-5`">
       <TagCard
-        :card_text="data.is_paid ? 'Completed' : 'Failed'"
-        :card_type="data.is_paid ? 'success' : 'error'"
+        :card_text="data.status"
+        :card_type="STATUS_COLOR[data.status]"
       />
     </td>
 
@@ -58,6 +57,7 @@
 
 <script>
 import TagCard from "@/shared/components/card-comps/tag-card";
+import STATUS_COLOR from "@/utilities/status";
 
 export default {
   name: "TransactionWalletWthdrawalTableRow",
@@ -178,6 +178,7 @@ export default {
   data: () => ({
     show_transaction_summary_modal: false,
     show_approval_modal: false,
+    STATUS_COLOR,
   }),
 
   methods: {
