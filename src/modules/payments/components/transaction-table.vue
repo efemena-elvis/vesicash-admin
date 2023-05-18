@@ -211,7 +211,7 @@ export default {
         amount: this.getCost(currency, data?.amount),
         paid_by: data?.user?.email_address,
         wallet_funded: data?.currency || data?.wallet_funded,
-        status: "Completed",
+        status: data.status,
       };
     },
 
