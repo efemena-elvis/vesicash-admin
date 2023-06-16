@@ -1,41 +1,62 @@
 <template>
   <div class="mgt-30 verification-container">
-    <template v-if="loading">
-      <div class="skeleton-loader"></div>
-      <div class="skeleton-loader"></div>
+    <RouteTabSwitcher
+      :tabs="verificationTabs"
+      query_key="type"
+      controlled
+      class="full-width"
+    />
+
+    <template v-if="$route.query.type === 'mor'">
+      <div class="full-width">
+        <DetailsCard :metas="morMetas" wrapperClass="mor-meta-wrapper" />
+        <div class="primary-1-text mgy-30">MOR Documents</div>
+        <MorVerificationTable />
+      </div>
     </template>
 
     <template v-else>
-      <DetailsCard
-        v-for="(verification, index) in userVerifications"
-        :key="index"
-        :metas="verification"
-      />
+      <template v-if="loading">
+        <div class="skeleton-loader"></div>
+        <div class="skeleton-loader"></div>
+      </template>
 
-      <DetailsCard :metas="docMetas">
-        <div class="doc-actions" v-if="docType">
-          <button class="btn btn-sm btn-alert" ref="reject" @click="rejectDoc">
-            Reject
-          </button>
+      <template v-else>
+        <DetailsCard
+          v-for="(verification, index) in userVerifications"
+          :key="index"
+          :metas="verification"
+        />
 
-          <button
-            class="btn btn-sm btn-tertiary"
-            :content="docContent"
-            v-if="docMeta"
-            @click="toggleMediaPreview"
-          >
-            View
-          </button>
+        <DetailsCard :metas="docMetas">
+          <div class="doc-actions" v-if="docType">
+            <button
+              class="btn btn-sm btn-alert"
+              ref="reject"
+              @click="rejectDoc"
+            >
+              Reject
+            </button>
 
-          <button
-            class="btn btn-sm btn-primary"
-            ref="approve"
-            @click="approveDoc"
-          >
-            Approve
-          </button>
-        </div>
-      </DetailsCard>
+            <button
+              class="btn btn-sm btn-tertiary"
+              :content="docContent"
+              v-if="docMeta"
+              @click="toggleMediaPreview"
+            >
+              View
+            </button>
+
+            <button
+              class="btn btn-sm btn-primary"
+              ref="approve"
+              @click="approveDoc"
+            >
+              Approve
+            </button>
+          </div>
+        </DetailsCard>
+      </template>
     </template>
 
     <!-- MODALS -->
@@ -55,6 +76,8 @@
 import { mapGetters, mapActions } from "vuex";
 import DetailsCard from "@/shared/components/card-comps/details-card";
 import MediaPreviewBanner from "@/shared/components/media-preview-banner";
+import RouteTabSwitcher from "@/shared/components/route-tab-switcher";
+import MorVerificationTable from "@/modules/users/components/verification/mor-verification-table";
 
 export default {
   name: "UserVerification",
@@ -62,6 +85,8 @@ export default {
   components: {
     DetailsCard,
     MediaPreviewBanner,
+    RouteTabSwitcher,
+    MorVerificationTable,
   },
 
   props: {
@@ -76,6 +101,23 @@ export default {
 
     username() {
       return `${this.getUserProfile?.user?.firstname} ${this.getUserProfile?.user?.lastname}`;
+    },
+
+    verificationTabs() {
+      return [
+        {
+          title: "Businesss  verification",
+          name: "business",
+          active:
+            !this.$route?.query?.type ||
+            this.$route?.query?.type === "business",
+        },
+        {
+          title: "MOR verification",
+          name: "mor",
+          active: this.$route?.query?.type === "mor",
+        },
+      ];
     },
 
     docContent() {
@@ -143,6 +185,27 @@ export default {
       return this.docVerification
         ? this.docVerification?.verification_type?.split("_").join(" ")
         : "";
+    },
+
+    morMetas() {
+      return [
+        {
+          name: "COUNTRIES TO DEPLOY MOR TO",
+          value: "Nigeria, Ghana, Rwanda, Kenya",
+        },
+        {
+          name: "MOR WALLETS ACTIVATED ",
+          value: "Naira wallet, Cedis wallet, Rwanda wallet, Kenya wallet",
+        },
+        {
+          name: "BUSINESS CATEGORY",
+          value: "Product & Services",
+        },
+        {
+          name: "HOW WILL YOU LIKE TO USE MOR",
+          value: "Offline",
+        },
+      ];
     },
 
     docMetas() {
@@ -318,6 +381,15 @@ export default {
 
   .skeleton-loader {
     height: toRem(55);
+  }
+
+  .full-width {
+    grid-column: 1/-1;
+
+    .mor-meta-wrapper {
+      border-radius: 3 !important;
+      padding: toRem(30);
+    }
   }
 
   .doc-actions {

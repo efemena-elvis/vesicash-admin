@@ -28,6 +28,16 @@ const navRoutes = [
   },
   {
     id: 3,
+    title: "MOR transactions",
+    slug: "mor",
+    icon: "MORIcon",
+    link: "/mor/transactions",
+    show_more: false,
+    children: [],
+    authorize: ["open"],
+  },
+  {
+    id: 4,
     title: "Escrow transactions",
     slug: "escrow-transactions",
     icon: "TransactionIcon",
@@ -37,7 +47,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 4,
+    id: 5,
     title: "Foreign exchange",
     slug: "foreign-exchange",
     icon: "ExchangeIcon",
@@ -47,7 +57,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 5,
+    id: 6,
     title: "Payments",
     slug: "payments",
     icon: "CreditCardIcon",
@@ -57,7 +67,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 6,
+    id: 7,
     title: "API overview",
     slug: "api",
     icon: "PaymentIcon",
@@ -74,18 +84,18 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 7,
+    id: 8,
     title: "Verifications",
     slug: "verifications",
     icon: "VerificationIcon",
-    link: "/verifications",
+    link: "/verifications/business",
     show_more: false,
     children: [],
     authorize: ["open"],
   },
 
   {
-    id: 8,
+    id: 9,
     title: "Settings",
     slug: "settings",
     icon: "SettingsIcon",

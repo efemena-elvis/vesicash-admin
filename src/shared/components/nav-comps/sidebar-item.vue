@@ -87,6 +87,10 @@ export default {
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/user-icon"
       ),
+    MORIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/mor-icon"
+      ),
     PaymentIcon: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/payment-icon"
@@ -135,7 +139,7 @@ export default {
     ...mapGetters({ getPendingCount: "transaction/getPendingCount" }),
 
     isActive() {
-      return this.path_list.includes(this.nav.slug) ? true : false;
+      return this.path_list.some((path) => path.includes(this.nav.slug));
     },
 
     // isChildLinkActive() {
@@ -161,7 +165,8 @@ export default {
   watch: {
     $route: {
       handler(value) {
-        this.path_list = value.path.split("/");
+        const paths = value.path.split("/");
+        this.path_list = [paths[1]];
       },
       immediate: true,
     },
