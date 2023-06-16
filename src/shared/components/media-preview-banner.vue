@@ -60,12 +60,12 @@
         <pdf :src="test" :style="docViewStyles" />
       </div>
 
-      <div class="doc-wrapper" v-if="isDoc && !isPdf">
-        <VueDocPreview :style="docViewStyles" :url="test" type="office" />
+      <div class="image-wrapper" v-else>
+        <img :src="content.meta" :alt="`${content.type} - Document`" />
       </div>
 
-      <div class="image-wrapper" v-if="isImage">
-        <img :src="content.meta" :alt="`${content.type} - Document`" />
+      <div class="doc-wrapper" v-if="isDoc && !isPdf">
+        <VueDocPreview :style="docViewStyles" :url="test" type="office" />
       </div>
     </div>
   </div>
@@ -74,14 +74,14 @@
 <script>
 import { mapActions } from "vuex";
 // import VueDocPreview from "vue-doc-preview";
-// import pdf from "vue-pdf";
+import pdf from "vue-pdf";
 
 export default {
   name: "MediaPreview",
 
   components: {
     // VueDocPreview,
-    // pdf,
+    pdf,
   },
 
   props: {
@@ -107,7 +107,8 @@ export default {
     },
 
     isPdf() {
-      return false;
+      // return false;
+      return true || this.content?.meta?.split(".")[1] === "pdf";
     },
 
     isDoc() {

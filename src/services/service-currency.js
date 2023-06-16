@@ -11,7 +11,8 @@ class serviceCurrency {
       naira = "₦",
       dollar = "$",
       pound = "£",
-      euro = "€";
+      euro = "€",
+      cedis = "₵";
 
     switch (currency) {
       case "naira":
@@ -38,18 +39,24 @@ class serviceCurrency {
       case "ESCROW_EUR":
         currency_type = euro;
         break;
+      case "cedis":
+      case "GHS":
+        currency_type = cedis;
+        break;
       default:
+        currency_type = "#";
         console.log("Currency sign not available yet!");
     }
 
     return currency_type;
   }
 
-  getCode(currency, dialing_code = null) {
+  getCode(currency, dialing_code = "###") {
     let currency_type = "",
       naira = "NGN",
       dollar = "USD",
-      pound = "GBP";
+      pound = "GBP",
+      cedis = "GHS";
 
     switch (currency) {
       case "naira":
@@ -70,6 +77,10 @@ class serviceCurrency {
       case "ESCROW_GBP":
         currency_type = pound;
         break;
+      case "cedis":
+      case "GHS":
+        currency_type = cedis;
+        break;
       default:
         currency_type = dialing_code;
     }
@@ -77,11 +88,12 @@ class serviceCurrency {
     return currency_type;
   }
 
-  getName(currency, dialing_code = null) {
+  getName(currency, dialing_code = "-----") {
     let currency_type = "",
       naira = "Naira",
       dollar = "Dollar",
       pound = "Pounds",
+      cedis = "Cedis",
       escrow_naira = "Escrow Naira",
       escrow_dollar = "Escrow Dollar",
       escrow_pounds = "Escrow Pounds";
@@ -101,6 +113,10 @@ class serviceCurrency {
       case "GBP":
       case "gb":
         currency_type = pound;
+        break;
+      case "cedis":
+      case "GHS":
+        currency_type = cedis;
         break;
       case "ESCROW_NGN":
       case "escrow_ngn":

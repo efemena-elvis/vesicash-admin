@@ -1,9 +1,9 @@
-const verificationRoutes = [
+const morRoutes = [
   {
     // ====================================
-    // VERIFICATION ROUTES
+    // MOR ROUTES
     // ====================================
-    path: "/verifications",
+    path: "/mor",
     component: () =>
       import(/* webpackChunkName: "base-layout" */ "@/layouts/layout-base"),
 
@@ -12,8 +12,8 @@ const verificationRoutes = [
         path: "",
         component: () =>
           import(
-            /* webpackChunkName: "verification-module" */
-            "@/modules/verifications/layouts/verification-layout"
+            /* webpackChunkName: "mor-module" */
+            "@/modules/mor/layouts/mor-layout"
           ),
         meta: {
           requiresAuth: true,
@@ -21,29 +21,29 @@ const verificationRoutes = [
 
         children: [
           {
-            name: "BusinessVerification",
-            path: "business",
+            name: "MORTransactions",
+            path: "transactions",
             component: () =>
               import(
-                /* webpackChunkName: "verification-module" */
-                "@/modules/verifications/pages/business-verification"
+                /* webpackChunkName: "mor-module" */
+                "@/modules/mor/pages/mor-transactions"
               ),
             meta: {
               requiresAuth: true,
-              name: "Business Verifications",
+              name: "MOR Transactions",
             },
           },
           {
-            name: "MORVerification",
-            path: "mor",
+            name: "MORPayouts",
+            path: "payouts",
             component: () =>
               import(
-                /* webpackChunkName: "verification-module" */
-                "@/modules/verifications/pages/mor-verification"
+                /* webpackChunkName: "mor-module" */
+                "@/modules/mor/pages/mor-payouts"
               ),
             meta: {
               requiresAuth: true,
-              name: "MOR Verifications",
+              name: "MOR Payouts",
             },
           },
         ],
@@ -52,4 +52,4 @@ const verificationRoutes = [
   },
 ];
 
-export default verificationRoutes;
+export default morRoutes;

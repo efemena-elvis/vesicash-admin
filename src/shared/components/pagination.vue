@@ -1,6 +1,6 @@
 <template>
   <div class="pagination-row mgt-30">
-    <div class="left">
+    <div class="left" v-if="pagination.total">
       <!-- PAGINATION TEXT -->
       <div class="pagination-text text-left tertiary-2-text grey-600">
         Showing {{ pagination.from }} to {{ pagination.to }} of

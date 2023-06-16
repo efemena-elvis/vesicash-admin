@@ -12,6 +12,7 @@ import fx from "@/modules/foreign-exchange/store";
 import escrow from "@/modules/escrow/store";
 import transaction from "@/modules/payments/store";
 import api from "@/modules/api/store";
+import mor from "@/modules/mor/store";
 
 Vue.use(Vuex);
 
@@ -25,5 +26,6 @@ export default new Vuex.Store({
     escrow,
     transaction,
     api,
+    mor,
   },
 });
