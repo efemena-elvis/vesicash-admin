@@ -4,7 +4,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Search by transaction ID"
+        placeholder="Search by reference ID"
         v-model.trim="search"
       />
 
@@ -63,6 +63,7 @@ import DatePicker from "vue2-datepicker";
 import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
 import "vue2-datepicker/index.css";
 import MorTransactionTable from "@/modules/mor/components/mor-transaction-table";
+import { mapGetters } from "vuex";
 
 export default {
   name: "MORTransactions",
@@ -75,22 +76,17 @@ export default {
   mixins: [MixinDateFilter],
 
   computed: {
-    walletTypes() {
-      return [
-        {
-          name: "Naira",
-          value: "NGN",
-        },
-        {
-          name: "Cedis",
-          value: "GHS",
-        },
+    ...mapGetters({
+      getMORUsers: "mor/getMORUsers",
+      getMORCountries: "mor/getMORCountries",
+    }),
 
-        {
-          name: "Kenya Shilling",
-          value: "KES",
-        },
-      ];
+    walletTypes() {
+      return this.getMORCountries?.map((item) => ({
+        value: item.currency_code,
+        id: item.currency_code,
+        name: `${item.name} ${item.currency_code}`,
+      }));
     },
 
     payoutStatus() {

@@ -8,4 +8,10 @@ export default {
   getMORSummary: (state) => state.mor_summary,
 
   getMORTransactions: (state) => state.mor_transactions,
+
+  getMORPayouts: (state) => state.mor_payouts,
+
+  getMORUsers: (state) => state.mor_users,
+
+  getMORCountries: (state) => state.mor_countries,
 };

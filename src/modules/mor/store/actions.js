@@ -13,7 +13,15 @@ const routes = {
 
     record_transaction:`https://mor-vesicash.onrender.com/v2/admin/transaction/record`,
 
-    mor_transactions: (query)=> `https://mor-vesicash.onrender.com/v2/admin/transactions/get?limit=15${query}`
+    send_payouts:'https://mor-vesicash.onrender.com/v2/admin/payout/to-wallet',
+
+    mor_transactions: (query)=> `https://mor-vesicash.onrender.com/v2/admin/transactions/get?limit=15${query}`,
+
+    mor_payouts: (query)=> `https://mor-vesicash.onrender.com/v2/admin/payouts/get?limit=15${query}`,
+
+    mor_users:'https://mor-vesicash.onrender.com/v2/admin/settings/get',
+
+    mor_countries:'https://auth-vesicash.onrender.com/v2/countries/mor'
 };
 
 export default {
@@ -51,11 +59,34 @@ export default {
         return response;
     },
 
+    fetchMORPayouts:async({commit},query)=>{
+        const _query = decodeURIComponent(location.search)
+        const response = await $api.fetch(routes.mor_payouts(query));
+        if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_PAYOUTS', response);
+        return response;
+    },
+
+    fetchMORUsers:async({commit})=>{
+        const response = await $api.fetch(routes.mor_users);
+        if(response?.code === 200) commit('SAVE_MOR_USERS', response?.data);
+        return response;
+    },
+
+    fetchMORCountries:async({commit})=>{
+        const response = await $api.fetch(routes.mor_countries);
+        if(response?.code === 200) commit('SAVE_MOR_COUNTRIES', response?.data);
+        return response;
+    },
+
     updateAPIRequests:async(_, payload)=>{
         return await $api.push(routes.update_request,{payload});
     },
 
     saveMORtransaction:async(_, payload)=>{
         return await $api.push(routes.record_transaction,{payload});
+    },
+
+    sendMORPayout:async(_, payload)=>{
+        return await $api.push(routes.send_payouts,{payload});
     },
 };

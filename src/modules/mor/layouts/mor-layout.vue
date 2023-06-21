@@ -4,7 +4,11 @@
       <div class="page-title">{{ $route.meta.name }}</div>
 
       <div class="right-row">
-        <button class="btn btn-md btn-primary" @click="togglePayoutModal">
+        <button
+          class="btn btn-md btn-primary"
+          @click="togglePayoutModal"
+          :disabled="loading_summary"
+        >
           Payouts to wallets
         </button>
         <button
@@ -55,7 +59,9 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getMORSummary: "mor/getMORSummary" }),
+    ...mapGetters({
+      getMORSummary: "mor/getMORSummary",
+    }),
 
     morRoutes() {
       return [
@@ -79,8 +85,10 @@ export default {
     };
   },
 
-  mounted() {
+  async mounted() {
     this.loadSummary();
+    await this.fetchMORUsers();
+    await this.fetchMORCountries();
   },
 
   created() {
@@ -90,13 +98,23 @@ export default {
   },
 
   methods: {
-    ...mapActions({ fetchMORSummary: "mor/fetchMORSummary" }),
+    ...mapActions({
+      fetchMORSummary: "mor/fetchMORSummary",
+      fetchMORUsers: "mor/fetchMORUsers",
+      fetchMORCountries: "mor/fetchMORCountries",
+    }),
 
     async loadSummary(ignore = false) {
       if (this.getMORSummary?.length && !ignore) return;
-      this.loading_summary = true;
-      await this.fetchMORSummary();
-      this.loading_summary = false;
+      try {
+        this.loading_summary = true;
+        const res = await this.fetchMORSummary();
+        this.loading_summary = false;
+        if (res?.status !== "success") this.pushToast(res.message, "warning");
+      } catch (err) {
+        this.loading_summary = false;
+        this.pushToast("Failed to load MOR summary", "warning");
+      }
     },
 
     toggleTransactionRecordModal() {

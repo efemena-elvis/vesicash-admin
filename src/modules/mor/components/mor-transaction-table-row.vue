@@ -84,17 +84,14 @@ export default {
         false
       );
 
+      const date = txn_date.getSimpleFormatDate();
+
       const txn_posted_date = this.$date?.formatDate(
         new Date(this.data?.created_at?.split("T")[0]),
         false
       );
 
       const posted_date = txn_posted_date?.getSimpleFormatDate();
-
-      const date =
-        new Date(
-          this.data?.transaction_date?.split("T")[0]
-        ).toLocaleDateString() || txn_date.getSimpleFormatDate();
 
       const id = this.data?.reference || "---------";
 

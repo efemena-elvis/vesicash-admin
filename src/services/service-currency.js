@@ -6,7 +6,7 @@ class serviceCurrency {
   // ===================================
   // FORMAT CURRENCY SIGN
   // ===================================
-  getSign(currency) {
+  getSign(currency, default_type="#") {
     let currency_type = "",
       naira = "₦",
       dollar = "$",
@@ -44,7 +44,7 @@ class serviceCurrency {
         currency_type = cedis;
         break;
       default:
-        currency_type = "#";
+        currency_type = default_type;
         console.log("Currency sign not available yet!");
     }
 
