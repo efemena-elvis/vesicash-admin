@@ -14,34 +14,30 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div class="form-group">
-          <div class="form-label">Merchant</div>
+          <div class="form-label">Merchants</div>
           <DropSelectInput
-            placeholder="Select Merchant to pay to"
-            :options="merchants"
-            @optionSelected="selected_merchant = $event.id"
+            placeholder="Select Merchants to pay to"
+            :multi_options="merchants"
+            @multiSelected="selectMerchants"
+            multi
+            all="All Merchants"
           />
         </div>
 
         <div class="form-label">Total processed money</div>
 
         <div class="metric-wrapper mgb-20">
-          <div class="metric-card">
-            <div class="h5-text teal-800">$6,400,000.00</div>
-            <div class="secondary-3-text grey-700 mgb-4">USD TRANSACTIONS</div>
-          </div>
-
-          <div class="metric-card">
-            <div class="h5-text teal-800">$6,400,000.00</div>
-            <div class="secondary-3-text grey-700 mgb-4">USD TRANSACTIONS</div>
-          </div>
-
-          <div class="metric-card">
-            <div class="h5-text teal-800">$6,400,000.00</div>
-            <div class="secondary-3-text grey-700 mgb-4">USD TRANSACTIONS</div>
-          </div>
-          <div class="metric-card">
-            <div class="h5-text teal-800">$6,400,000.00</div>
-            <div class="secondary-3-text grey-700 mgb-4">USD TRANSACTIONS</div>
+          <div
+            class="metric-card"
+            v-for="option in getMORSummary"
+            :key="option.currency"
+          >
+            <div class="h5-text teal-800">
+              {{ formattedAmount(option.currency, option.amount) }}
+            </div>
+            <div class="secondary-3-text grey-700 mgb-4">
+              {{ option.currency }} TRANSACTIONS
+            </div>
           </div>
         </div>
       </div>
@@ -52,9 +48,9 @@
       <div class="modal-cover-footer">
         <button
           class="btn btn-md btn-primary w-100 mgt-15"
-          :disabled="!selected_merchant"
+          :disabled="!selected_merchants.length"
           ref="update"
-          @click="changeFXRate"
+          @click="sendPayout"
         >
           Pay to wallet
         </button>
@@ -77,59 +73,66 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getFXStats: "fx/getFXStats" }),
+    ...mapGetters({
+      getMORUsers: "mor/getMORUsers",
+      getMORSummary: "mor/getMORSummary",
+    }),
 
     updatePayload() {
       return {
-        selected_merchant: "",
+        merchants: this.selected_merchants,
       };
     },
 
     merchants() {
-      return [
-        {
-          id: "1",
-          name: "Abobagunwa Ezekiel",
-        },
-        {
-          id: "2",
-          name: "Awotunde Bangalee",
-        },
-
-        {
-          id: "3",
-          name: "Liam Gabby",
-        },
-      ];
+      return [...this.getMORUsers]?.map((user) => ({
+        name: user.full_name,
+        id: user.account_id,
+      }));
     },
   },
 
   data() {
     return {
       selected_merchant: "",
+      selected_merchants: [],
     };
   },
 
   methods: {
-    ...mapActions({ updateRate: "fx/updateRate" }),
+    ...mapActions({ sendMORPayout: "mor/sendMORPayout" }),
 
-    async changeFXRate() {
+    formattedAmount(currency, cost) {
+      const amount = `${this.$money?.getSign(currency)}${this.$money?.addComma(
+        cost
+      )}`;
+
+      return amount;
+    },
+
+    selectMerchants(merchants) {
+      this.selected_merchants = merchants
+        ?.filter((m) => m.selected)
+        ?.map((m) => m.id);
+    },
+
+    async sendPayout() {
       this.handleClick("update");
       try {
-        const response = await this.updateRate(this.updatePayload);
-        this.handleClick("update", "Update rate", false);
+        const response = await this.sendMORPayout(this.updatePayload);
+        this.handleClick("update", "Pay to wallet", false);
         const type = response?.code === 200 ? "success" : "warning";
         const message = response?.message;
         this.pushToast(message, type);
 
         if (response?.code === 200) {
-          this.$emit("updateRate");
+          this.$bus?.$emit("refreshMOR");
           this.$emit("closeTriggered");
         }
       } catch (err) {
-        this.handleClick("update", "Update rate", false);
-        console.log("FAILED TO UPDATE RATE", err);
-        this.pushToast("Failed to update rate", "error");
+        this.handleClick("update", "Pay to wallet", false);
+        console.log("FAILED TO PAY WALLET", err);
+        this.pushToast("Failed to Pay wallet", "error");
       }
     },
   },
@@ -141,6 +144,9 @@ export default {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: toRem(15) toRem(15);
+  max-height: toRem(200);
+  overflow-y: auto;
+  @include custom-scroll-style;
 
   & > .full-width {
     grid-column: 1/-1;

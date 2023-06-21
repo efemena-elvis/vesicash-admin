@@ -162,7 +162,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getFXStats: "fx/getFXStats" }),
+    ...mapGetters({
+      getMORUsers: "mor/getMORUsers",
+      getMORCountries: "mor/getMORCountries",
+    }),
 
     today() {
       return new Date().toISOString().split("T")[0];
@@ -178,16 +181,10 @@ export default {
     },
 
     vesicashMerchants() {
-      return [
-        {
-          name: "Gabby Molly",
-          id: "7493884123",
-        },
-        {
-          name: "Johnson Dan",
-          id: "9488553669",
-        },
-      ];
+      return this.getMORUsers?.map((user) => ({
+        name: user.full_name,
+        id: user.account_id,
+      }));
     },
 
     txnDate() {
@@ -209,46 +206,32 @@ export default {
     },
 
     morCountries() {
-      return [
-        {
-          id: 251,
-          name: "Nigeria",
-        },
-        {
-          id: 115,
-          name: "Kenya",
-        },
-
-        {
-          id: 253,
-          name: "Ghana",
-        },
-        {
-          id: 249,
-          name: "Zambia",
-        },
-        {
-          id: 65,
-          name: "Egypt",
-        },
-      ];
+      return this.getMORCountries;
     },
 
     morCurrencyOptions() {
-      return [
-        {
-          id: "NGN",
-          name: "Naira",
-        },
-        {
-          id: "USD",
-          name: "Dollar",
-        },
-        {
-          id: "GHS",
-          name: "Ghana",
-        },
-      ];
+      return this.getMORCountries?.map((item) => ({
+        id: item.currency_code,
+        value: item.currency_code,
+        name: `${item.name} ${item.currency_code}`,
+      }));
+    },
+  },
+
+  watch: {
+    "getMORUsers.length": {
+      async handler(size) {
+        console.log("SIZE USERS", size);
+        if (!size) await this.fetchMORUsers();
+      },
+      immediate: true,
+    },
+    "getMORCountries.length": {
+      async handler(size) {
+        console.log("SIZE COUNTRIES", size);
+        if (!size) await this.fetchMORCountries();
+      },
+      immediate: true,
     },
   },
 
@@ -278,7 +261,11 @@ export default {
   },
 
   methods: {
-    ...mapActions({ saveMORtransaction: "mor/saveMORtransaction" }),
+    ...mapActions({
+      saveMORtransaction: "mor/saveMORtransaction",
+      fetchMORUsers: "mor/fetchMORUsers",
+      fetchMORCountries: "mor/fetchMORCountries",
+    }),
 
     async saveTransaction() {
       this.handleClick("update");

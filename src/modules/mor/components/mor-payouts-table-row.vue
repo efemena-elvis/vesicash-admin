@@ -5,29 +5,25 @@
     </td>
 
     <td class="body-data" :class="`${table_name}-2`">
-      {{ "23rd July, 2021" || getFormattedData.date }}
+      {{ getFormattedData.date }}
     </td>
 
     <td class="body-data text-no-wrap" :class="`${table_name}-3`">
-      {{ "yuiro908p0" || getFormattedData.id }}
+      {{ getFormattedData.id }}
     </td>
 
     <td class="body-data" :class="`${table_name}-4`">
-      {{ "Naira wallet" || getFormattedData.wallet }}
+      {{ getFormattedData.name }}
     </td>
 
     <td class="body-data text-no-wrap" :class="`${table_name}-5`">
-      {{ "$45,000" || getFormattedData.amount }}
+      {{ getFormattedData.amount }}
     </td>
 
     <td class="body-data" :class="`${table_name}-8`">
       <TagCard
-        :card_text="
-          'successful' || data.status !== 'successful' ? 'Failed' : 'Completed'
-        "
-        :card_type="
-          'successful' || data.status !== 'successful' ? 'error' : 'success'
-        "
+        :card_text="data.status !== 'successful' ? 'Failed' : 'Completed'"
+        :card_type="data.status !== 'successful' ? 'error' : 'success'"
       />
     </td>
 
@@ -80,7 +76,7 @@ export default {
   computed: {
     getFormattedData() {
       const txn_date = this.$date?.formatDate(
-        new Date(this.data?.transaction_date?.split("T")[0]),
+        new Date(this.data?.created_at?.split("T")[0]),
         false
       );
 
@@ -88,19 +84,22 @@ export default {
 
       const id = this.data?.reference || "---------";
 
-      //   const email = this.data?.user?.email_address;
+      const name = this.data?.merchant_name || "--------";
 
-      //   const initial_currency = `${this.$money?.getSign(
-      //     this.data?.rate?.from_currency
-      //   )}${this.$money?.addComma(this.data?.initial_amount)}`;
+      const email = this.data?.merchant_email || "--------";
+
+      const currency = this.data?.Currency || this.data?.currency;
+
       const amount = `${this.$money?.getSign(
-        this.data?.currency
+        this.data?.Currency || this.data?.currency
       )}${this.$money?.addComma(this.data?.amount)}`;
 
       return {
         id,
         date,
-        wallet: `${this.data.currency} wallet`,
+        name,
+        email,
+        currency,
         amount,
         status: this.data.status,
       };
@@ -110,28 +109,32 @@ export default {
       return [
         {
           name: "AMOUNT",
-          value: "N45,000" || this.getFormattedData?.date,
+          value: this.getFormattedData?.amount,
         },
         {
           name: "TRANSACTION DATE",
-          value: "21st Apr 2022" || this.getFormattedData?.date,
+          value: this.getFormattedData?.date,
         },
         {
           name: "TRANSACTION REFERENCE",
-          value: "112450701" || this.getFormattedData?.id,
+          value: this.getFormattedData?.id,
         },
         {
           name: "MERCHANT NAME",
-          value: "UBER Ride" || this.getFormattedData?.name,
+          value: this.getFormattedData?.name,
+        },
+        {
+          name: "MERCHANT EMAIL",
+          value: this.getFormattedData?.email,
         },
         {
           name: "WALLET",
-          value: "Dollar" || this.getFormattedData?.email,
+          value: this.getFormattedData?.currency,
         },
         {
           name: "STATUS",
-          value: "Completed",
-          status: "success",
+          value: this.data.status !== "successful" ? "Failed" : "Completed",
+          status: this.data.status !== "successful" ? "success" : "error",
         },
       ];
     },

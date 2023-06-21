@@ -8,4 +8,7 @@ export default () => ({
   api_requests: null,
   mor_summary: [],
   mor_transactions: null,
+  mor_payouts: null,
+  mor_users: [],
+  mor_countries: [],
 });

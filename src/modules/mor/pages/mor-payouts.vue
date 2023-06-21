@@ -4,7 +4,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Search by transaction ID"
+        placeholder="Search by reference ID"
         v-model.trim="search"
       />
 
@@ -39,7 +39,7 @@
           prefix-class="xmx"
           :formatter="{ stringify: () => '' }"
           :range-separator="'Date range'"
-          :placeholder="'Date range'"
+          :placeholder="'Disabled'"
           class="pointer"
           :clearable="false"
           :editable="false"
@@ -47,6 +47,7 @@
           :popup-style="{ right: '0', top: '40px', left: 'auto' }"
           :append-to-body="false"
           :shortcuts="shortcutConfig"
+          disabled
         >
           <span slot="icon-calendar" class="icon icon-caret-fill-down"></span>
         </DatePicker>
@@ -62,6 +63,7 @@ import DatePicker from "vue2-datepicker";
 import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
 import "vue2-datepicker/index.css";
 import MorPayoutsTable from "@/modules/mor/components/mor-payouts-table";
+import { mapGetters } from "vuex";
 
 export default {
   name: "MORTransactions",
@@ -74,39 +76,38 @@ export default {
   mixins: [MixinDateFilter],
 
   computed: {
+    ...mapGetters({
+      getMORCountries: "mor/getMORCountries",
+    }),
+
     walletTypes() {
-      return [
-        {
-          name: "Dollar",
-          value: "dollar",
-        },
-        {
-          name: "Naira",
-          value: "naira",
-        },
-      ];
+      return this.getMORCountries?.map((item) => ({
+        value: item.currency_code,
+        id: item.currency_code,
+        name: `${item.name} ${item.currency_code}`,
+      }));
     },
 
     payoutStatus() {
       return [
         {
-          name: "Completed",
-          value: "1",
+          name: "Successful",
+          value: "successful",
         },
         {
           name: "Pending",
-          value: "2",
+          value: "pending",
         },
         {
           name: "Failed",
-          value: "3",
+          value: "failed",
         },
       ];
     },
 
     txnQueries() {
       const search = this.search;
-      const type = this.type;
+      const currency = this.type;
       const status = this.status;
       const [start, end] = this.time;
       const start_date = start
@@ -117,7 +118,7 @@ export default {
         : "";
 
       return {
-        type,
+        currency,
         search,
         start_date,
         end_date,

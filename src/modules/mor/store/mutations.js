@@ -8,4 +8,10 @@ export default {
   SAVE_MOR_SUMMARY: (state, summary) => (state.mor_summary = summary),
 
   SAVE_MOR_TRANSACTIONS: (state, data) => (state.mor_transactions = data),
+
+  SAVE_MOR_PAYOUTS: (state, data) => (state.mor_payouts = data),
+
+  SAVE_MOR_USERS: (state, data) => (state.mor_users = data),
+
+  SAVE_MOR_COUNTRIES: (state, data) => (state.mor_countries = data),
 };

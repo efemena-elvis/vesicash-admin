@@ -53,7 +53,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      getFXRates: "fx/getFXRates",
+      getMORPayouts: "mor/getMORPayouts",
     }),
 
     filterQuery() {
@@ -65,33 +65,17 @@ export default {
     },
 
     getPaginatedTable() {
-      const { per_page } = this;
-      const tables = [...this.getFXRates];
-      const max_index = Math.max(0, Math.ceil(tables.length / per_page));
-      const index = Math.min(this.page - 1, max_index);
-      const start_range = per_page * index;
-      const end_range = start_range + per_page;
-
-      return tables.slice(start_range, end_range);
+      return this.getMORPayouts?.data || [];
     },
 
     getPagination() {
-      const tables = [...this.getFXRates];
-      const { per_page } = this;
-      const current_page = this.page;
-
-      const max_index = Math.max(0, Math.ceil(tables.length / per_page));
-      const index = Math.min(this.page - 1, max_index);
-      const from = per_page * index;
-      const to = Math.min(from + per_page, tables.length);
-
       return {
-        current_page,
-        per_page,
-        last_page: Math.ceil(tables.length / per_page),
-        from: from + 1,
-        to,
-        total: tables.length,
+        current_page: this.page,
+        per_page: 15,
+        last_page: this.getMORPayouts?.pagination?.total_pages_count || 0,
+        from: 0,
+        to: 0,
+        total: 0,
       };
     },
   },
@@ -105,18 +89,9 @@ export default {
       deep: true,
     },
 
-    "getFXRates.length": {
-      handler(size) {
-        const max_page = Math.max(1, Math.ceil(size / this.per_page));
-        this.page = Math.min(this.page, max_page);
-      },
-      immediate: true,
-      deep: true,
-    },
-
     filterQuery: {
       handler(query) {
-        this.getPastFXRates(query);
+        this.fetchPayouts(query);
       },
     },
   },
@@ -127,7 +102,7 @@ export default {
         "#",
         "Date",
         "Reference ID",
-        "Wallet paid to",
+        "Merchant name",
         "Total amount paid",
         "Status",
         "Action",
@@ -148,17 +123,23 @@ export default {
       },
       paginatedData: {},
       paginationPages: {},
-      empty_message: "No past records of fx rates",
+      empty_message: "No past records of MOR payouts",
     };
   },
 
   mounted() {
-    this.getPastFXRates(this.filterQuery);
+    this.fetchPayouts(this.filterQuery);
+  },
+
+  created() {
+    this.$bus.$on("refreshMOR", () => {
+      this.fetchPayouts(this.filterQuery);
+    });
   },
 
   methods: {
     ...mapActions({
-      fetchFXRates: "fx/fetchFXRates",
+      fetchMORPayouts: "mor/fetchMORPayouts",
     }),
 
     updatePage(page) {
@@ -177,14 +158,14 @@ export default {
         .join("&");
     },
 
-    getPastFXRates(query) {
+    fetchPayouts(query) {
       const _query = this.filterQuery
         ? `?${this.filterQuery}`
         : this.filterQuery;
 
       this.table_loading = true;
 
-      this.fetchFXRates(query)
+      this.fetchMORPayouts(query)
         .then((response) => {
           if (
             response.code === 200 &&
