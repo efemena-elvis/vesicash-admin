@@ -14,4 +14,6 @@ export default {
   getMORUsers: (state) => state.mor_users,
 
   getMORCountries: (state) => state.mor_countries,
+
+  getMORVerifications: (state) => state.mor_verifications,
 };

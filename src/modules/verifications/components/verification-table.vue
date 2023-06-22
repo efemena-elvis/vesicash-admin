@@ -53,7 +53,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      getFXRates: "fx/getFXRates",
+      getMORUsers: "mor/getMORVerifications",
+      getMORCountries: "mor/getMORCountries",
     }),
 
     filterQuery() {
@@ -66,7 +67,7 @@ export default {
 
     getPaginatedTable() {
       const { per_page } = this;
-      const tables = [...this.getFXRates];
+      const tables = [...this.getMORUsers];
       const max_index = Math.max(0, Math.ceil(tables.length / per_page));
       const index = Math.min(this.page - 1, max_index);
       const start_range = per_page * index;
@@ -76,7 +77,7 @@ export default {
     },
 
     getPagination() {
-      const tables = [...this.getFXRates];
+      const tables = [...this.getMORUsers];
       const { per_page } = this;
       const current_page = this.page;
 
@@ -105,7 +106,7 @@ export default {
       deep: true,
     },
 
-    "getFXRates.length": {
+    "getMORUsers.length": {
       handler(size) {
         const max_page = Math.max(1, Math.ceil(size / this.per_page));
         this.page = Math.min(this.page, max_page);
@@ -116,7 +117,7 @@ export default {
 
     filterQuery: {
       handler(query) {
-        this.getPastFXRates(query);
+        this.getMORVerifications(query);
       },
     },
   },
@@ -147,17 +148,17 @@ export default {
       },
       paginatedData: {},
       paginationPages: {},
-      empty_message: "No past records of fx rates",
+      empty_message: "No MOR verification",
     };
   },
 
   mounted() {
-    this.getPastFXRates(this.filterQuery);
+    this.getMORVerifications(this.filterQuery);
   },
 
   methods: {
     ...mapActions({
-      fetchFXRates: "fx/fetchFXRates",
+      fetchMORVerifications: "mor/fetchMORVerifications",
     }),
 
     updatePage(page) {
@@ -176,14 +177,14 @@ export default {
         .join("&");
     },
 
-    getPastFXRates(query) {
+    getMORVerifications(query) {
       const _query = this.filterQuery
         ? `?${this.filterQuery}`
         : this.filterQuery;
 
       this.table_loading = true;
 
-      this.fetchFXRates(query)
+      this.fetchMORVerifications(query)
         .then((response) => {
           if (
             response.code === 200 &&
@@ -203,6 +204,7 @@ export default {
     // HANDLE ERROR RESPONSE
     // ==========================
     handleErrorResponse() {
+      this.pushToast("Failed to load", "error");
       this.table_loading = false;
       this.table_data = [];
     },

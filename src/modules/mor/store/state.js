@@ -11,4 +11,5 @@ export default () => ({
   mor_payouts: null,
   mor_users: [],
   mor_countries: [],
+  mor_verifications: [],
 });

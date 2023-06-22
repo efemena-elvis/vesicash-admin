@@ -4,7 +4,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Search by transaction ID"
+        placeholder="Search by account ID, email"
         v-model.trim="search"
       />
 
@@ -27,7 +27,7 @@
           prefix-class="xmx"
           :formatter="{ stringify: () => '' }"
           :range-separator="'Date range'"
-          :placeholder="'Date range'"
+          :placeholder="'Disabled'"
           class="pointer"
           :clearable="false"
           :editable="false"
@@ -35,6 +35,7 @@
           :popup-style="{ right: '0', top: '40px', left: 'auto' }"
           :append-to-body="false"
           :shortcuts="shortcutConfig"
+          disabled
         >
           <span slot="icon-calendar" class="icon icon-caret-fill-down"></span>
         </DatePicker>
@@ -77,16 +78,12 @@ export default {
     verificationStatus() {
       return [
         {
-          name: "Completed",
-          value: "1",
+          name: "Verified",
+          value: true,
         },
         {
           name: "Pending",
-          value: "2",
-        },
-        {
-          name: "Failed",
-          value: "3",
+          value: "false",
         },
       ];
     },
