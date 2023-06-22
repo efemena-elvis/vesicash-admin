@@ -1,7 +1,9 @@
 <template>
   <tr
     @click="
-      $router.push('/users/manage-users/6705437381/verification?type=mor')
+      $router.push(
+        `/users/manage-users/${getFormattedData.account_id}/verification?type=mor`
+      )
     "
   >
     <td class="body-data" :class="`${table_name}-1`">
@@ -22,8 +24,10 @@
 
     <td class="body-data" :class="`${table_name}-8`">
       <TagCard
-        :card_text="data.status === 'failed' ? 'Failed' : 'Completed'"
-        :card_type="data.status === 'failed' ? 'error' : 'success'"
+        :card_text="getFormattedData.status"
+        :card_type="
+          getFormattedData.status !== 'Verified' ? 'progress' : 'success'
+        "
       />
     </td>
 
@@ -62,29 +66,23 @@ export default {
 
   computed: {
     getFormattedData() {
-      //   const txn_date = this.$date?.formatDate(
-      //     new Date(this.data?.created_at),
-      //     false
-      //   );
+      const txn_date = this.$date?.formatDate(
+        new Date(this.data?.created_at),
+        false
+      );
 
-      //   const date = txn_date?.getSimpleFormatDate();
-
-      //   const id = this.data?.uid || "---------";
-
-      //   const email = this.data?.user?.email_address;
-
-      //   const initial_currency = `${this.$money?.getSign(
-      //     this.data?.rate?.from_currency
-      //   )}${this.$money?.addComma(this.data?.initial_amount)}`;
-      //   const final_currency = `${this.$money?.getSign(
-      //     this.data?.rate?.to_currency
-      //   )}${this.$money?.addComma(this.data?.final_amount)}`;
+      const date = txn_date?.getSimpleFormatDate();
+      const account_id = this.data.account_id;
+      const email = this.data.email;
+      const status = this.data.is_verified ? "Verified" : "Pending";
+      const name = this.data.full_name;
 
       return {
-        account_id: "112450701",
-        email: "adekunle@gmail.com",
-        name: `Ajiboye Nathaniel`,
-        status: "Passed",
+        date,
+        account_id,
+        email,
+        name,
+        status,
       };
     },
   },
