@@ -3,20 +3,21 @@
     <!-- TABLE CONTAINER -->
     <TableContainer
       table_name="mor-verification-tb"
-      :table_data="getPaginatedTable"
+      :table_data="getUserDocs"
       :table_header="table_header"
-      :is_loading="table_loading"
+      :is_loading="loading"
       :empty_message="empty_message"
-      :show_paging="showPagination"
+      :show_paging="false"
       :pagination="getPagination"
       @goToPage="updatePage"
     >
-      <template v-for="(data, index) in getPaginatedTable">
+      <template v-for="(data, index) in getUserDocs">
         <MorVerificationTableRow
           :key="index"
           :index="index + 1 + (page - 1) * per_page"
           table_name="mor-verification-tb"
           :data="data"
+          :user="user"
         />
       </template>
 
@@ -49,12 +50,38 @@ export default {
       type: Array,
       default: () => [],
     },
+
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+
+    user: {
+      type: Object,
+      default: () => null,
+    },
   },
 
   computed: {
     ...mapGetters({
       getFxTable: "fx/getFXTransactions",
     }),
+
+    getUsername() {
+      return this.user ? this.user?.full_name : "MOR Merchant";
+    },
+
+    getUserDocs() {
+      return this.user
+        ? this.user?.verifications?.map((c) => ({
+            ...c,
+            country_name: this.getDocCountry(
+              this.user?.countries,
+              c?.country_id
+            ),
+          }))
+        : [];
+    },
 
     filterQuery() {
       return this.queryStrings(this.$route?.query);
@@ -114,11 +141,11 @@ export default {
       deep: true,
     },
 
-    filterQuery: {
-      handler(query) {
-        this.getFxTransactions(query);
-      },
-    },
+    // filterQuery: {
+    //   handler(query) {
+    //     this.getFxTransactions(query);
+    //   },
+    // },
   },
 
   data() {
@@ -126,7 +153,7 @@ export default {
       table_header: [
         "#",
         "Mor country",
-        "MOR document",
+        // "MOR document",
         "Document Status",
         "Actions",
       ],
@@ -146,18 +173,22 @@ export default {
       },
       paginatedData: {},
       paginationPages: {},
-      empty_message: "No fx transactions",
+      empty_message: "No mor verification documents",
     };
   },
 
   mounted() {
-    this.getFxTransactions(this.filterQuery);
+    // this.getFxTransactions(this.filterQuery);
   },
 
   methods: {
     ...mapActions({
       fetchAllFxTransactions: "fx/fetchFXTxns",
     }),
+
+    getDocCountry(countries, country_id) {
+      return countries?.find((cc) => cc.id === country_id)?.name || "-------";
+    },
 
     updatePage(page) {
       this.page = Number(page);

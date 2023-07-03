@@ -5,13 +5,18 @@
       query_key="type"
       controlled
       class="full-width"
+      v-if="isBusiness"
     />
 
     <template v-if="$route.query.type === 'mor'">
       <div class="full-width">
-        <DetailsCard :metas="morMetas" wrapperClass="mor-meta-wrapper" />
+        <div
+          class="details-card-loader skeleton-loader"
+          v-if="loading_mor"
+        ></div>
+        <DetailsCard :metas="morMetas" wrapperClass="mor-meta-wrapper" v-else />
         <div class="primary-1-text mgy-30">MOR Documents</div>
-        <MorVerificationTable />
+        <MorVerificationTable :user="morUser" :loading="loading_mor" />
       </div>
     </template>
 
@@ -96,8 +101,24 @@ export default {
     },
   },
 
+  created(){
+    this.$bus.$on("refresh_users", this.fetchMORUserDetails());
+  },
+
   computed: {
     ...mapGetters({ getUserProfile: "users/getUserProfile" }),
+
+    isBusiness() {
+      return this.getUserProfile?.user?.account_type === "business";
+    },
+
+    morUser() {
+      return (
+        this.mor_users?.find(
+          (user) => user?.account_id == this.$route?.params?.userID
+        ) || null
+      );
+    },
 
     username() {
       return `${this.getUserProfile?.user?.firstname} ${this.getUserProfile?.user?.lastname}`;
@@ -188,22 +209,30 @@ export default {
     },
 
     morMetas() {
+      const countries = this.morUser
+        ? this.morUser?.countries?.map((cc) => cc.name)?.join(", ")
+        : "--------------";
+      const morWallets = this.morUser
+        ? this.morUser?.currency_codes?.map((cc) => `${cc} wallet`)?.join(", ")
+        : "-----------";
+      const mode = this.morUser?.usage_type || "--------";
+
       return [
         {
-          name: "COUNTRIES TO DEPLOY MOR TO",
-          value: "Nigeria, Ghana, Rwanda, Kenya",
+          name: "MOR COUNTRIES",
+          value: countries,
         },
         {
-          name: "MOR WALLETS ACTIVATED ",
-          value: "Naira wallet, Cedis wallet, Rwanda wallet, Kenya wallet",
+          name: "MOR WALLETS",
+          value: morWallets,
         },
+        // {
+        //   name: "BUSINESS CATEGORY",
+        //   value: "Product & Services",
+        // },
         {
-          name: "BUSINESS CATEGORY",
-          value: "Product & Services",
-        },
-        {
-          name: "HOW WILL YOU LIKE TO USE MOR",
-          value: "Offline",
+          name: "MOR MODE",
+          value: mode,
         },
       ];
     },
@@ -283,9 +312,21 @@ export default {
     },
   },
 
+  watch: {
+    "$route.query.type": {
+      handler(type) {
+        if (type === "mor") this.fetchMORUserDetails();
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+
   data() {
     return {
       preview_doc: false,
+      loading_mor: false,
+      mor_users: [],
       doc_types: [
         "cac",
         "passport",
@@ -302,10 +343,27 @@ export default {
     ...mapActions({
       approveUserDoc: "users/approveUserDoc",
       rejectUserDoc: "users/rejectUserDoc",
+      fetchMORUser: "mor/fetchMORUser",
     }),
 
     toggleMediaPreview() {
       this.preview_doc = !this.preview_doc;
+    },
+
+    async fetchMORUserDetails() {
+      try {
+        this.loading_mor = true;
+        const response = await this.fetchMORUser(this.$route?.params?.userID);
+
+        if (response?.code !== 200)
+          this.pushToast(response?.message, "warning");
+        else this.mor_users = response?.data;
+
+        this.loading_mor = false;
+      } catch (err) {
+        this.pushToast("Failed to load mor user details", "error");
+        console.log("FAILED TO GET MOR DETAILS", err);
+      }
     },
 
     async approveDoc() {
@@ -389,6 +447,7 @@ export default {
     .mor-meta-wrapper {
       border-radius: 3 !important;
       padding: toRem(30);
+      gap: toRem(25) toRem(50);
     }
   }
 
@@ -404,5 +463,9 @@ export default {
       }
     }
   }
+}
+
+.details-card-loader {
+  height: toRem(150);
 }
 </style>

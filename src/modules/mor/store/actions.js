@@ -9,21 +9,25 @@ const routes = {
 
     update_request: `admin/feature-request`,
 
-    mor_summary:'https://mor-vesicash.onrender.com/v2/admin/transactions/summary',
+    mor_summary:'https://mor.cn.vesicash.com/v2/admin/transactions/summary',
 
-    record_transaction:`https://mor-vesicash.onrender.com/v2/admin/transaction/record`,
+    record_transaction:`https://mor.cn.vesicash.com/v2/admin/transaction/record`,
 
-    send_payouts:'https://mor-vesicash.onrender.com/v2/admin/payout/to-wallet',
+    send_payouts:'https://mor.cn.vesicash.com/v2/admin/payout/to-wallet',
 
-    mor_transactions: (query)=> `https://mor-vesicash.onrender.com/v2/admin/transactions/get?limit=15${query}`,
+    mor_transactions: (query)=> `https://mor.cn.vesicash.com/v2/admin/transactions/get?limit=15${query}`,
 
-    mor_payouts: (query)=> `https://mor-vesicash.onrender.com/v2/admin/payouts/get?limit=15${query}`,
+    mor_payouts: (query)=> `https://mor.cn.vesicash.com/v2/admin/payouts/get?limit=15${query}`,
 
-    mor_users: 'https://mor-vesicash.onrender.com/v2/admin/settings/get',
+    mor_users: 'https://mor.cn.vesicash.com/v2/admin/settings/get',
 
-    mor_verifications: (query)=>`https://mor-vesicash.onrender.com/v2/admin/settings/get?${query}`,
+    mor_user:'https://mor.cn.vesicash.com/v2/admin/settings/get?search=',
 
-    mor_countries:'https://auth-vesicash.onrender.com/v2/countries/mor'
+    mor_verifications: (query)=>`https://mor.cn.vesicash.com/v2/admin/settings/get?${query}`,
+
+    mor_countries:'https://mor.cn.vesicash.com/v2/countries/mor',
+
+    approve_mor_doc: (id) => `https://mor.cn.vesicash.com/v2/admin/settings/${id}/document`
 };
 
 export default {
@@ -74,6 +78,11 @@ export default {
         return response;
     },
 
+    fetchMORUser:async(_,account_id)=>{
+        const response = await $api.fetch(routes.mor_user+account_id);
+        return response;
+    },
+
     fetchMORVerifications:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
         const response = await $api.fetch(routes.mor_verifications(query));
@@ -89,6 +98,10 @@ export default {
 
     updateAPIRequests:async(_, payload)=>{
         return await $api.push(routes.update_request,{payload});
+    },
+
+    approveMORDoc:async(_, {payload, id})=>{
+      return await $api.push(routes.approve_mor_doc(id),{payload});
     },
 
     saveMORtransaction:async(_, payload)=>{

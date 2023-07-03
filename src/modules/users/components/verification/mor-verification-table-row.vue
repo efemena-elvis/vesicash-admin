@@ -1,36 +1,32 @@
 <template>
-  <tr>
+  <tr @click="toggleMediaPreview">
     <td class="body-data grey-900" :class="`${table_name}-0`">{{ index }}</td>
 
     <td class="body-data grey-900" :class="`${table_name}-1`">
-      {{ "Nigeria" || data.country }}
+      {{ data.country_name }}
     </td>
 
-    <td class="body-data grey-900" :class="`${table_name}-2`">
+    <!-- <td class="body-data grey-900" :class="`${table_name}-2`">
       {{ "MordocforGhana.pdf" || data.document }}
-    </td>
+    </td> -->
 
     <td class="body-data" :class="`${table_name}-3`">
       <TagCard
-        :card_text="
-          'failed' || data.status === 'failed' ? 'Failed' : 'Completed'
-        "
-        :card_type="'failed' || data.status === 'failed' ? 'error' : 'success'"
+        :card_text="data.status === 'approved' ? 'Verified' : 'Pending'"
+        :card_type="data.status === 'approved' ? 'success' : 'progress'"
       />
     </td>
 
     <td class="body-data" :class="`${table_name}-4`">
       <button class="btn btn-sm btn-secondary d-inline-flex">
-        <span class="secondary-3-text grey-900" @click="toggleMediaPreview"
-          >View</span
-        >
+        <span class="secondary-3-text grey-900">View</span>
       </button>
-      <button class="btn btn-sm btn-primary d-inline-flex mgx-20">
+      <!-- <button class="btn btn-sm btn-primary d-inline-flex mgx-20">
         <span class="secondary-3-text grey-900">Approve</span>
       </button>
       <button class="btn btn-sm btn-alert d-inline-flex">
         <span class="secondary-3-text grey-900">Reject</span>
-      </button>
+      </button> -->
     </td>
 
     <!-- MODALS -->
@@ -59,6 +55,16 @@ export default {
       default: "",
     },
 
+    username: {
+      type: String,
+      default: "",
+    },
+
+    user: {
+      type: Object,
+      default: () => null,
+    },
+
     index: {
       type: Number,
       default: 1,
@@ -73,10 +79,15 @@ export default {
   computed: {
     docContent() {
       return {
-        meta: this.test_doc,
-        username: "MOR User",
-        id: "MOR DOC ID",
-        type: "pdf",
+        meta:
+          "https://cdn.pixabay.com/photo/2017/12/24/21/08/secret-3037639_1280.jpg" ||
+          this.data?.document_url,
+        username: this.user?.full_name || "MOR Merchant",
+        id: `${this.data?.country_name}`,
+        type: "MOR Document",
+        country_id: this.data?.country_id,
+        account_id: this.user?.account_id,
+        mor: true,
       };
     },
   },

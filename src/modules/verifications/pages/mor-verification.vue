@@ -21,13 +21,20 @@
       </select>
 
       <div class="date-wrapper">
+        <div class="secondary-2-text mgb-5" v-if="getDateShortcut">
+          {{ getDateShortcut }}
+        </div>
+
+        <div class="secondary-2-text mgb-5" v-else>
+          {{ formattedDateRange || "Till Date" }}
+        </div>
         <DatePicker
           v-model="time"
           range
           prefix-class="xmx"
           :formatter="{ stringify: () => '' }"
           :range-separator="'Date range'"
-          :placeholder="'Disabled'"
+          :placeholder="'Date range'"
           class="pointer"
           :clearable="false"
           :editable="false"
@@ -93,18 +100,24 @@ export default {
       const type = this.type;
       const status = this.status;
       const [start, end] = this.time;
-      const start_date = start
-        ? this.$date.formatDate(new Date(start), false).getSimpleDate()
-        : "";
-      const end_date = end
-        ? this.$date.formatDate(new Date(end), false).getSimpleDate()
-        : "";
+      let _start = new Date(start);
+      _start.setHours(1, 0, 0, 0);
+      let _end = new Date(end);
+      _end.setHours(1, 0, 0, 0);
+      const from = start ? Math.floor(new Date(_start).getTime() / 1000) : "";
+      const to = end ? Math.floor(new Date(_end).getTime() / 1000) : "";
+      // const start_date = start
+      //   ? this.$date.formatDate(new Date(start), false).getSimpleDate()
+      //   : "";
+      // const end_date = end
+      //   ? this.$date.formatDate(new Date(end), false).getSimpleDate()
+      //   : "";
 
       return {
         type,
         search,
-        start_date,
-        end_date,
+        from,
+        to,
         status,
         page: 1,
       };
@@ -150,8 +163,22 @@ export default {
       this.search = this.$route?.query?.search || "";
       this.status = this.$route?.query?.status || "";
       this.type = this.$route?.query?.type || "";
-      const start_date = this.$route?.query?.start_date || "";
-      const end_date = this.$route?.query?.end_date || "";
+
+      const start_date = this.$route?.query?.from
+        ? this.$date
+            .formatDate(
+              new Date(Number(this.$route?.query?.from) * 1000),
+              false
+            )
+            .getSimpleDate()
+        : "";
+
+      const end_date = this.$route?.query?.to
+        ? this.$date
+            .formatDate(new Date(Number(this.$route?.query?.to) * 1000), false)
+            .getSimpleDate()
+        : "";
+
       this.time = [start_date, end_date];
     },
 
@@ -210,6 +237,12 @@ export default {
     max-width: toRem(230);
     position: relative;
     height: toRem(40);
+
+    .secondary-2-text {
+      position: absolute;
+      top: -20px;
+      left: 0;
+    }
   }
 }
 </style>
