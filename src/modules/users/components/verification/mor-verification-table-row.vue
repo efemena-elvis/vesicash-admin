@@ -84,6 +84,7 @@ export default {
           this.data?.document_url,
         username: this.user?.full_name || "MOR Merchant",
         id: `${this.data?.country_name}`,
+        setting_id: this.data?.id,
         type: "MOR Document",
         country_id: this.data?.country_id,
         account_id: this.user?.account_id,

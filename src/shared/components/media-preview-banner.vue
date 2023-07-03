@@ -149,20 +149,22 @@ export default {
             country_id: this.content?.country_id,
             status: approve ? "verified" : "not_verified",
           },
-          id: this.content?.account_id,
+          id: this.content?.setting_id,
         };
 
         const response = await this.approveMORDoc(details);
 
         this.handleClick(button, button, false);
 
-        const type = response?.code === 200 ? "success" : "warning";
+        const type = [200, 201].includes(response?.code)
+          ? "success"
+          : "warning";
 
         const message = response?.message;
 
         this.pushToast(message, type);
 
-        if (response?.code === 200) {
+        if ([200, 201].includes(response?.code)) {
           this.$emit("close");
           this.$bus?.$emit("refresh_users");
         }

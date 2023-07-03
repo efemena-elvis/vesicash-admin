@@ -156,6 +156,12 @@ export default {
     this.getMORVerifications(this.filterQuery);
   },
 
+  created() {
+    this.$bus.$on("refresh_users", () =>
+      this.getMORVerifications(this.filterQuery)
+    );
+  },
+
   methods: {
     ...mapActions({
       fetchMORVerifications: "mor/fetchMORVerifications",
