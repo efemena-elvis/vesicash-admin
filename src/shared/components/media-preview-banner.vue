@@ -27,18 +27,20 @@
       <div class="right-items d-flex align-items-center neutral-100">
         <button
           class="btn btn-sm btn-alert mgr-10"
-          ref="reject"
-          @click="rejectDoc"
+          ref="Reject"
+          @click="content.mor ? updateMORDoc(false) : rejectDoc"
         >
           Reject
         </button>
+
         <button
           class="btn btn-sm btn-primary mgr-20"
-          ref="approve"
-          @click="approveDoc"
+          ref="Approve"
+          @click="content.mor ? updateMORDoc(true) : approveDoc"
         >
           Approve
         </button>
+
         <!-- <span
           title="Download"
           class="icon icon-caret-fill-down pointer"
@@ -57,7 +59,7 @@
 
     <div class="content-wrapper pointer">
       <div class="doc-wrapper" v-if="isPdf">
-        <pdf :src="test" :style="docViewStyles" />
+        <pdf :src="content.meta" :style="docViewStyles" />
       </div>
 
       <div class="image-wrapper" v-else>
@@ -103,12 +105,12 @@ export default {
     },
 
     isImage() {
-      return true;
+      return !this.isPdf;
     },
 
     isPdf() {
       // return false;
-      return true || this.content?.meta?.split(".")[1] === "pdf";
+      return this.fileType(this.content?.meta) === "pdf";
     },
 
     isDoc() {
@@ -127,11 +129,53 @@ export default {
     ...mapActions({
       approveUserDoc: "users/approveUserDoc",
       rejectUserDoc: "users/rejectUserDoc",
+      approveMORDoc: "mor/approveMORDoc",
     }),
+
+    fileType(url) {
+      const filename = url.substring(url.lastIndexOf("/") + 1);
+      const extension = filename.substring(filename.lastIndexOf(".") + 1);
+      return extension;
+    },
+
+    async updateMORDoc(approve = true) {
+      const button = approve ? "Approve" : "Reject";
+
+      try {
+        this.handleClick(button);
+
+        const details = {
+          payload: {
+            country_id: this.content?.country_id,
+            status: approve ? "verified" : "not_verified",
+          },
+          id: this.content?.account_id,
+        };
+
+        const response = await this.approveMORDoc(details);
+
+        this.handleClick(button, button, false);
+
+        const type = response?.code === 200 ? "success" : "warning";
+
+        const message = response?.message;
+
+        this.pushToast(message, type);
+
+        if (response?.code === 200) {
+          this.$emit("close");
+          this.$bus?.$emit("refresh_users");
+        }
+      } catch (err) {
+        console.log("ERROR DOC", err);
+        this.handleClick(button, button, false);
+        this.pushToast("Failed", "error");
+      }
+    },
 
     async approveDoc() {
       try {
-        this.handleClick("approve");
+        this.handleClick("Approve");
         const payload = {
           business_id: this.$route?.params?.userID,
           verification_type: this.content?.type,
@@ -139,7 +183,7 @@ export default {
 
         const response = await this.approveUserDoc(payload);
 
-        this.handleClick("approve", "Approve", false);
+        this.handleClick("Approve", "Approve", false);
 
         const type = response?.code === 200 ? "success" : "warning";
 
@@ -156,14 +200,14 @@ export default {
         }
       } catch (err) {
         console.log("ERROR APPROVING DOC", err);
-        this.handleClick("approve", "Approve", false);
+        this.handleClick("Approve", "Approve", false);
         this.pushToast("Failed to approve document", "error");
       }
     },
 
     async rejectDoc() {
       try {
-        this.handleClick("reject");
+        this.handleClick("Reject");
         const payload = {
           business_id: this.$route?.params?.userID,
           verification_type: this.content?.type,
@@ -171,7 +215,7 @@ export default {
 
         const response = await this.rejectUserDoc(payload);
 
-        this.handleClick("reject", "Reject", false);
+        this.handleClick("Reject", "Reject", false);
 
         const type = response?.code === 200 ? "success" : "warning";
 
@@ -188,7 +232,7 @@ export default {
         }
       } catch (err) {
         console.log("ERROR REJECTING DOC", err);
-        this.handleClick("reject", "Reject", false);
+        this.handleClick("Reject", "Reject", false);
         this.pushToast("Failed to reject document", "error");
       }
     },
