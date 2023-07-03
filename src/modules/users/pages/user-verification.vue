@@ -101,8 +101,8 @@ export default {
     },
   },
 
-  created(){
-    this.$bus.$on("refresh_users", this.fetchMORUserDetails());
+  created() {
+    this.$bus.$on("refresh_users", () => this.fetchMORUserDetails());
   },
 
   computed: {

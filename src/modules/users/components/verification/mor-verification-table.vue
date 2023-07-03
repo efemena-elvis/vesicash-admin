@@ -75,6 +75,7 @@ export default {
       return this.user
         ? this.user?.verifications?.map((c) => ({
             ...c,
+            id: this.user?.id,
             country_name: this.getDocCountry(
               this.user?.countries,
               c?.country_id
