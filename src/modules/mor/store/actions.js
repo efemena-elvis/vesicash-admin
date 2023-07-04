@@ -17,6 +17,8 @@ const routes = {
 
     mor_transactions: (query)=> `https://mor.cn.vesicash.com/v2/admin/transactions/get?limit=15${query}`,
 
+    mor_withdrawals: (query)=> `https://mor.cn.vesicash.com/v2/admin/withdrawal/get-all?limit=15${query}`,
+
     mor_payouts: (query)=> `https://mor.cn.vesicash.com/v2/admin/payouts/get?limit=15${query}`,
 
     mor_users: 'https://mor.cn.vesicash.com/v2/admin/settings/get',
@@ -63,6 +65,15 @@ export default {
         const response = await $api.fetch(routes.mor_transactions(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_TRANSACTIONS', response);
         return response;
+        // SAVE_MOR_WITHDRAWALS
+    },
+
+    fetchMORWithdrawals:async({commit},query)=>{
+        const _query = decodeURIComponent(location.search)
+        const response = await $api.fetch(routes.mor_withdrawals(query));
+        if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_WITHDRAWALS', response);
+        return response;
+        // 
     },
 
     fetchMORPayouts:async({commit},query)=>{
