@@ -73,6 +73,11 @@ export default {
           name: "MOR Payouts",
           route: "/mor/payouts",
         },
+
+        {
+          name: "MOR Withdrawals",
+          route: "/mor/withdrawals",
+        },
       ];
     },
   },

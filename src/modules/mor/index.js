@@ -46,6 +46,20 @@ const morRoutes = [
               name: "MOR Payouts",
             },
           },
+
+          {
+            name: "MORWithdrawals",
+            path: "withdrawals",
+            component: () =>
+              import(
+                /* webpackChunkName: "mor-module" */
+                "@/modules/mor/pages/mor-withdrawals"
+              ),
+            meta: {
+              requiresAuth: true,
+              name: "MOR Withdrawals",
+            },
+          },
         ],
       },
     ],
