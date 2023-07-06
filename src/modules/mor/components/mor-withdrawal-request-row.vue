@@ -32,15 +32,24 @@
     </td>
 
     <td class="body-data" :class="`${table_name}-7`">
-      <button class="btn btn-secondary btn-sm d-inline-flex">Approve</button>
-      <button class="btn btn-secondary btn-sm d-inline-flex mgl-15">
-        Reject
+      <button
+        class="btn btn-primary btn-sm d-inline-flex approve"
+        ref="update"
+        :disabled="data.status === ''"
+        @click="approveMORWithdrawal"
+      >
+        Approve
       </button>
+      <!-- <button class="btn btn-secondary btn-sm d-inline-flex mgl-15">
+        Reject
+      </button> -->
     </td>
   </tr>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import TagCard from "@/shared/components/card-comps/tag-card";
 
 export default {
@@ -108,8 +117,41 @@ export default {
 
   data: () => ({}),
 
-  methods: {},
+  methods: {
+    ...mapActions({ completeMORWithdrawal: "mor/completeMORWithdrawal" }),
+
+    async approveMORWithdrawal() {
+      this.handleClick("update");
+      try {
+        const response = await this.completeMORWithdrawal(this.data?.id);
+        this.handleClick("update", "Approve", false);
+        const type = response?.code === 200 ? "success" : "warning";
+        const message = response?.message;
+        this.pushToast(message, type);
+
+        if (response?.code === 200) {
+          this.$bus?.$emit("refreshMOR");
+        }
+      } catch (err) {
+        this.handleClick("update", "Approve", false);
+        console.log("FAILED TO APPROVE", err);
+        this.pushToast("Failed to approve withdrawal", "error");
+      }
+    },
+  },
 };
 </script>
 
-<style></style>
+<style lang="scss">
+.btn.approve {
+  // padding: 4px 12px;
+  .f-size-19 {
+    font-size: 0.7rem;
+  }
+
+  .icon-spinner {
+    position: relative;
+    transform: scale(0.7);
+  }
+}
+</style>

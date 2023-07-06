@@ -148,7 +148,7 @@ export default {
       },
       paginatedData: {},
       paginationPages: {},
-      empty_message: "No MOR verification",
+      empty_message: "No pending MOR verifications",
     };
   },
 
