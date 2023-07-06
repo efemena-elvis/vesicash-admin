@@ -1,60 +1,54 @@
 import $api from "@/services/service-api";
 
 const routes = {
-    api_metrics:'admin/tokens',
+    mor_summary:'/admin/transactions/summary',
 
-    api_keys:(query)=> `admin/tokens/list?${query}`,
+    record_transaction:`/admin/transaction/record`,
 
-    api_requests:(query)=>`admin/list-feature-request?${query}`,
+    send_payouts:'/admin/payout/to-wallet',
 
-    update_request: `admin/feature-request`,
+    mor_transactions: (query)=> `/admin/transactions/get?limit=15${query}`,
 
-    mor_summary:'https://mor.cn.vesicash.com/v2/admin/transactions/summary',
+    mor_withdrawals: (query)=> `/admin/withdrawal/get-all?limit=15${query}`,
 
-    record_transaction:`https://mor.cn.vesicash.com/v2/admin/transaction/record`,
+    mor_payouts: (query)=> `/admin/payouts/get?limit=15${query}`,
 
-    send_payouts:'https://mor.cn.vesicash.com/v2/admin/payout/to-wallet',
+    mor_users: '/admin/settings/get',
 
-    mor_transactions: (query)=> `https://mor.cn.vesicash.com/v2/admin/transactions/get?limit=15${query}`,
+    mor_user:'/admin/settings/get?search=',
 
-    mor_withdrawals: (query)=> `https://mor.cn.vesicash.com/v2/admin/withdrawal/get-all?limit=15${query}`,
+    mor_verifications: (query)=>`/admin/settings/get?${query}`,
 
-    mor_payouts: (query)=> `https://mor.cn.vesicash.com/v2/admin/payouts/get?limit=15${query}`,
+    mor_countries:'/countries/mor',
 
-    mor_users: 'https://mor.cn.vesicash.com/v2/admin/settings/get',
+    approve_mor_doc: (id) => `/admin/settings/${id}/document`,
 
-    mor_user:'https://mor.cn.vesicash.com/v2/admin/settings/get?search=',
-
-    mor_verifications: (query)=>`https://mor.cn.vesicash.com/v2/admin/settings/get?${query}`,
-
-    mor_countries:'https://mor.cn.vesicash.com/v2/countries/mor',
-
-    approve_mor_doc: (id) => `https://mor.cn.vesicash.com/v2/admin/settings/${id}/document`
+    complete_mor_withdrawal: (id)=>`/admin/withdrawal/complete/${id}`
 };
 
 export default {
     fetchAPIMetrics:async({commit})=>{
-        const response = await $api.fetch(routes.api_metrics);
+        const response = await $api.use('mor','v2').fetch(routes.api_metrics);
         if(response?.code === 200) commit('SAVE_API_METRICS', response?.data);
         return response;
     },
 
     fetchAPIkeys:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
-        const response = await $api.fetch(routes.api_keys(query));
+        const response = await $api.use('mor','v2').fetch(routes.api_keys(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_API_KEYS', response?.data);
         return response;
     },
 
     fetchAPIRequests:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
-        const response = await $api.fetch(routes.api_requests(query));
+        const response = await $api.use('mor','v2').fetch(routes.api_requests(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_API_REQUESTS', response?.data);
         return response;
     },
 
     fetchMORSummary:async({commit})=>{
-        const response = await $api.fetch(routes.mor_summary);
+        const response = await $api.use('mor','v2').fetch(routes.mor_summary);
         if(response?.code === 200) commit('SAVE_MOR_SUMMARY', response?.data);
         return response;
     },
@@ -62,7 +56,7 @@ export default {
     
     fetchMORTransactions:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
-        const response = await $api.fetch(routes.mor_transactions(query));
+        const response = await $api.use('mor','v2').fetch(routes.mor_transactions(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_TRANSACTIONS', response);
         return response;
         // SAVE_MOR_WITHDRAWALS
@@ -70,7 +64,7 @@ export default {
 
     fetchMORWithdrawals:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
-        const response = await $api.fetch(routes.mor_withdrawals(query));
+        const response = await $api.use('mor','v2').fetch(routes.mor_withdrawals(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_WITHDRAWALS', response);
         return response;
         // 
@@ -78,48 +72,49 @@ export default {
 
     fetchMORPayouts:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
-        const response = await $api.fetch(routes.mor_payouts(query));
+        const response = await $api.use('mor','v2').fetch(routes.mor_payouts(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_PAYOUTS', response);
         return response;
     },
 
     fetchMORUsers:async({commit})=>{
-        const response = await $api.fetch(routes.mor_users);
+        const response = await $api.use('mor','v2').fetch(routes.mor_users);
         if(response?.code === 200) commit('SAVE_MOR_USERS', response?.data || []);
         return response;
     },
 
     fetchMORUser:async(_,account_id)=>{
-        const response = await $api.fetch(routes.mor_user+account_id);
+        const response = await $api.use('mor','v2').fetch(routes.mor_user+account_id);
         return response;
     },
 
     fetchMORVerifications:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
-        const response = await $api.fetch(routes.mor_verifications(query));
+        const response = await $api.use('mor','v2').fetch(routes.mor_verifications(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_VERIFICATIONS', response?.data || response?.data || []);
         return response;
     },
 
     fetchMORCountries:async({commit})=>{
-        const response = await $api.fetch(routes.mor_countries);
+        const response = await $api.use('auth','v2').fetch(routes.mor_countries);
         if(response?.code === 200) commit('SAVE_MOR_COUNTRIES', response?.data);
         return response;
     },
 
-    updateAPIRequests:async(_, payload)=>{
-        return await $api.push(routes.update_request,{payload});
+    
+    approveMORDoc:async(_, {payload, id})=>{
+      return await $api.use('mor','v2').push(routes.approve_mor_doc(id),{payload});
     },
 
-    approveMORDoc:async(_, {payload, id})=>{
-      return await $api.push(routes.approve_mor_doc(id),{payload});
+    completeMORWithdrawal:async(_, id)=>{
+        return await $api.use('mor','v2').patch(routes.complete_mor_withdrawal(id),{payload:{}});
     },
 
     saveMORtransaction:async(_, payload)=>{
-        return await $api.push(routes.record_transaction,{payload});
+        return await $api.use('mor','v2').push(routes.record_transaction,{payload});
     },
 
     sendMORPayout:async(_, payload)=>{
-        return await $api.push(routes.send_payouts,{payload});
+        return await $api.use('mor','v2').push(routes.send_payouts,{payload});
     },
 };

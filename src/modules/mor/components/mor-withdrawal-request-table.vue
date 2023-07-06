@@ -132,6 +132,12 @@ export default {
     this.fetchTransactions(this.filterQuery);
   },
 
+  created() {
+    this.$bus.$on("refreshMOR", () => {
+      this.fetchTransactions(this.filterQuery);
+    });
+  },
+
   methods: {
     ...mapActions({
       fetchMORTransactions: "mor/fetchMORWithdrawals",
