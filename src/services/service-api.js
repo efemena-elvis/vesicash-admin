@@ -23,7 +23,7 @@ class serviceApi {
     this.injectTokenInterceptor();
   }
 
-  use(service, version=""){
+  use(service, version="v2"){
     axios.defaults.baseURL = `https://${service}.${VESICASH_API_ENVIRONMENT}.api.vesicash.com/${version}`;
     return this;
   }
