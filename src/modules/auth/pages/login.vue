@@ -119,7 +119,7 @@ export default {
       this.handleClick("loginBtn");
 
       let request_payload = {
-        username: this.form?.email_address,
+        email_address: this.form?.email_address,
         password: this.form?.password,
       };
 
