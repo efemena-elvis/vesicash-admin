@@ -21,13 +21,14 @@
       </select>
 
       <div class="date-wrapper">
-        <div class="secondary-2-text mgb-5" v-if="getDateShortcut">
+        <div class="secondary-2-text mgb-10" v-if="getDateShortcut">
           {{ getDateShortcut }}
         </div>
 
-        <div class="secondary-2-text mgb-5" v-else>
+        <div class="secondary-2-text mgb-10" v-else>
           {{ formattedDateRange || "Till Date" }}
         </div>
+        
         <DatePicker
           v-model="time"
           range
@@ -42,7 +43,6 @@
           :popup-style="{ right: '0', top: '40px', left: 'auto' }"
           :append-to-body="false"
           :shortcuts="shortcutConfig"
-          disabled
         >
           <span slot="icon-calendar" class="icon icon-caret-fill-down"></span>
         </DatePicker>

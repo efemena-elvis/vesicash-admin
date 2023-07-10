@@ -6,15 +6,13 @@ import { VESICASH_AUTH_TOKEN } from "@/utilities/constant";
 // ========================================
 const verifyAuthRoutes = (to, next) => {
   if (getStorage(VESICASH_AUTH_TOKEN) === null) {
-    next()
-    // next({
-    //   name: "VesicashLogin",
-    // });
+    next({
+      name: "VesicashLogin",
+    });
   } else if (getStorage(VESICASH_AUTH_TOKEN) !== null) {
     // CHECK SESSION TIMEOUT IN 60 MINUTES
-    // if (checkAuthTimeout(90));
-    // else next();
-    next()
+    if (checkAuthTimeout(90));
+    else next();
   }
 };
 

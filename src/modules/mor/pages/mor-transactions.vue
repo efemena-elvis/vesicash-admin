@@ -33,13 +33,21 @@
       </select>
 
       <div class="date-wrapper">
+        <div class="secondary-2-text mgb-5" v-if="getDateShortcut">
+          {{ getDateShortcut }}
+        </div>
+
+        <div class="secondary-2-text mgb-5" v-else>
+          {{ formattedDateRange || "Till Date" }}
+        </div>
+
         <DatePicker
           v-model="time"
           range
           prefix-class="xmx"
           :formatter="{ stringify: () => '' }"
           :range-separator="'Date range'"
-          :placeholder="'Disabled for now'"
+          :placeholder="'Date range'"
           class="pointer"
           :clearable="false"
           :editable="false"
@@ -47,7 +55,6 @@
           :popup-style="{ right: '0', top: '40px', left: 'auto' }"
           :append-to-body="false"
           :shortcuts="shortcutConfig"
-          disabled
         >
           <span slot="icon-calendar" class="icon icon-caret-fill-down"></span>
         </DatePicker>
@@ -111,18 +118,25 @@ export default {
       const currency = this.type;
       const status = this.status;
       const [start, end] = this.time;
-      const start_date = start
-        ? this.$date.formatDate(new Date(start), false).getSimpleDate()
-        : "";
-      const end_date = end
-        ? this.$date.formatDate(new Date(end), false).getSimpleDate()
-        : "";
+      let _start = new Date(start);
+      _start.setHours(1, 0, 0, 0);
+      let _end = new Date(end);
+      _end.setHours(1, 0, 0, 0);
+      const from = start ? Math.floor(new Date(_start).getTime() / 1000) : "";
+      const to = end ? Math.floor(new Date(_end).getTime() / 1000) : "";
+
+      // const start_date = start
+      //   ? this.$date.formatDate(new Date(start), false).getSimpleDate()
+      //   : "";
+      // const end_date = end
+      //   ? this.$date.formatDate(new Date(end), false).getSimpleDate()
+      //   : "";
 
       return {
         currency,
         search,
-        start_date,
-        end_date,
+        from,
+        to,
         status,
         page: 1,
       };
@@ -168,8 +182,21 @@ export default {
       this.search = this.$route?.query?.search || "";
       this.status = this.$route?.query?.status || "";
       this.type = this.$route?.query?.type || "";
-      const start_date = this.$route?.query?.start_date || "";
-      const end_date = this.$route?.query?.end_date || "";
+      const start_date = this.$route?.query?.from
+        ? this.$date
+            .formatDate(
+              new Date(Number(this.$route?.query?.from) * 1000),
+              false
+            )
+            .getSimpleDate()
+        : "";
+
+      const end_date = this.$route?.query?.to
+        ? this.$date
+            .formatDate(new Date(Number(this.$route?.query?.to) * 1000), false)
+            .getSimpleDate()
+        : "";
+
       this.time = [start_date, end_date];
     },
 
@@ -221,6 +248,12 @@ export default {
     position: relative;
     display: flex;
     justify-content: center;
+
+    .secondary-2-text {
+      position: absolute;
+      top: -25px;
+      left: 0;
+    }
   }
 
   .icon-caret-fill-down {

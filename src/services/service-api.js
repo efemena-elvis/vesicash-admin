@@ -123,7 +123,7 @@ class serviceApi {
       ? {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${authUserToken}`,
+            // Authorization: `Bearer ${authUserToken}`,
             "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
             "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
           },
@@ -131,7 +131,7 @@ class serviceApi {
       : {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${authUserToken}`,
+            // Authorization: `Bearer ${authUserToken}`,
             "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
             "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
           },
