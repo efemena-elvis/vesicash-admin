@@ -18,4 +18,6 @@ export default {
   getMORCountries: (state) => state.mor_countries,
 
   getMORVerifications: (state) => state.mor_verifications,
+
+  getPendingMORVerifications: (state) => state.pending_mor_verifications,
 };

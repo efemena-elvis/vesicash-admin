@@ -19,6 +19,8 @@ const routes = {
 
     mor_verifications: (query)=>`/admin/settings/get?${query}`,
 
+    pending_mor_verifications:'/admin/settings/get',
+
     mor_countries:'/countries/mor',
 
     approve_mor_doc: (id) => `/admin/settings/${id}/document`,
@@ -92,6 +94,16 @@ export default {
         const _query = decodeURIComponent(location.search)
         const response = await $api.use('mor','v2').fetch(routes.mor_verifications(query));
         if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_VERIFICATIONS', response?.data || response?.data || []);
+        return response;
+    },
+
+    fetchPendingMORVerifications:async({commit})=>{
+        commit('SAVE_PENDING_MOR_VERIFICATIONS', 0)
+        const response = await $api.use('mor','v2').fetch(routes.pending_mor_verifications);
+        if(response?.code === 200) {
+            const count = (response?.data || [])?.filter(user=>!user?.is_verified)?.length;
+            commit('SAVE_PENDING_MOR_VERIFICATIONS', count);
+        }
         return response;
     },
 

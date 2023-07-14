@@ -68,6 +68,7 @@ export default {
 
   async mounted() {
     await this.fetchPendingTransactionsCount();
+    await this.fetchPendingMORVerifications();
   },
 
   created() {
@@ -89,12 +90,15 @@ export default {
 
     // EVENT BUS TO TOGGLE ALERT BANNER
     this.$bus.$on("toggle-alert-banner", (data) => this.toggleAlert(data));
+
+    this.$bus.$on("refresh_users", () => this.fetchPendingMORVerifications());
   },
 
   methods: {
     ...mapActions({
       fetchPendingTransactionsCount:
         "transaction/fetchPendingTransactionsCount",
+      fetchPendingMORVerifications: "mor/fetchPendingMORVerifications",
     }),
 
     toggleAlert(data = {}) {
