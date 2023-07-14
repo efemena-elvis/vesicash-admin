@@ -18,4 +18,7 @@ export default {
   SAVE_MOR_COUNTRIES: (state, data) => (state.mor_countries = data),
 
   SAVE_MOR_VERIFICATIONS: (state, data) => (state.mor_verifications = data),
+
+  SAVE_PENDING_MOR_VERIFICATIONS: (state, count) =>
+    (state.pending_mor_verifications = count),
 };

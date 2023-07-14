@@ -40,7 +40,15 @@
           class="indicator"
           v-if="nav.title === 'Payments' && getPendingCount"
         >
-          <span>{{ getPendingCount }}</span>
+          <span>{{ getPendingCount > 9 ? "10⁺" : getPendingCount }}</span>
+        </div>
+        <div
+          class="indicator"
+          v-if="nav.title === 'Verifications' && getPendingMORVerifications"
+        >
+          <span>{{
+            getPendingMORVerifications > 9 ? "10⁺" : getPendingMORVerifications
+          }}</span>
         </div>
       </router-link>
     </template>
@@ -136,7 +144,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getPendingCount: "transaction/getPendingCount" }),
+    ...mapGetters({
+      getPendingCount: "transaction/getPendingCount",
+      getPendingMORVerifications: "mor/getPendingMORVerifications",
+    }),
 
     isActive() {
       return this.path_list.some((path) => path.includes(this.nav.slug));

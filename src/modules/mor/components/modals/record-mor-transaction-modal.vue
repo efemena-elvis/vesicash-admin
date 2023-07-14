@@ -63,9 +63,11 @@
         <div>
           <div class="form-label">Country of transaction</div>
           <DropSelectInput
-            placeholder="Nigeria"
-            :options="morCountries"
+            placeholder="MOR Country"
+            :options="merchantMORCountries"
             @optionSelected="transaction_country = $event.id"
+            :disabled="!account_id"
+            reset
           />
         </div>
 
@@ -187,6 +189,17 @@ export default {
       }));
     },
 
+    merchantMORCountries() {
+      const merchant = [...this.getMORUsers]?.find(
+        (user) => user.account_id === this.account_id
+      );
+      return merchant
+        ? merchant?.countries?.length
+          ? merchant?.countries
+          : []
+        : this.getMORCountries;
+    },
+
     txnDate() {
       return new Date(this.transaction_date)?.getTime() / 1000;
     },
@@ -221,17 +234,21 @@ export default {
   watch: {
     "getMORUsers.length": {
       async handler(size) {
-        console.log("SIZE USERS", size);
         if (!size) await this.fetchMORUsers();
       },
       immediate: true,
     },
     "getMORCountries.length": {
       async handler(size) {
-        console.log("SIZE COUNTRIES", size);
         if (!size) await this.fetchMORCountries();
       },
       immediate: true,
+    },
+
+    account_id: {
+      handler() {
+        this.transaction_country = "";
+      },
     },
   },
 

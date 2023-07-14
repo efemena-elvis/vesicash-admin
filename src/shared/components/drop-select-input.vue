@@ -4,7 +4,7 @@
     <div
       class="select-input form-control"
       ref="selectInput"
-      @click="toggleView"
+      @click="disabled ? null : toggleView()"
       v-on-clickaway="determineTargetArea"
       :class="option_select ? 'active-select-input' : null"
     >
@@ -130,6 +130,16 @@ export default {
       ],
     },
 
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+
+    reset: {
+      type: Boolean,
+      default: false,
+    },
+
     all: {
       type: String,
       default: "",
@@ -231,6 +241,13 @@ export default {
         }
       },
       immediate: true,
+      deep: true,
+    },
+
+    options: {
+      handler() {
+        if (this.reset) this.selected_value = this.placeholder;
+      },
       deep: true,
     },
   },

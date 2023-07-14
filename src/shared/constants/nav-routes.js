@@ -88,7 +88,7 @@ const navRoutes = [
     title: "Verifications",
     slug: "verifications",
     icon: "VerificationIcon",
-    link: "/verifications/mor",
+    link: "/verifications/mor?page=1&status=false",
     show_more: false,
     children: [],
     authorize: ["open"],
