@@ -6,8 +6,8 @@ import { urlHash } from "./service-route";
 import { getStorage } from "@/utilities/auth-utils";
 import {
   // VESICASH_API_URL,
-  VESICASH_PRIVATE_KEY_TOKEN,
-  VESICASH_PUBLIC_KEY_TOKEN,
+  // VESICASH_PRIVATE_KEY_TOKEN,
+  // VESICASH_PUBLIC_KEY_TOKEN,
   VESICASH_AUTH_TOKEN,
   VESICASH_API_ENVIRONMENT,
   // VESICASH_API_VERSION
@@ -124,16 +124,16 @@ class serviceApi {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${authUserToken}`,
-            "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
+            // "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
+            // "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
           },
         }
       : {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authUserToken}`,
-            "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
+            // "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
+            // "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
           },
         };
   }

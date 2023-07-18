@@ -325,6 +325,7 @@ export default {
         padding: 6px 12px 6px 16px;
         border: 1px solid getColor("grey-300");
         transition: all ease-in-out 0.25s;
+        min-width: fit-content;
 
         &:hover {
           background: getColor("grey-10");
