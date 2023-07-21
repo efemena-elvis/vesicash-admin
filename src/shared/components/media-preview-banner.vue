@@ -25,21 +25,23 @@
       </div>
 
       <div class="right-items d-flex align-items-center neutral-100">
-        <button
-          class="btn btn-sm btn-alert mgr-10"
-          ref="Reject"
-          @click="content.mor ? updateMORDoc(false) : rejectDoc"
-        >
-          Reject
-        </button>
+        <template v-if="!content.approved">
+          <button
+            class="btn btn-sm btn-alert mgr-10"
+            ref="Reject"
+            @click="content.mor ? updateMORDoc(false) : rejectDoc"
+          >
+            Reject
+          </button>
 
-        <button
-          class="btn btn-sm btn-primary mgr-20"
-          ref="Approve"
-          @click="content.mor ? updateMORDoc(true) : approveDoc"
-        >
-          Approve
-        </button>
+          <button
+            class="btn btn-sm btn-primary mgr-20"
+            ref="Approve"
+            @click="content.mor ? updateMORDoc(true) : approveDoc"
+          >
+            Approve
+          </button>
+        </template>
 
         <!-- <span
           title="Download"
