@@ -7,7 +7,7 @@
         <button
           class="btn btn-md btn-primary"
           @click="togglePayoutModal"
-          :disabled="loading_summary"
+          :disabled="loading_summary || !getMORSummary.length"
         >
           Payouts to wallets
         </button>
