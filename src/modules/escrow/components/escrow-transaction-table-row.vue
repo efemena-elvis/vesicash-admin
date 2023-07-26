@@ -21,7 +21,7 @@
           }}{{ $money.addComma(data.amount || data.totalAmount) }}
         </div>
         <div class="meta tertiary-3-text grey-600">
-          {{ $money.getSign("dollar" || data.currency)
+          {{ $money.getSign(data.currency || "dollar")
           }}{{ $money.addComma(getTotalAmountPaid || 0) }} paid
         </div>
       </td>

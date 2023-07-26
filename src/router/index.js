@@ -9,6 +9,7 @@ Vue.use(VueRouter);
 // =======================================================
 import authRoutes from "@/modules/auth";
 import dashboardRoutes from "@/modules/dashboard";
+import morRoutes from "@/modules/mor";
 import apiRoutes from "@/modules/api";
 import escrowRoutes from "@/modules/escrow";
 import fxRoutes from "@/modules/foreign-exchange";
@@ -24,6 +25,7 @@ import verificationsRoutes from "@/modules/verifications";
 const routes = [
   ...authRoutes,
   ...dashboardRoutes,
+  ...morRoutes,
   ...apiRoutes,
   ...escrowRoutes,
   ...fxRoutes,

@@ -3,4 +3,7 @@ export default {
 
   SAVE_PENDING_TRANSACTIONS: (state, data) =>
     (state.pending_transactions = data),
+
+  SAVE_PENDING_TRANSACTIONS_COUNT: (state, data) =>
+    (state.pending_count = data),
 };

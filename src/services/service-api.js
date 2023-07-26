@@ -5,10 +5,12 @@ import axios from "axios";
 import { urlHash } from "./service-route";
 import { getStorage } from "@/utilities/auth-utils";
 import {
-  VESICASH_API_URL,
-  VESICASH_PRIVATE_KEY_TOKEN,
-  VESICASH_PUBLIC_KEY_TOKEN,
+  // VESICASH_API_URL,
+  // VESICASH_PRIVATE_KEY_TOKEN,
+  // VESICASH_PUBLIC_KEY_TOKEN,
   VESICASH_AUTH_TOKEN,
+  VESICASH_API_ENVIRONMENT,
+  // VESICASH_API_VERSION
 } from "@/utilities/constant";
 
 // ===============================
@@ -17,8 +19,13 @@ import {
 class serviceApi {
   // INSTANTIATE BASE API URL
   constructor() {
-    axios.defaults.baseURL = VESICASH_API_URL;
+    axios.defaults.baseURL = `https://admin.${VESICASH_API_ENVIRONMENT}.api.vesicash.com/`;
     this.injectTokenInterceptor();
+  }
+
+  use(service, version="v2"){
+    axios.defaults.baseURL = `https://${service}.${VESICASH_API_ENVIRONMENT}.api.vesicash.com/${version}`;
+    return this;
   }
 
   // ===============================
@@ -53,6 +60,18 @@ class serviceApi {
   async push(url, { payload = {}, resolve = true, is_attach = false }) {
     try {
       let response = await axios.post(url, payload, this.getHeaders(is_attach));
+      return resolve ? response.data : response;
+    } catch (err) {
+      return this.handleErrors(err);
+    }
+  }
+
+  // ===============================
+  // PATCH API REQUEST
+  // ===============================
+  async patch(url, { payload = {}, resolve = true, is_attach = false }) {
+    try {
+      let response = await axios.patch(url, payload, this.getHeaders(is_attach));
       return resolve ? response.data : response;
     } catch (err) {
       return this.handleErrors(err);
@@ -105,16 +124,16 @@ class serviceApi {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${authUserToken}`,
-            "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
+            // "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
+            // "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
           },
         }
       : {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authUserToken}`,
-            "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
-            "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
+            // "V-PUBLIC-KEY": VESICASH_PUBLIC_KEY_TOKEN,
+            // "V-PRIVATE-KEY": VESICASH_PRIVATE_KEY_TOKEN,
           },
         };
   }

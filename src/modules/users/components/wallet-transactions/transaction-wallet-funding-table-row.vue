@@ -4,17 +4,22 @@
 
     <td class="body-data" :class="`${table_name}-1`">{{ getCreatedDate }}</td>
 
-    <td class="body-data text-no-wrap" :class="`${table_name}-2`">{{ data.reference }}</td>
+    <td class="body-data text-no-wrap" :class="`${table_name}-2`">
+      {{ data.payment_id }}
+    </td>
 
-    <td class="body-data" :class="`${table_name}-3`">{{ data.beneficiary_name || '-----' }}</td>
+    <td class="body-data" :class="`${table_name}-3`">
+      {{ data.user ? data.user.email_address : "-------" }}
+    </td>
 
-    <td
-      class="body-data"
-      :class="`${table_name}-4`"
-    >{{ $money.getSign(data.currency) }}{{ $money.addComma(data.amount) }}</td>
+    <td class="body-data" :class="`${table_name}-4`">
+      {{ $money.getSign(data.currency)
+      }}{{ $money.addComma(data.total_amount) }}
+    </td>
 
     <td class="body-data" :class="`${table_name}-5`">
-      <TagCard :card_text="data.status" :card_type="STATUS_COLOR[data.status]" />
+      <!-- <TagCard :card_text="data.status" :card_type="STATUS_COLOR[data.status]" /> -->
+      <TagCard card_text="Completed" card_type="success" />
     </td>
 
     <td class="body-data" :class="`${table_name}-6`">
@@ -84,7 +89,7 @@ export default {
           },
           {
             name: "REFERENCE ID",
-            value: this.data?.reference,
+            value: this.data?.payment_id,
           },
           {
             name: "CURRENCY",
@@ -94,12 +99,12 @@ export default {
             name: "TOTAL AMOUNT",
             value: `${this.$money.getSign(
               this.data?.currency
-            )}${this.$money.addComma(this.data.amount)}`,
+            )}${this.$money.addComma(this.data?.total_amount || "0")}`,
           },
 
           {
-            name: "BENEFICIARY NAME",
-            value: this.data?.beneficiary_name,
+            name: "BENEFICIARY EMAIL",
+            value: this.data?.user?.email_address,
           },
 
           {
@@ -125,16 +130,16 @@ export default {
           // },
           {
             name: "BANK NAME",
-            value: this.data.bank_name,
+            value: this.data?.bank_name,
           },
           {
             name: "ACCOUNT NUMBER",
-            value: this.data.bank_account_number,
+            value: this.data?.bank_account_number,
           },
           {
             name: "TRANSACTION STATUS",
-            value: this.data.status,
-            status: this.STATUS_COLOR[this.data?.status],
+            value: "Completed",
+            status: "success",
           },
         ],
       };
@@ -156,5 +161,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -2,10 +2,11 @@ import $api from "@/services/service-api";
 
 const routes = {
   dashboard_txn_stats: (query) =>
-    `admin/business/transactions/statistics?${query}`,
-  exchange_rates: (query) => `admin/business/rates/statistics?${query}`,
-  vesicash_users: (query) => `admin/users/total?${query}`,
-  api_keys: (query) => `admin/tokens?${query}`,
+    `/business/transactions/statistics?${query}`,
+  exchange_rates: (query) => `/business/rates/statistics?${query}`,
+  vesicash_users: (query) => `/users/total?${query}`,
+  api_keys: (query) => `/tokens?${query}`,
+  graph_metrics: (query) => `/graphical-metrics?${query}`,
 };
 
 export default {
@@ -13,7 +14,7 @@ export default {
   // FETCH DASHBOARD TXN STATS
   // ============================================
   async fetchTransactionStats({ state, commit }, query = "") {
-    let response = await $api.fetch(routes.dashboard_txn_stats(query));
+    let response = await $api.use('admin').fetch(routes.dashboard_txn_stats(query));
     if (response.code === 200) {
       const updated_stats = {
         ...state.dashboard_stats,
@@ -31,7 +32,7 @@ export default {
   // FETCH DASHBOARD EXCHANGE RATES
   // ============================================
   async fetchExchangeRates({ state, commit }, query) {
-    let response = await $api.fetch(routes.exchange_rates(query));
+    let response = await $api.use('admin').fetch(routes.exchange_rates(query));
     if (response.code === 200) {
       const updated_stats = {
         ...state.dashboard_stats,
@@ -54,7 +55,7 @@ export default {
   // FETCH DASHBOARD USERS COUNTS
   // ============================================
   async fetchUsersCount({ state, commit }, query = "") {
-    let response = await $api.fetch(routes.vesicash_users(query));
+    let response = await $api.use('admin').fetch(routes.vesicash_users(query));
     if (response.code === 200) {
       const updated_stats = {
         ...state.dashboard_stats,
@@ -71,7 +72,7 @@ export default {
   // FETCH API KEYS
   // ============================================
   async fetchAPIkeysStats({ state, commit }, query = "") {
-    let response = await $api.fetch(routes.api_keys(query));
+    let response = await $api.use('admin').fetch(routes.api_keys(query));
     if (response.code === 200) {
       const updated_stats = {
         ...state.dashboard_stats,
@@ -82,5 +83,9 @@ export default {
       commit("SAVE_DASHBOARD_STATS", updated_stats);
     }
     return response;
+  },
+
+  async fetchGraphMetrics(_, query = "") {
+    return await $api.use('admin').fetch(routes.graph_metrics(query));
   },
 };

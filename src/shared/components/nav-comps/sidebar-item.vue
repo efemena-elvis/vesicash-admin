@@ -36,9 +36,20 @@
           <component :is="nav.icon" />
         </div>
         <div class="nav-text">{{ nav.title }}</div>
-        <!-- <div class="indicator" v-if="nav.title === 'Payments'">
-          <span>43</span>
-        </div> -->
+        <div
+          class="indicator"
+          v-if="nav.title === 'Payments' && getPendingCount"
+        >
+          <span>{{ getPendingCount > 9 ? "10⁺" : getPendingCount }}</span>
+        </div>
+        <div
+          class="indicator"
+          v-if="nav.title === 'Verifications' && getPendingMORVerifications"
+        >
+          <span>{{
+            getPendingMORVerifications > 9 ? "10⁺" : getPendingMORVerifications
+          }}</span>
+        </div>
       </router-link>
     </template>
 
@@ -71,6 +82,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "SidebarItem",
 
@@ -82,6 +94,10 @@ export default {
     UserIcon: () =>
       import(
         /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/user-icon"
+      ),
+    MORIcon: () =>
+      import(
+        /* webpackChunkName: "shared-module" */ "@/shared/components/icon-comps/mor-icon"
       ),
     PaymentIcon: () =>
       import(
@@ -128,8 +144,13 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      getPendingCount: "transaction/getPendingCount",
+      getPendingMORVerifications: "mor/getPendingMORVerifications",
+    }),
+
     isActive() {
-      return this.path_list.includes(this.nav.slug) ? true : false;
+      return this.path_list.some((path) => path.includes(this.nav.slug));
     },
 
     // isChildLinkActive() {
@@ -155,7 +176,8 @@ export default {
   watch: {
     $route: {
       handler(value) {
-        this.path_list = value.path.split("/");
+        const paths = value.path.split("/");
+        this.path_list = [paths[1]];
       },
       immediate: true,
     },
