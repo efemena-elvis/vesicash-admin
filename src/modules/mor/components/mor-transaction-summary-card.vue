@@ -13,8 +13,8 @@
         v-for="option in summary"
         :key="option.currency"
       >
-        <div class="secondary-3-text grey-700 mgb-4">
-          {{ option.currency }} TRANSACTIONS
+        <div class="secondary-3-text grey-700 mgb-4 text-uppercase">
+          {{ option.currency }} {{ summaryType }}
         </div>
         <div class="h5-text teal-800">
           {{ formattedAmount(option.currency, option.amount) }}
