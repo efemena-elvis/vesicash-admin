@@ -61,6 +61,8 @@ export default {
   computed: {
     ...mapGetters({
       getMORSummary: "mor/getMORSummary",
+      getMORPayoutSummary: "mor/getMORPayoutSummary",
+      getMORWithdrawalsSummary: "mor/getMORWithdrawalsSummary",
     }),
 
     morRoutes() {
@@ -91,29 +93,48 @@ export default {
   },
 
   async mounted() {
-    this.loadSummary();
+    this.loadSummary(this.getMORSummary, this.fetchMORSummary);
+    this.loadSummary(this.getMORPayoutSummary, this.fetchMORPayoutSummary);
+    this.loadSummary(
+      this.getMORWithdrawalsSummary,
+      this.fetchMORWithdrawalsSummary
+    );
     await this.fetchMORUsers();
     await this.fetchMORCountries();
   },
 
   created() {
     this.$bus.$on("refreshMOR", () => {
-      this.loadSummary(true);
+      this.loadSummary(this.getMORSummary, this.fetchMORSummary, true);
+
+      this.loadSummary(
+        this.getMORPayoutSummary,
+        this.fetchMORPayoutSummary,
+        true
+      );
+
+      this.loadSummary(
+        this.getMORWithdrawalsSummary,
+        this.fetchMORWithdrawalsSummary,
+        true
+      );
     });
   },
 
   methods: {
     ...mapActions({
       fetchMORSummary: "mor/fetchMORSummary",
+      fetchMORPayoutSummary: "mor/fetchMORPayoutSummary",
+      fetchMORWithdrawalsSummary: "mor/fetchMORWithdrawalsSummary",
       fetchMORUsers: "mor/fetchMORUsers",
       fetchMORCountries: "mor/fetchMORCountries",
     }),
 
-    async loadSummary(ignore = false) {
-      if (this.getMORSummary?.length && !ignore) return;
+    async loadSummary(summary, fetchSummary, ignore = false) {
+      if (summary?.length && !ignore) return;
       try {
         this.loading_summary = true;
-        const res = await this.fetchMORSummary();
+        const res = await fetchSummary();
         this.loading_summary = false;
         if (res?.status !== "success") this.pushToast(res.message, "warning");
       } catch (err) {

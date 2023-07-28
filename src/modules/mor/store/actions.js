@@ -3,6 +3,10 @@ import $api from "@/services/service-api";
 const routes = {
     mor_summary:'/admin/transactions/summary',
 
+    mor_payout_summary:'/admin/payouts/summary',
+
+    mor_withdrawals_summary:'/admin/withdrawals/summary',
+
     record_transaction:`/admin/transaction/record`,
 
     send_payouts:'/admin/payout/to-wallet',
@@ -52,6 +56,18 @@ export default {
     fetchMORSummary:async({commit})=>{
         const response = await $api.use('mor','v2').fetch(routes.mor_summary);
         if(response?.code === 200) commit('SAVE_MOR_SUMMARY', response?.data);
+        return response;
+    },
+
+    fetchMORPayoutSummary:async({commit})=>{
+        const response = await $api.use('mor','v2').fetch(routes.mor_payout_summary);
+        if(response?.code === 200) commit('SAVE_MOR_PAYOUT_SUMMARY', response?.data);
+        return response;
+    },
+
+    fetchMORWithdrawalsSummary:async({commit})=>{
+        const response = await $api.use('mor','v2').fetch(routes.mor_withdrawals_summary);
+        if(response?.code === 200) commit('SAVE_MOR_WITHDRAWALS_SUMMARY', response?.data);
         return response;
     },
 

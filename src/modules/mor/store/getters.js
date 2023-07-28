@@ -7,6 +7,10 @@ export default {
 
   getMORSummary: (state) => state.mor_summary,
 
+  getMORPayoutSummary: (state) => state.mor_payout_summary,
+
+  getMORWithdrawalsSummary: (state) => state.mor_withdrawals_summary,
+
   getMORTransactions: (state) => state.mor_transactions,
 
   getMORWithdrawals: (state) => state.mor_withdrawals,
