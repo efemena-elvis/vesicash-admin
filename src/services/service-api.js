@@ -19,12 +19,12 @@ import {
 class serviceApi {
   // INSTANTIATE BASE API URL
   constructor() {
-    axios.defaults.baseURL = `https://admin.${VESICASH_API_ENVIRONMENT}.api.vesicash.com/`;
+    axios.defaults.baseURL = `https://admin-${VESICASH_API_ENVIRONMENT}.staging.api.vesicash.com/`;
     this.injectTokenInterceptor();
   }
 
   use(service, version="v2"){
-    axios.defaults.baseURL = `https://${service}.${VESICASH_API_ENVIRONMENT}.api.vesicash.com/${version}`;
+    axios.defaults.baseURL = `https://${service}-${VESICASH_API_ENVIRONMENT}.staging.api.vesicash.com/${version}`;
     return this;
   }
 
