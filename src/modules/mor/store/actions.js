@@ -11,11 +11,11 @@ const routes = {
 
     send_payouts:'/admin/payout/to-wallet',
 
-    mor_transactions: (query)=> `/admin/transactions/get?limit=15${query}`,
+    mor_transactions: (query)=> `/admin/transactions/get?limit=15&${query}`,
 
-    mor_withdrawals: (query)=> `/admin/withdrawal/get-all?limit=15${query}`,
+    mor_withdrawals: (query)=> `/admin/withdrawal/get-all?limit=15&${query}`,
 
-    mor_payouts: (query)=> `/admin/payouts/get?limit=15${query}`,
+    mor_payouts: (query)=> `/admin/payouts/get?limit=15&${query}`,
 
     mor_users: '/admin/settings/get',
 
