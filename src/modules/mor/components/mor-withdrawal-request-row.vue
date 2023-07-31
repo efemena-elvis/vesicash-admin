@@ -35,7 +35,7 @@
       <button
         class="btn btn-primary btn-sm d-inline-flex approve"
         ref="update"
-        :disabled="data.status === ''"
+        :disabled="data.status == 'successful'"
         @click="approveMORWithdrawal"
       >
         Approve

@@ -89,11 +89,11 @@ export default {
       deep: true,
     },
 
-    // filterQuery: {
-    //   handler(query) {
-    //     this.fetchTransactions(query);
-    //   },
-    // },
+    filterQuery: {
+      handler(query) {
+        this.fetchTransactions(query);
+      },
+    },
   },
 
   data() {
