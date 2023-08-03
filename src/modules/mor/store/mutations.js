@@ -7,6 +7,12 @@ export default {
 
   SAVE_MOR_SUMMARY: (state, summary) => (state.mor_summary = summary),
 
+  SAVE_MOR_PAYOUT_SUMMARY: (state, summary) =>
+    (state.mor_payout_summary = summary),
+
+  SAVE_MOR_WITHDRAWALS_SUMMARY: (state, summary) =>
+    (state.mor_withdrawals_summary = summary),
+
   SAVE_MOR_TRANSACTIONS: (state, data) => (state.mor_transactions = data),
 
   SAVE_MOR_WITHDRAWALS: (state, data) => (state.mor_withdrawals = data),

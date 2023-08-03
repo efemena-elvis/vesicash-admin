@@ -1,6 +1,8 @@
 <template>
   <div class="summary-card">
-    <div class="h5-text w-100 mgb-20">Total Processed transaction summary</div>
+    <div class="h5-text w-100 mgb-20">
+      Total Processed {{ summaryType }} summary
+    </div>
     <div class="balance-block-wrapper" v-if="loading">
       <div class="skeleton-loader" v-for="i in 4" :key="i"></div>
     </div>
@@ -8,11 +10,11 @@
     <div class="balance-block-wrapper" v-else>
       <div
         class="balance-block"
-        v-for="option in getMORSummary"
+        v-for="option in summary"
         :key="option.currency"
       >
-        <div class="secondary-3-text grey-700 mgb-4">
-          {{ option.currency }} TRANSACTIONS
+        <div class="secondary-3-text grey-700 mgb-4 text-uppercase">
+          {{ option.currency }} {{ summaryType }}
         </div>
         <div class="h5-text teal-800">
           {{ formattedAmount(option.currency, option.amount) }}
@@ -35,7 +37,41 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ getMORSummary: "mor/getMORSummary" }),
+    ...mapGetters({
+      getMORSummary: "mor/getMORSummary",
+      getMORPayoutSummary: "mor/getMORPayoutSummary",
+      getMORWithdrawalsSummary: "mor/getMORWithdrawalsSummary",
+    }),
+
+    summary() {
+      const routeName = this.$route?.name;
+
+      switch (routeName) {
+        case "MORPayouts":
+          return this.getMORPayoutSummary;
+        case "MORTransactions":
+          return this.getMORSummary;
+        case "MORWithdrawals":
+          return this.getMORWithdrawalsSummary;
+        default:
+          return this.getMORSummary;
+      }
+    },
+
+    summaryType() {
+      const routeName = this.$route?.name;
+
+      switch (routeName) {
+        case "MORPayouts":
+          return "Payouts";
+        case "MORTransactions":
+          return "Transactions";
+        case "MORWithdrawals":
+          return "Withdrawals";
+        default:
+          return "Transactions";
+      }
+    },
   },
 
   methods: {

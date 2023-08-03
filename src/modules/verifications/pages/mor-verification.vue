@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="filter-row mgy-30">
+    <div class="filter-row mgy-50">
       <input
         type="text"
         class="form-control"
@@ -28,7 +28,7 @@
         <div class="secondary-2-text mgb-10" v-else>
           {{ formattedDateRange || "Till Date" }}
         </div>
-        
+
         <DatePicker
           v-model="time"
           range
@@ -101,9 +101,9 @@ export default {
       const status = this.status;
       const [start, end] = this.time;
       let _start = new Date(start);
-      _start.setHours(1, 0, 0, 0);
+      _start.setHours(0, 0, 0, 0);
       let _end = new Date(end);
-      _end.setHours(1, 0, 0, 0);
+      _end.setHours(23, 59, 59, 999);
       const from = start ? Math.floor(new Date(_start).getTime() / 1000) : "";
       const to = end ? Math.floor(new Date(_end).getTime() / 1000) : "";
       // const start_date = start
@@ -240,8 +240,9 @@ export default {
 
     .secondary-2-text {
       position: absolute;
-      top: -20px;
-      left: 0;
+      top: -30px;
+      right: 0;
+      min-width: max-content;
     }
   }
 }
