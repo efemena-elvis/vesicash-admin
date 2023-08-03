@@ -19,12 +19,17 @@ import {
 class serviceApi {
   // INSTANTIATE BASE API URL
   constructor() {
-    axios.defaults.baseURL = `https://admin-${VESICASH_API_ENVIRONMENT}.staging.api.vesicash.com/`;
+    this.setAxiosBaseURL('admin', VESICASH_API_ENVIRONMENT);
     this.injectTokenInterceptor();
   }
 
+  setAxiosBaseURL(service, env, version=''){
+     const environment = env === 'prod' ? '':`-${env}`;
+     axios.defaults.baseURL = `https://${service}${environment}.core.vesicash.com/${version}`;
+  }
+
   use(service, version="v2"){
-    axios.defaults.baseURL = `https://${service}-${VESICASH_API_ENVIRONMENT}.staging.api.vesicash.com/${version}`;
+    this.setAxiosBaseURL(service, VESICASH_API_ENVIRONMENT, version)
     return this;
   }
 
