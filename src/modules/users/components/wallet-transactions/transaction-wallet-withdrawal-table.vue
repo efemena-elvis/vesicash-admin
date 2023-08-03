@@ -149,31 +149,31 @@ export default {
 }
 
 .transaction-wallet-tb {
-  &-1 {
-    max-width: toRem(170);
-  }
+  // &-1 {
+  //   max-width: toRem(170);
+  // }
 
-  &-2 {
-    @include text-truncate();
-    max-width: toRem(160);
-  }
+  // &-2 {
+  //   @include text-truncate();
+  //   max-width: toRem(160);
+  // }
 
-  &-3 {
-    max-width: toRem(230);
-  }
+  // &-3 {
+  //   max-width: toRem(230);
+  // }
 
-  &-4 {
-    max-width: toRem(140);
-  }
+  // &-4 {
+  //   max-width: toRem(140);
+  // }
 
-  &-5 {
-    max-width: toRem(140);
-  }
+  // &-5 {
+  //   max-width: toRem(140);
+  // }
 
-  &-6 {
-    display: flex;
-    gap: toRem(10);
-  }
+  // &-6 {
+  //   display: flex;
+  //   gap: toRem(10);
+  // }
 
   //   &-7 {
   //   }

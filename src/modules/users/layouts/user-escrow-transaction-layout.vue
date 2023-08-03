@@ -9,7 +9,7 @@
       ></div>
       <div class="page-title" v-else>{{ transaction_details.title }}</div>
 
-      <select name="status" id="status" class="form-control">
+      <select name="status" id="status" class="form-control" v-if="false">
         <option value="0">Change status</option>
         <option value="1">Renew date</option>
         <option value="2">Reject</option>
@@ -112,6 +112,31 @@ export default {
     },
 
     disbursementDetails() {
+      const active_status = [
+        "Sent - Awaiting Confirmation",
+        "Accepted - Not Funded",
+        "In Progress",
+        "Draft",
+        "Active",
+      ];
+
+      const last_milestone_index =
+        (this.transaction_details?.milestones?.length || 1) - 1;
+
+      const active_milestone = this.transaction_details?.milestones?.find(
+        (milestone, index) => {
+          return (
+            active_status.includes(!milestone?.status) ||
+            last_milestone_index === index
+          );
+        }
+      );
+
+      const active_due_date = this.formattedDate(
+        active_milestone?.due_date?.split(" ")
+      );
+      const status = active_milestone?.status;
+
       return [
         {
           name: "#",
@@ -122,10 +147,8 @@ export default {
           value: this.formattedDate(this.transaction_details?.created_at),
         },
         {
-          name: "PAYMENT DUE DATE",
-          value: this.formattedDate(
-            this.transaction_details?.due_date_formatted
-          ),
+          name: "DUE DATE",
+          value: active_due_date,
         },
         {
           name: "DISBURSMENT TYPE",
@@ -143,16 +166,21 @@ export default {
         },
         {
           name: "TRANSACTION STATUS",
-          value: this.transaction_details?.status,
-          status:
-            this.status_colors[
-              this.transaction_details?.status?.toLowerCase()
-            ] || "error",
+          value: status,
+          status: this.status_colors[status?.toLowerCase()] || "error",
         },
       ];
     },
 
     paymentDetails() {
+      const amount = this.transaction_details?.milestones?.reduce(
+        (sum, milestone) => {
+          sum += Number(milestone?.amount || 0);
+          return sum;
+        },
+        0
+      );
+
       return [
         {
           name: "AMOUNT TO PAY",
@@ -166,9 +194,7 @@ export default {
           name: "AMOUNT PAID",
           value: `${this.$money?.getSign(
             this.transaction_details?.currency
-          )}${this.$money?.addComma(
-            this.transaction_details?.amount_paid || "0.00"
-          )}`,
+          )}${this.$money?.addComma(amount || "0.00")}`,
         },
         // {
         //   name: "PAYMENT CURRENCY",
@@ -240,7 +266,7 @@ export default {
 
     formattedDate(date) {
       if (!date) return "";
-      const _date = this.$date?.formatDate(date);
+      const _date = this.$date?.formatDate(new Date(date), false);
       return _date.getSimpleFormatDate();
     },
 

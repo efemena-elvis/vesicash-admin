@@ -17,7 +17,9 @@
         :key="user.account_id + index"
         table_name="user-table"
         :data="user"
-        :index="index + 1 + (page - 1) * per_page"
+        :index="
+          index + 1 + (getPagination.current_page - 1) * getPagination.per_page
+        "
       />
     </TableContainer>
   </div>
@@ -52,34 +54,53 @@ export default {
     },
 
     getPaginatedUser() {
-      const { per_page } = this;
-      const users = [...this.users];
-      const max_index = Math.max(0, Math.ceil(users.length / per_page));
-      const index = Math.min(this.page - 1, max_index);
-      const start_range = per_page * index;
-      const end_range = start_range + per_page;
-      return users.slice(start_range, end_range);
+      // const users = this.getConnectedUsers?.data
+      //   ? [...this.getConnectedUsers?.data]
+      //   : [];
+
+      return [...this.users];
     },
+
+    // getPaginatedUser() {
+    //   const { per_page } = this;
+    //   const users = [...this.users];
+    //   const max_index = Math.max(0, Math.ceil(users.length / per_page));
+    //   const index = Math.min(this.page - 1, max_index);
+    //   const start_range = per_page * index;
+    //   const end_range = start_range + per_page;
+    //   return users.slice(start_range, end_range);
+    // },
 
     getPagination() {
-      const users = [...this.users];
-      const { per_page } = this;
-      const current_page = this.page;
-
-      const max_index = Math.max(0, Math.ceil(users.length / per_page));
-      const index = Math.min(this.page - 1, max_index);
-      const from = per_page * index;
-      const to = Math.min(from + per_page, users.length);
-
       return {
-        current_page,
-        per_page,
-        last_page: Math.ceil(users.length / per_page),
-        from: from + 1,
-        to,
-        total: users.length,
+        current_page: this.getConnectedUsers?.current_page,
+        per_page: this.getConnectedUsers?.per_page,
+        last_page: this.getConnectedUsers?.last_page,
+        from: this.getConnectedUsers?.from,
+        to: this.getConnectedUsers?.to,
+        total: this.getConnectedUsers?.total,
       };
     },
+
+    // getPagination() {
+    //   const users = [...this.users];
+    //   const { per_page } = this;
+    //   const current_page = this.page;
+
+    //   const max_index = Math.max(0, Math.ceil(users.length / per_page));
+    //   const index = Math.min(this.page - 1, max_index);
+    //   const from = per_page * index;
+    //   const to = Math.min(from + per_page, users.length);
+
+    //   return {
+    //     current_page,
+    //     per_page,
+    //     last_page: Math.ceil(users.length / per_page),
+    //     from: from + 1,
+    //     to,
+    //     total: users.length,
+    //   };
+    // },
   },
 
   data() {

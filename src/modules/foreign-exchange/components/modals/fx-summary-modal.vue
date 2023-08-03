@@ -6,7 +6,7 @@
     <!-- MODAL COVER HEADER -->
     <template slot="modal-cover-header">
       <div class="modal-cover-header">
-        <div class="modal-cover-title">Exchange Details</div>
+        <div class="modal-cover-title">{{ title }}</div>
       </div>
     </template>
 
@@ -37,6 +37,10 @@ export default {
     details: {
       type: Array,
       default: () => [{ name: "USER", value: "Yusuf Rilwan" }],
+    },
+    title: {
+      type: String,
+      default: "Exchange Details",
     },
   },
 
