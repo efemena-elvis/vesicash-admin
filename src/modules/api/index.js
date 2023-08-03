@@ -3,7 +3,7 @@ const apiRoutes = [
     // ====================================
     // API ROUTES
     // ====================================
-    path: "/api/api-overview",
+    path: "/api/overview",
     component: () =>
       import(/* webpackChunkName: "base-layout" */ "@/layouts/layout-base"),
 
@@ -18,10 +18,11 @@ const apiRoutes = [
           ),
         meta: {
           requiresAuth: true,
+          name: "API Overview",
         },
       },
       {
-        path: "/api/api-transactions",
+        path: "/api/feature-requests",
         name: "VesicashAPITransactions",
         component: () =>
           import(
@@ -30,6 +31,7 @@ const apiRoutes = [
           ),
         meta: {
           requiresAuth: true,
+          name: "API Feature Requests",
         },
       },
     ],

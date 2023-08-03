@@ -3,33 +3,37 @@
     <div class="button-tab-switcher" v-if="controlled">
       <div
         class="tab-item pointer"
-        :class="tab.active ?'tab-item--active':''"
+        :class="tab.active ? 'tab-item--active' : ''"
         v-for="(tab, index) in tabs"
         :key="index"
         @click="updatePage(tab.name, query_key)"
-      >{{ tab.name }}</div>
+      >
+        {{ tab.title || tab.name }}
+      </div>
     </div>
 
     <div class="plain-tab-switcher" v-else-if="plain">
       <router-link
         class="tab-item secondary-3-text grey-600 fw-500 smooth-transition pointer"
-        :active-class="exact ?'':'tab-item--active'"
-        :exact-active-class="exact ?'tab-item--active':''"
+        :active-class="exact ? '' : 'tab-item--active'"
+        :exact-active-class="exact ? 'tab-item--active' : ''"
         v-for="(tab, index) in tabs"
         :key="index"
-        :to="tab.routeName ? {name:tab.routeName} : tab.route"
-      >{{ tab.name }}</router-link>
+        :to="tab.routeName ? { name: tab.routeName } : tab.route"
+        >{{ tab.name }}</router-link
+      >
     </div>
 
     <div class="button-tab-switcher" v-else>
       <router-link
-        :active-class="exact ?'':'tab-item--active'"
-        :exact-active-class="exact ?'tab-item--active':''"
+        :active-class="exact ? '' : 'tab-item--active'"
+        :exact-active-class="exact ? 'tab-item--active' : ''"
         class="tab-item"
         v-for="(tab, index) in tabs"
         :key="index"
-        :to="tab.routeName ? {name:tab.routeName} : tab.route"
-      >{{ tab.name }}</router-link>
+        :to="tab.routeName ? { name: tab.routeName } : tab.route"
+        >{{ tab.name }}</router-link
+      >
     </div>
   </div>
 </template>

@@ -6,7 +6,7 @@
       <div class="page-title">
         {{ $route.query.name || getUserDetails.fullname }}
       </div>
-      <button class="btn btn-md btn-primary">Reset Password</button>
+      <!-- <button class="btn btn-md btn-primary">Reset Password</button> -->
     </div>
 
     <div class="meta-loading-container" v-if="loading_details">

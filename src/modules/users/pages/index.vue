@@ -17,7 +17,7 @@
         type="text"
         class="form-control"
         placeholder="Search user ID, email, name, phone number"
-        v-model="search"
+        v-model.trim="search"
       />
 
       <select name id class="form-control pointer" v-model="account_type">
@@ -30,8 +30,8 @@
       <select name id class="form-control pointer" v-model="status">
         <option value="" disabled selected>Status</option>
         <option value="">All</option>
-        <option value="verified">Verified</option>
-        <option value="pending">Pending</option>
+        <option value="true">Verified</option>
+        <option :value="'false'">Pending</option>
       </select>
 
       <div class="date-wrapper">
@@ -79,17 +79,21 @@ export default {
     ...mapGetters({ getConnectedUsers: "users/getAllConnectedUsers" }),
 
     getUsers() {
-      let users = [...this.getConnectedUsers];
-      if (!this.status) return users;
-      if (this.status === "verified")
-        return users?.filter((user) => user.is_verified);
-      return users?.filter((user) => !user.is_verified);
+      let users = this.getConnectedUsers?.data
+        ? [...this.getConnectedUsers?.data]
+        : [];
+      // if (!this.status) return users;
+      // if (this.status === "verified")
+      //   return users?.filter((user) => user.is_verified);
+      // return users?.filter((user) => !user.is_verified);
+      return users;
     },
 
     userQueries() {
       const search = this.search;
       const account_type = this.account_type;
       const [start, end] = this.time;
+      const status = this.status;
       const start_date = start
         ? this.$date.formatDate(new Date(start), false).getSimpleDate()
         : "";
@@ -102,6 +106,8 @@ export default {
         search,
         start_date,
         end_date,
+        status,
+        page: 1,
       };
     },
   },

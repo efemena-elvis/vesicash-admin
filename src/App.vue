@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "App",
 
@@ -65,6 +66,11 @@ export default {
     },
   }),
 
+  async mounted() {
+    await this.fetchPendingTransactionsCount();
+    await this.fetchPendingMORVerifications();
+  },
+
   created() {
     // EVENT BUS TO TOGGLE PAGE LOADER
     this.$bus.$on("toggle-page-loader", (message) => {
@@ -84,9 +90,17 @@ export default {
 
     // EVENT BUS TO TOGGLE ALERT BANNER
     this.$bus.$on("toggle-alert-banner", (data) => this.toggleAlert(data));
+
+    this.$bus.$on("refresh_users", () => this.fetchPendingMORVerifications());
   },
 
   methods: {
+    ...mapActions({
+      fetchPendingTransactionsCount:
+        "transaction/fetchPendingTransactionsCount",
+      fetchPendingMORVerifications: "mor/fetchPendingMORVerifications",
+    }),
+
     toggleAlert(data = {}) {
       Object.keys(data).length ? (this.alert = data) : null;
       this.show_alert = !this.show_alert;

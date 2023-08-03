@@ -119,7 +119,7 @@ export default {
       this.handleClick("loginBtn");
 
       let request_payload = {
-        username: this.form?.email_address,
+        email_address: this.form?.email_address,
         password: this.form?.password,
       };
 
@@ -127,17 +127,20 @@ export default {
         .then((response) => {
           this.handleClick("loginBtn", "Login to account", false);
           if (response.code === 200) {
-            if (response?.data?.user?.account_type !== "admin") {
-              this.pushToast("Login with an admin account", "warning");
-              return;
+            if (
+              response?.data?.user?.account_type === "admin" ||
+              response?.data?.user?.permissions?.length
+            ) {
+              this.pushToast("User login was successful", "success");
+              // REDIRECT TO DASHBOARD
+              return setTimeout(() => (location.href = "/dashboard"), 2000);
             }
 
-            this.pushToast("User login was successful", "success");
-
+            this.pushToast(
+              "Unauthorized. Only Admin or Moderator have access",
+              "warning"
+            );
             // console.log("login response", response);
-
-            // REDIRECT TO DASHBOARD
-            setTimeout(() => (location.href = "/dashboard"), 2000);
           }
 
           // HANDLE NON 200 RESPONSE

@@ -16,7 +16,11 @@
           :key="user.account_id + index"
           table_name="users-table"
           :data="user"
-          :index="index + 1"
+          :index="
+            index +
+            1 +
+            (getPagination.current_page - 1) * getPagination.per_page
+          "
         />
       </template>
 
@@ -46,32 +50,51 @@ export default {
     ...mapGetters({ getConnectedUsers: "users/getConnectedUsers" }),
 
     getPaginatedUser() {
-      const { per_page } = this;
-      const index = this.page - 1;
-      const start_range = per_page * index;
-      const end_range = start_range + per_page;
-      const users = [...this.getConnectedUsers];
-      return users.slice(start_range, end_range);
+      const users = this.getConnectedUsers?.data
+        ? [...this.getConnectedUsers?.data]
+        : [];
+
+      return users;
     },
+
+    // getPaginatedUser() {
+    //   const { per_page } = this;
+    //   const index = this.page - 1;
+    //   const start_range = per_page * index;
+    //   const end_range = start_range + per_page;
+    //   const users = [...this.getConnectedUsers];
+    //   return users.slice(start_range, end_range);
+    // },
 
     getPagination() {
-      const users = [...this.getConnectedUsers];
-      const { per_page } = this;
-      const current_page = this.page;
-
-      const index = this.page - 1;
-      const from = per_page * index;
-      const to = Math.min(from + per_page, users.length);
-
       return {
-        current_page,
-        per_page,
-        last_page: Math.ceil(users.length / per_page),
-        from: from + 1,
-        to,
-        total: users.length,
+        current_page: this.getConnectedUsers?.current_page,
+        per_page: this.getConnectedUsers?.per_page,
+        last_page: this.getConnectedUsers?.last_page,
+        from: this.getConnectedUsers?.from,
+        to: this.getConnectedUsers?.to,
+        total: this.getConnectedUsers?.total,
       };
     },
+
+    // getPagination() {
+    //   const users = [...this.getConnectedUsers];
+    //   const { per_page } = this;
+    //   const current_page = this.page;
+
+    //   const index = this.page - 1;
+    //   const from = per_page * index;
+    //   const to = Math.min(from + per_page, users.length);
+
+    //   return {
+    //     current_page,
+    //     per_page,
+    //     last_page: Math.ceil(users.length / per_page),
+    //     from: from + 1,
+    //     to,
+    //     total: users.length,
+    //   };
+    // },
   },
 
   data() {
@@ -118,10 +141,10 @@ export default {
       this.page = page;
 
       // USE PREVIOUSLY SAVED DATA (AVOID UNNECESSARY API CALLS)
-      if (this.getConnectedUsers.length) {
-        this.table_loading = false;
-        return;
-      }
+      // if (this.getConnectedUsers.length) {
+      //   this.table_loading = false;
+      //   return;
+      // }
 
       const payload = {
         page,

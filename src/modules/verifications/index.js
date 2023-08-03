@@ -1,7 +1,7 @@
-const verificationsRoutes = [
+const verificationRoutes = [
   {
     // ====================================
-    // VERIFICATIONS ROUTES
+    // VERIFICATION ROUTES
     // ====================================
     path: "/verifications",
     component: () =>
@@ -10,18 +10,46 @@ const verificationsRoutes = [
     children: [
       {
         path: "",
-        name: "VesicashVerifications",
         component: () =>
           import(
-            /* webpackChunkName: "verifications-module" */
-            "@/modules/verifications/pages"
+            /* webpackChunkName: "verification-module" */
+            "@/modules/verifications/layouts/verification-layout"
           ),
         meta: {
           requiresAuth: true,
         },
+
+        children: [
+          {
+            name: "BusinessVerification",
+            path: "business",
+            component: () =>
+              import(
+                /* webpackChunkName: "verification-module" */
+                "@/modules/verifications/pages/business-verification"
+              ),
+            meta: {
+              requiresAuth: true,
+              name: "Business Verifications",
+            },
+          },
+          {
+            name: "MORVerification",
+            path: "mor",
+            component: () =>
+              import(
+                /* webpackChunkName: "verification-module" */
+                "@/modules/verifications/pages/mor-verification"
+              ),
+            meta: {
+              requiresAuth: true,
+              name: "MOR Verifications",
+            },
+          },
+        ],
       },
     ],
   },
 ];
 
-export default verificationsRoutes;
+export default verificationRoutes;

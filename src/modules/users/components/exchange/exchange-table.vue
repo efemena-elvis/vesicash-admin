@@ -136,7 +136,7 @@ export default {
   },
 
   mounted() {
-    if (!this.getFxTable.length) this.getFxTransactions();
+    this.getFxTransactions();
   },
 
   methods: {
