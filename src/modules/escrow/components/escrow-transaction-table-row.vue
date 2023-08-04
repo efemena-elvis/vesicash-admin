@@ -70,13 +70,12 @@ export default {
 
   computed: {
     getCreatedDate() {
-      let date =
-        `${this.data?.created_at?.split(" ")[0] ?? "2022-01-01"} 00:00:00` ??
-        this.data?.due_date_formatted;
+      const txn_date = this.$date?.formatDate(
+        new Date(this.data?.created_at),
+        false
+      );
 
-      let { d3, m4, y1 } = this.$date.formatDate(date).getAll();
-
-      return `${d3} ${m4}, ${y1}`;
+      return txn_date?.getSimpleFormatDate();
     },
 
     getTransactionType() {
