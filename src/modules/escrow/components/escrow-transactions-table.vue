@@ -68,16 +68,16 @@ export default {
 
     getPagination() {
       const pagination = this.getAllEscrowTransactions?.pagination;
-      const from = pagination?.limit * (pagination?.currentPage - 1) + 1;
+      const from = pagination?.per_page * (pagination?.current_page - 1) + 1;
       const data = this.getAllEscrowTransactions?.data;
 
       return {
-        current_page: pagination?.currentPage,
-        per_page: pagination?.limit,
-        last_page: pagination?.totalPages,
+        current_page: pagination?.current_page,
+        per_page: pagination?.per_page,
+        last_page: pagination?.total_pages,
         from,
         to: from + (data?.length - 1),
-        total: pagination?.total_records,
+        total: pagination?.count,
         // current_page: this.getAllEscrowTransactions?.current_page,
         // per_page: this.getAllEscrowTransactions?.per_page,
         // last_page: this.getAllEscrowTransactions?.last_page,
