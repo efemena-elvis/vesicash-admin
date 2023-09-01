@@ -59,7 +59,7 @@ export default {
             : "";
 
         const due_date = this.$date
-          ?.formatDate(new Date(milestone?.due_date), false)
+          ?.formatDate(new Date(milestone?.due_date * 1000), false)
           ?.getSimpleFormatDate();
 
         const inspection_period = `${

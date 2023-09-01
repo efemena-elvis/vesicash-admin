@@ -87,7 +87,7 @@ export default {
   computed: {
     docContent() {
       return {
-        meta: ["approved", "verified"].includes(this.data.status)
+        meta: !["approved", "verified"].includes(this.data.status)
           ? "https://cdn.pixabay.com/photo/2017/12/24/21/08/secret-3037639_1280.jpg"
           : "https://cdn.pixabay.com/photo/2016/10/09/17/27/approved-1726357_1280.jpg" ||
             this.data?.document_url,

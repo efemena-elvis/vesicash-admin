@@ -133,7 +133,8 @@ export default {
       );
 
       const active_due_date = this.formattedDate(
-        active_milestone?.due_date?.split(" ")
+        active_milestone?.due_date?.split(" "),
+        true
       );
       const status = active_milestone?.status;
 
@@ -264,9 +265,10 @@ export default {
   methods: {
     ...mapActions({ fetchTransactionDetails: "users/fetchTransactionDetails" }),
 
-    formattedDate(date) {
+    formattedDate(date, timestamp = false) {
       if (!date) return "";
-      const _date = this.$date?.formatDate(new Date(date), false);
+      const _data = timestamp ? date * 1000 : date;
+      const _date = this.$date?.formatDate(new Date(_data), false);
       return _date.getSimpleFormatDate();
     },
 
