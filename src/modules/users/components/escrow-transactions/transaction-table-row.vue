@@ -13,17 +13,15 @@
         <div class="text mgb-6 text-no-wrap">{{ data.description }}</div>
       </td>
 
-      <td class="body-data" :class="`${table_name}-3`">{{ getCreatedDate }}</td>
+      <td class="body-data" :class="`${table_name}-3`">{{ getDueDate }}</td>
 
       <td class="body-data" :class="`${table_name}-4`">
         <div class="text mgb-6 text-no-wrap">
-          {{ $money.getSign( data.currency)
-          }}{{
-          $money.addComma( data.amount || data.totalAmount)
-          }}
+          {{ $money.getSign(data.currency)
+          }}{{ $money.addComma(data.amount || data.totalAmount) }}
         </div>
         <div class="meta tertiary-3-text grey-600">
-          {{ $money.getSign( 'dollar' || data.currency)
+          {{ $money.getSign("dollar" || data.currency)
           }}{{ $money.addComma(getTotalAmountPaid || 0) }} paid
         </div>
       </td>
@@ -71,14 +69,13 @@ export default {
   },
 
   computed: {
-    getCreatedDate() {
-      let date =
-        `${this.data?.created_at?.split(" ")[0] ?? "2022-01-01"} 00:00:00` ??
-        this.data?.due_date_formatted;
+    getDueDate() {
+      const due_date = this.$date?.formatDate(
+        new Date(this.data?.due_date * 1000),
+        false
+      );
 
-      let { d3, m4, y1 } = this.$date.formatDate(date).getAll();
-
-      return `${d3} ${m4}, ${y1}`;
+      return due_date.getSimpleFormatDate();
     },
 
     getTransactionType() {
@@ -145,5 +142,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
