@@ -28,6 +28,16 @@ const navRoutes = [
   },
   {
     id: 3,
+    title: "Pricing",
+    slug: "pricing",
+    icon: "CreditCardIcon",
+    link: "/pricing/wallet-funding",
+    show_more: false,
+    children: [],
+    authorize: ["open"],
+  },
+  {
+    id: 4,
     title: "MOR transactions",
     slug: "mor",
     icon: "MORIcon",
@@ -37,7 +47,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 4,
+    id: 5,
     title: "Escrow transactions",
     slug: "escrow-transactions",
     icon: "TransactionIcon",
@@ -47,7 +57,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 5,
+    id: 6,
     title: "Foreign exchange",
     slug: "foreign-exchange",
     icon: "ExchangeIcon",
@@ -57,7 +67,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 6,
+    id: 7,
     title: "Payments",
     slug: "payments",
     icon: "CreditCardIcon",
@@ -67,7 +77,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 7,
+    id: 8,
     title: "API overview",
     slug: "api",
     icon: "PaymentIcon",
@@ -84,7 +94,7 @@ const navRoutes = [
     authorize: ["open"],
   },
   {
-    id: 8,
+    id: 9,
     title: "Verifications",
     slug: "verifications",
     icon: "VerificationIcon",
@@ -95,7 +105,7 @@ const navRoutes = [
   },
 
   {
-    id: 9,
+    id: 10,
     title: "Settings",
     slug: "settings",
     icon: "SettingsIcon",

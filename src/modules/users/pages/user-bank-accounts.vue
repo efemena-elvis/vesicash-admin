@@ -2,9 +2,17 @@
   <div class="mgt-20">
     <RouteTabSwitcher controlled :tabs="tabs" class="mgb-20" />
 
-    <UserNairaAccountTable :loading="loading" :accounts="getNairaAccounts" v-if="tabs[0].active" />
+    <UserNairaAccountTable
+      :loading="loading"
+      :accounts="getNairaAccounts"
+      v-if="tabs[0].active"
+    />
 
-    <UserDollarAccountTable :loading="loading" :accounts="getDollarAccounts" v-else />
+    <UserDollarAccountTable
+      :loading="loading"
+      :accounts="getDollarAccounts"
+      v-else
+    />
   </div>
 </template>
 
@@ -51,6 +59,7 @@ export default {
       return [
         {
           name: "Naira",
+          query: "naira",
           active:
             !this.$route?.query?.currency ||
             this.$route?.query?.currency === "naira",
@@ -58,6 +67,7 @@ export default {
 
         {
           name: "Dollar",
+          query: "dollar",
           active: this.$route?.query?.currency === "dollar",
         },
       ];
@@ -66,5 +76,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

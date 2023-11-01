@@ -16,6 +16,7 @@ import fxRoutes from "@/modules/foreign-exchange";
 import paymentsRoutes from "@/modules/payments";
 import settingsRoutes from "@/modules/settings";
 import usersRoutes from "@/modules/users";
+import pricingRoutes from "@/modules/pricing";
 import verificationsRoutes from "@/modules/verifications";
 
 // =======================================================
@@ -33,6 +34,7 @@ const routes = [
   ...settingsRoutes,
   ...usersRoutes,
   ...verificationsRoutes,
+  ...pricingRoutes,
   {
     path: "/*",
     name: "NotFoundError",

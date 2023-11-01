@@ -18,6 +18,7 @@ const dashboardRoutes = [
           ),
         meta: {
           requiresAuth: true,
+          name: "dashboard",
         },
       },
     ],

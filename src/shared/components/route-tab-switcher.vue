@@ -6,7 +6,7 @@
         :class="tab.active ? 'tab-item--active' : ''"
         v-for="(tab, index) in tabs"
         :key="index"
-        @click="updatePage(tab.name, query_key)"
+        @click="updatePage(tab.query || tab.name, query_key)"
       >
         {{ tab.title || tab.name }}
       </div>
@@ -71,7 +71,7 @@ export default {
 
   methods: {
     updatePage(name, key) {
-      const query = { ...this.$route?.query, [key]: name?.toLowerCase() };
+      const query = { ...this.$route?.query, [key]: name };
 
       this.$router.replace({
         path: this.$route.path,
@@ -118,6 +118,10 @@ export default {
   border-radius: toRem(7);
   background: getColor("grey-100");
   position: relative;
+  max-width: 100%;
+
+  overflow-x: auto;
+  @include custom-scroll-style("grey-100", 0);
 
   .tab-item {
     font-size: toRem(13);
@@ -125,6 +129,7 @@ export default {
     padding: toRem(5) toRem(12);
     border-radius: toRem(6);
     transition: all ease-in-out 0.3s;
+    min-width: max-content;
     &:hover {
       background: getColor("neutral-10");
     }
