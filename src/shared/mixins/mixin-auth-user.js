@@ -14,6 +14,10 @@ const MixinAuthUser = {
       return Object.keys(this.getAuthUser).length ? this.getAuthUser : {};
     },
 
+    getUserPermissions(){
+      return this.getUser?.permissions || [];
+    },
+
     // ==============================
     // GET USER LOGIN COUNT
     // ==============================

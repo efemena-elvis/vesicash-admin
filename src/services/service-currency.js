@@ -6,7 +6,7 @@ class serviceCurrency {
   // ===================================
   // FORMAT CURRENCY SIGN
   // ===================================
-  getSign(currency, default_type="#") {
+  getSign(currency, default_type = "#") {
     let currency_type = "",
       naira = "₦",
       dollar = "$",

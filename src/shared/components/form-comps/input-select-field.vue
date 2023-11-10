@@ -24,105 +24,15 @@
           @paste="validateAndEmitUserInput"
           @change="validateAndEmitUserInput"
         />
-
-        <!-- FORM SUFFIX AREA -->
-        <template v-if="input_type === 'password' && toggle_password">
-          <div
-            class="icon"
-            @click="togglePasswordType"
-            :class="
-              passwordType
-                ? ['icon-show', 'grey-500']
-                : ['icon-hide', 'green-500']
-            "
-          ></div>
-        </template>
-
-        <template v-if="custom_options.length">
-          <div
-            v-on-clickaway="determineTargetArea"
-            :class="[
-              'prefix-select-area',
-              custom_options.length > 1 ? '' : 'px-3',
-            ]"
-            @click="custom_options.length > 1 ? toggleDropdown() : null"
-          >
-            <div
-              v-html="selectedCustomOption.title"
-              class="tertiary-2-text"
-            ></div>
-            <div
-              v-if="custom_options.length > 1"
-              class="icon icon-caret-fill-down smooth-transition"
-              :class="show_dropdown && 'rotate-180'"
-            ></div>
-          </div>
-        </template>
-
-        <!-- FORM PREFIX AREA -->
-        <template v-if="is_phone_type || is_currency_type">
-          <div
-            v-on-clickaway="determineTargetArea"
-            class="prefix-select-area"
-            @click="toggleDropdown"
-          >
-            <img
-              v-lazy="
-                is_currency_type ? currency_country.flag : current_country.flag
-              "
-              :alt="
-                is_currency_type
-                  ? currency_country.country
-                  : current_country.country
-              "
-            />
-            <div
-              class="icon icon-caret-fill-down smooth-transition"
-              :class="show_dropdown && 'rotate-180'"
-            ></div>
-          </div>
-        </template>
-
-        <!-- FORM CURRENCY TYPE -->
-        <div class="prefix-select-area value-area" v-if="currency">
-          <div class="value grey-900 text-no-wrap" v-html="currency"></div>
-        </div>
       </div>
     </div>
 
     <!-- DROP DOWN SELECT AREA -->
-    <template v-if="custom_options.length">
-      <template name="drop-select-area" v-if="show_dropdown">
-        <CustomDropSelect
-          :list="custom_options"
-          @selected="$emit('selected', $event)"
-        />
-      </template>
-    </template>
-
-    <!-- DROP DOWN SELECT AREA -->
-    <template v-if="is_phone_type">
+    <template>
       <template name="drop-select-area" v-if="show_dropdown">
         <CountryDropSelect
           :countries="countries_data"
           @countrySelected="current_country = $event"
-        />
-      </template>
-    </template>
-
-    <template v-if="is_currency_type">
-      <template name="drop-select-area" v-if="show_dropdown">
-        <CountryDropSelect
-          :allow_search="
-            currency_options.length
-              ? currency_options.length > 5
-              : countries_data.length > 5
-          "
-          is_currency_type
-          :countries="
-            currency_options.length ? currency_options : countries_data
-          "
-          @countrySelected="currency_country = $event"
         />
       </template>
     </template>
@@ -136,7 +46,6 @@
 
 <script>
 import CountryHelper from "@/shared/mixins/mixin-country-helper";
-import CustomDropSelect from "@/shared/components/custom-drop-select";
 
 export default {
   name: "BasicInput",
@@ -144,7 +53,6 @@ export default {
   mixins: [CountryHelper],
 
   components: {
-    CustomDropSelect,
     CountryDropSelect: () =>
       import(
         /* webpackChunkName: 'shared-module' */ "@/shared/components/country-drop-select"
@@ -222,11 +130,6 @@ export default {
       default: true,
     },
 
-    custom_options: {
-      type: Array,
-      default: () => [],
-    },
-
     custom_style: {
       type: Object,
       default: () => ({
@@ -254,10 +157,6 @@ export default {
   },
 
   computed: {
-    selectedCustomOption() {
-      return this.custom_options?.find((item) => item.selected);
-    },
-
     getGroupWrapperStyle() {
       return this.custom_style?.group_wrapper_style || null;
     },

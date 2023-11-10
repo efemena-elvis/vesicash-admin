@@ -6,7 +6,7 @@
       ref="selectInput"
       @click="disabled ? null : toggleView()"
       v-on-clickaway="determineTargetArea"
-      :class="option_select ? 'active-select-input' : null"
+      :class="[option_select && 'active-select-input', disabled && 'disabled']"
     >
       <!-- SELECTIONS -->
       <div class="multi-selections-wrapper" v-if="validSelection">
@@ -296,6 +296,10 @@ export default {
 <style lang="scss" scoped>
 .drop-select-input {
   position: relative;
+  .disabled {
+    opacity: 0.75;
+    border: dashed 1px #000;
+  }
 
   .select-input {
     @include transition(0.3s);

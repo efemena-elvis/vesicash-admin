@@ -129,7 +129,7 @@ export default {
           if (response.code === 200) {
             if (
               response?.data?.user?.account_type === "admin" ||
-              response?.data?.user?.permissions?.length
+              response?.data?.user_permissions?.length
             ) {
               this.pushToast("User login was successful", "success");
               // REDIRECT TO DASHBOARD

@@ -13,6 +13,7 @@ import escrow from "@/modules/escrow/store";
 import transaction from "@/modules/payments/store";
 import api from "@/modules/api/store";
 import mor from "@/modules/mor/store";
+import pricing from "@/modules/pricing/store";
 
 Vue.use(Vuex);
 
@@ -27,5 +28,6 @@ export default new Vuex.Store({
     transaction,
     api,
     mor,
+    pricing,
   },
 });
