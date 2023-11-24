@@ -113,11 +113,15 @@ export default {
 
     disbursementDetails() {
       const active_status = [
-        "Sent - Awaiting Confirmation",
-        "Accepted - Not Funded",
+        // "Sent - Awaiting Confirmation",
+        // "Accepted - Not Funded",
         "In Progress",
-        "Draft",
+        // "Draft",
         "Active",
+        "Delivered - Accepted",
+        "Closed - Disbursement Pending",
+        "Accepted - Funded",
+        "Delivered - Rejected",
       ];
 
       const last_milestone_index =
@@ -126,7 +130,7 @@ export default {
       const active_milestone = this.transaction_details?.milestones?.find(
         (milestone, index) => {
           return (
-            active_status.includes(!milestone?.status) ||
+            active_status.includes(milestone?.status) ||
             last_milestone_index === index
           );
         }
