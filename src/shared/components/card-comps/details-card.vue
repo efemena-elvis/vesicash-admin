@@ -66,7 +66,7 @@ export default {
 <style lang="scss" scoped>
 .card {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(183px, 1fr));
   gap: toRem(25) toRem(10);
   border: toRem(1) solid getColor("grey-300");
   align-content: flex-start;
