@@ -125,9 +125,9 @@ export default {
       ];
 
       const done_status = [
-        "closed - disbursement pending",
-        "closed - manual disbursement pending",
-        "closed - disbursement complete",
+        "Closed - Disbursement Pending",
+        "Closed - Manual Disbursement Pending",
+        "Closed - Disbursement Complete",
       ];
 
       const last_milestone_index =
