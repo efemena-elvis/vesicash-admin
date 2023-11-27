@@ -81,7 +81,10 @@ export default {
   computed: {
     getEmptyMessage() {
       const status = this?.transaction?.status?.toLowerCase() || "failed";
-      return EMPTY_STATES[status];
+      return (
+        EMPTY_STATES[status] ||
+        "No disbursement has been made for this escrow transaction."
+      );
     },
   },
 

@@ -124,13 +124,19 @@ export default {
         "Delivered - Rejected",
       ];
 
+      const done_status = [
+        "closed - disbursement pending",
+        "closed - manual disbursement pending",
+        "closed - disbursement complete",
+      ];
+
       const last_milestone_index =
         (this.transaction_details?.milestones?.length || 1) - 1;
 
       const active_milestone = this.transaction_details?.milestones?.find(
         (milestone, index) => {
           return (
-            active_status.includes(milestone?.status) ||
+            !done_status.includes(milestone?.status) ||
             last_milestone_index === index
           );
         }
@@ -237,16 +243,24 @@ export default {
         "sent - Rejected": "error",
         "accepted - not funded": "error",
         "accepted - funded": "okay",
-        draft: "okay",
+        "funded - rejected": "error",
+        draft: "progress",
         "in progress": "progress",
         delivered: "okay",
         "delivered - accepted": "success",
         "delivered - rejected": "error",
+        "closed - disbursement pending": "progress",
+        "closed - manual disbursement pending": "progress",
         "closed - disbursement complete": "success",
+        "closed - disputed": "error",
         completed: "success",
         "closed - refunded": "error",
         "closed - not funded": "error",
         closed: "error",
+        pending: "progress",
+        failed: "error",
+        active: "progress",
+        deleted: "error",
       },
 
       transaction_tabs: [
