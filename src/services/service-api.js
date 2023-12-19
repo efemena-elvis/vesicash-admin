@@ -19,17 +19,24 @@ import {
 class serviceApi {
   // INSTANTIATE BASE API URL
   constructor() {
-    this.setAxiosBaseURL('admin', VESICASH_API_ENVIRONMENT);
+    this.setAxiosBaseURL("admin", VESICASH_API_ENVIRONMENT);
     this.injectTokenInterceptor();
   }
 
-  setAxiosBaseURL(service, env, version=''){
-     const environment = env === 'prod' ? '':`-${env}`;
-     axios.defaults.baseURL = `https://${service}${environment}.core.vesicash.com/${version}`;
+  setAxiosBaseURL(service, env, version = "") {
+    const environment = env === "prod" ? "" : `-${env}`;
+    if (service === "admin") {
+      axios.defaults.baseURL =
+        env === "prod"
+          ? `https://admin-api.vesicash.com/${version}`
+          : `http://staging-admin-api.vesicash.com/${version}`;
+      return;
+    }
+    axios.defaults.baseURL = `https://${service}${environment}.core.vesicash.com/${version}`;
   }
 
-  use(service, version="v2"){
-    this.setAxiosBaseURL(service, VESICASH_API_ENVIRONMENT, version)
+  use(service, version = "v2") {
+    this.setAxiosBaseURL(service, VESICASH_API_ENVIRONMENT, version);
     return this;
   }
 
@@ -76,7 +83,11 @@ class serviceApi {
   // ===============================
   async patch(url, { payload = {}, resolve = true, is_attach = false }) {
     try {
-      let response = await axios.patch(url, payload, this.getHeaders(is_attach));
+      let response = await axios.patch(
+        url,
+        payload,
+        this.getHeaders(is_attach)
+      );
       return resolve ? response.data : response;
     } catch (err) {
       return this.handleErrors(err);
