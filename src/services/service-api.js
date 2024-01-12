@@ -25,11 +25,8 @@ class serviceApi {
 
   setAxiosBaseURL(service, env, version = "") {
     const environment = env === "prod" ? "" : `-${env}`;
-    if (service === "admin") {
-      axios.defaults.baseURL =
-        env === "prod"
-          ? `https://admin-api.vesicash.com/${version}`
-          : `http://staging-admin-api.vesicash.com/${version}`;
+    if (service === "admin" && env === "prod") {
+      axios.defaults.baseURL = `https://admin-api.vesicash.com/${version}`;
       return;
     }
     axios.defaults.baseURL = `https://${service}${environment}.core.vesicash.com/${version}`;

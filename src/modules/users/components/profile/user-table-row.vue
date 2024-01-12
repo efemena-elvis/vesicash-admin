@@ -27,8 +27,8 @@
 
       <td class="body-data grey-900" :class="`${table_name}-6`">
         <TagCard
-          :card_text="data.is_verified ? 'verified' : 'pending'"
-          :card_type="data.is_verified ? 'success' : 'progress'"
+          :card_text="isVerified ? 'verified' : 'pending'"
+          :card_type="isVerified ? 'success' : 'progress'"
         />
       </td>
 
@@ -70,6 +70,14 @@ export default {
       return `${
         this.data?.firstname || this.data?.username || this.data?.email_address
       } ${this.data?.lastname || ""}`;
+    },
+
+    isVerified() {
+      const verifications = this.data?.is_verified || [];
+      return ["email", "cac", "bvn"].every((type) => {
+        return verifications?.find((item) => item.verification_type === type)
+          ?.is_verified;
+      });
     },
   },
 };
