@@ -39,6 +39,7 @@
               class="btn btn-sm btn-alert"
               ref="reject"
               @click="rejectDoc"
+              v-if="isDocVerified"
             >
               Reject
             </button>
@@ -56,6 +57,7 @@
               class="btn btn-sm btn-primary"
               ref="approve"
               @click="approveDoc"
+              v-if="!isDocVerified"
             >
               Approve
             </button>
@@ -241,7 +243,7 @@ export default {
       return [
         {
           name: "DOCUMENT TYPE",
-          value: this.docType || "----------",
+          value: this.docType?.toUpperCase() || "----------",
         },
         {
           name: "STATUS",

@@ -118,6 +118,13 @@ export default {
     ...mapGetters({ getUserProfile: "users/getUserProfile" }),
 
     getUserDetails() {
+      const verifications = this.getUserProfile?.profile?.verifications || [];
+
+      const verified = ["email", "cac", "bvn"].every((type) => {
+        return verifications?.find((item) => item.verification_type === type)
+          ?.is_verified;
+      });
+
       return {
         userID: this.$route?.params?.userID,
         account_type: this.getUserProfile?.user?.account_type || "-------",
@@ -125,7 +132,7 @@ export default {
         fullname: `${this.getUserProfile?.user?.firstname || "--------"} ${
           this.getUserProfile?.user?.lastname || "------"
         }`,
-        verified: this.getUserProfile?.profile?.is_verified,
+        verified,
       };
     },
 
