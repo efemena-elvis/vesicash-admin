@@ -170,19 +170,19 @@ export default {
     transactionTypeTabs() {
       return [
         {
-          name: "Inflow",
+          name: "inflow",
           active:
             !this.$route?.query?.tx_type ||
             this.$route?.query?.tx_type === "inflow",
         },
 
         {
-          name: "Outflow",
+          name: "outflow",
           active: this.$route?.query?.tx_type === "outflow",
         },
 
         {
-          name: "Pending",
+          name: "pending",
           active: this.$route?.query?.tx_type === "pending",
         },
       ];
