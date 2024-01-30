@@ -1,6 +1,9 @@
 <template>
   <div class="user-details-layout">
-    <PageBackBtn back_link="/users/manage-users" />
+    <PageBackBtn
+      :back_link="'/users/manage-users'"
+      :page_query="getPageQuery"
+    />
 
     <div class="top-row mgb-30">
       <div class="page-title">
@@ -116,6 +119,12 @@ export default {
 
   computed: {
     ...mapGetters({ getUserProfile: "users/getUserProfile" }),
+
+    getPageQuery() {
+      const query = this.$route?.query ? { ...this.$route?.query } : {};
+      delete query.name;
+      return query;
+    },
 
     getUserDetails() {
       const verifications = this.getUserProfile?.profile?.verifications || [];

@@ -107,7 +107,7 @@ export default {
         start_date,
         end_date,
         status,
-        page: 1,
+        page: this.mounted ? 1 : this.$route?.query?.page || "",
       };
     },
   },
@@ -122,13 +122,16 @@ export default {
         );
 
         // THIS CONDITION AVOIDS REDUNDANT NAVIGATION
-
-        this.queryStrings(updated_query) !==
-          this.queryStrings(this.$route?.query) &&
+        if (
+          this.queryStrings(updated_query) !==
+          this.queryStrings(this.$route?.query)
+        ) {
           this.$router.replace({
             path: this.$route.path,
             query: { ...updated_query },
           });
+          this.mounted = true;
+        }
       },
     },
   },
@@ -144,6 +147,7 @@ export default {
       status: "",
       show_date_range: false,
       date_shortcut: "",
+      mounted: false,
     };
   },
 
