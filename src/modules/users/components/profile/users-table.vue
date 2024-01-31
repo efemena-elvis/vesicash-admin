@@ -136,7 +136,7 @@ export default {
   },
 
   mounted() {
-    this.fetchUsers(this.page, this.filterQuery);
+    // this.fetchUsers(this.page, this.filterQuery);
   },
 
   watch: {
@@ -148,19 +148,20 @@ export default {
       deep: true,
     },
 
-    "users.length": {
-      handler(size) {
-        const max_page = Math.max(1, Math.ceil(size / this.per_page));
-        this.page = Math.min(this.page, max_page);
-      },
-      immediate: true,
-      deep: true,
-    },
+    // "users.length": {
+    //   handler(size) {
+    //     const max_page = Math.max(1, Math.ceil(size / this.per_page));
+    //     this.page = Math.min(this.page, max_page);
+    //   },
+    //   immediate: true,
+    //   deep: true,
+    // },
 
     filterQuery: {
       handler(query) {
-        this.fetchUsers(this.page, query);
+        this.fetchUsers(query.page, query);
       },
+      immediate: true,
     },
 
     users: {

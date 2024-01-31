@@ -22,6 +22,11 @@ export default {
       default: "/dashboard",
     },
 
+    page_query: {
+      type: Object,
+      default: () => ({}),
+    },
+
     history_mode: {
       type: Boolean,
       default: false,
@@ -42,7 +47,11 @@ export default {
       if (this.custom_mode) this.$emit("clicked");
       else {
         if (this.history_mode) this.$router.go(-1);
-        else this.$router.push({ path: this.back_link });
+        else
+          this.$router.push({
+            path: this.back_link,
+            query: this.page_query,
+          });
       }
     },
   },

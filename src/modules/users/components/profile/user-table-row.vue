@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="`/users/manage-users/${data.account_id}/profile?name=${getName}`"
+    :to="`/users/manage-users/${data.account_id}/profile${usersFilter}`"
     v-slot="{ navigate }"
     custom
   >
@@ -78,6 +78,15 @@ export default {
         return verifications?.find((item) => item.verification_type === type)
           ?.is_verified;
       });
+    },
+
+    usersFilter() {
+      const filter = location.search
+        ? decodeURIComponent(location.search)?.split("?")[1]
+        : "";
+      return filter
+        ? `?name=${decodeURIComponent(this.getName.trim())}&${filter}`
+        : `?name=${decodeURIComponent(this.getName.trim())}`;
     },
   },
 };
