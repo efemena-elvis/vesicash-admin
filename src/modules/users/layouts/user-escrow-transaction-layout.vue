@@ -1,6 +1,6 @@
 <template>
   <div class="pdb-40">
-    <PageBackBtn :back_link="getBackLink" />
+    <PageBackBtn :back_link="getBackLink" :page_query="getPageQuery" />
 
     <div class="d-flex justify-content-between align-items-center">
       <div
@@ -67,6 +67,12 @@ export default {
       return userID
         ? `/users/manage-users/${userID}/escrow-transaction`
         : `/escrow-transactions`;
+    },
+
+    getPageQuery() {
+      const query = this.$route?.query ? { ...this.$route?.query } : {};
+      delete query.name;
+      return query;
     },
 
     transactionTabs() {

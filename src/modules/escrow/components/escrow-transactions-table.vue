@@ -11,8 +11,9 @@
       :pagination="getPagination"
       @goToPage="updatePage"
     >
-      <template v-for="(data, index) in getPaginatedTransaction">
+      <template>
         <TransactionTableRow
+          v-for="(data, index) in getPaginatedTransaction"
           :key="index"
           table_name="transaction-tb"
           :data="data"
@@ -101,6 +102,7 @@ export default {
       handler() {
         this.getEscrowTransactions(this.page);
       },
+      immediate: true,
     },
   },
 
@@ -133,10 +135,6 @@ export default {
       empty_message:
         "You have not created any transactions yet. Click the button below to get started",
     };
-  },
-
-  mounted() {
-    this.getEscrowTransactions(this.page);
   },
 
   methods: {
