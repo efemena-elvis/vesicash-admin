@@ -136,4 +136,18 @@ export default [
       name: "User API Keys",
     },
   },
+
+  {
+    path: "access",
+    name: "UserAccess",
+    component: () =>
+      import(
+        /* webpackChunkName: "users-module" */
+        "@/modules/users/pages/user-access"
+      ),
+    meta: {
+      requiresAuth: true,
+      name: "User Access",
+    },
+  },
 ];
