@@ -86,6 +86,10 @@ export default {
           routeName: "UserProfile",
         },
         {
+          name: "USER ACCESS",
+          routeName: "UserAccess",
+        },
+        {
           name: "ESCROW",
           routeName: "UserEscrowTransactions",
         },

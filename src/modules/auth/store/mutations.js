@@ -26,6 +26,19 @@ export default {
     userData.meta = response_payload.user.meta;
     userData.bio = response_payload.profile.user.bio;
     userData.permissions = response_payload.user_permissions;
+
+    // const access = [
+    //   "can_fund",
+    //   "can_make_withdrawal",
+    //   "can_exchange",
+    //   "is_mor_enabled",
+    //   "is_escrow_enabled",
+    // ];
+
+    // access.forEach((item) => {
+    //   userData[item] = response_payload?.user?.[item];
+    // });
+
     // userData.has_seen_tour = response_payload.user.has_seen_tour;
 
     // BUSINESS ACCOUNT DATA
