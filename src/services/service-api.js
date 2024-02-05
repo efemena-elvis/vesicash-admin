@@ -29,7 +29,7 @@ class serviceApi {
       axios.defaults.baseURL = `https://admin-api.vesicash.com/${version}`;
       return;
     }
-    axios.defaults.baseURL = `https://${service}${environment}.core.vesicash.com/${version}`;
+    axios.defaults.baseURL = `https://${service}${environment}.platform.vesicash.com/${version}`;
   }
 
   use(service, version = "v2") {

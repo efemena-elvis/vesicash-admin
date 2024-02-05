@@ -128,7 +128,7 @@ export default {
             name: "TOTAL AMOUNT",
             value: `${this.$money.getSign(
               this.data?.currency
-            )}${this.$money.addComma(this.data.total_amount)}`,
+            )}${this.$money.addComma(this.data.amount)}`,
           },
 
           {
