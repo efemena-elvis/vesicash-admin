@@ -25,8 +25,8 @@ class serviceApi {
 
   setAxiosBaseURL(service, env, version = "") {
     const environment = env === "prod" ? "" : `-${env}`;
-    const field = env === "prod" ? "platform" : "core";
-    axios.defaults.baseURL = `https://${service}${environment}.${field}.vesicash.com/${version}`;
+    const field = env === "prod" ? ".platform" : "";
+    axios.defaults.baseURL = `https://${service}${environment}${field}.vesicash.com/${version}`;
   }
 
   use(service, version = "v2") {
