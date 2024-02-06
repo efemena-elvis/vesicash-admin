@@ -12,6 +12,7 @@ import {
   VESICASH_API_ENVIRONMENT,
   // VESICASH_API_VERSION
 } from "@/utilities/constant";
+import store from "../store";
 
 // ===============================
 // SERVICE API CLSS
@@ -162,11 +163,16 @@ class serviceApi {
         const originalConfig = error.config;
 
         if (error.response) {
-          if (error.response.status === 403 && !originalConfig._retry) {
+          if (
+            [403, 401].includes(error.response.status) &&
+            !originalConfig._retry
+          ) {
             originalConfig._retry = true;
 
+            store?.commit("general/UPDATE_AUTH_STATUS", false);
+
             localStorage.clear();
-            window.location.href = "/";
+            // if (window.location.pathname !== "/") window.location.href = "/";
 
             return axios(originalConfig);
           }
