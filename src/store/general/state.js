@@ -13,4 +13,6 @@ export default () => ({
     total: 8,
     ongoing: false,
   },
+
+  authorized: true,
 });

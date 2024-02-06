@@ -1,4 +1,8 @@
 export default {
+  UPDATE_AUTH_STATUS: (state, status) => {
+    state.authorized = status;
+  },
+
   UPDATE_FILE_PROGRESS: (state, payload) => {
     state.file = payload;
   },
