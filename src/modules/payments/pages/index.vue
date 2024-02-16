@@ -49,7 +49,7 @@
           :key="option"
           class="text-capitalize"
         >
-          {{ option }}
+          {{ paymentEntryNames[option] || option }}
         </option>
       </select>
 
@@ -59,6 +59,7 @@
         class="form-control pointer"
         v-model="status"
         v-if="isPending"
+        disabled
       >
         <option value="" disabled selected>Status</option>
         <option value="">All</option>
@@ -133,12 +134,30 @@ export default {
       return this.$route?.query?.tx_type === "pending";
     },
 
+    paymentEntryNames() {
+      return {
+        transfer_third_party: "Transfer to third party",
+        transfer_wallet: "Transfer to wallet",
+      };
+    },
+
     paymentEntry() {
       if (["ESCROW_NGN", "ESCROW_USD", "ESCROW_GBP"].includes(this.wallet_type))
         return ["escrow"];
       if (this.$route?.query?.tx_type === "outflow")
-        return ["escrow", "transfer", "exchange"];
-      return ["funding", "escrow", "transfer", "exchange"];
+        return [
+          "escrow",
+          "transfer_third_party",
+          "transfer_wallet",
+          "exchange",
+        ];
+      return [
+        "funding",
+        "escrow",
+        "transfer_third_party",
+        "transfer_wallet",
+        "exchange",
+      ];
     },
 
     txnQueries() {
@@ -249,7 +268,7 @@ export default {
       show_date_range: false,
       date_shortcut: "",
       search: "",
-      txn_type: "inflow",
+      txn_type: this.$route?.query?.tx_type || "inflow",
     };
   },
 

@@ -45,7 +45,7 @@
 import { mapActions } from "vuex";
 import ModalCover from "@/shared/components/modal-cover";
 export default {
-  name: "SuccesModal",
+  name: "PaymentApprovalModal",
 
   components: {
     ModalCover,
@@ -66,6 +66,8 @@ export default {
   methods: {
     ...mapActions({
       approveOrDeclineTransaction: "users/approveOrDeclineTransaction",
+      approveTransaction: "transaction/approveTransaction",
+      declineTransaction: "transaction/declineTransaction",
     }),
 
     async updateTransaction(status = "yes") {
@@ -73,15 +75,13 @@ export default {
 
       const ref = status === "yes" ? "Approve" : "Decline";
 
-      const payload = {
-        id,
-        status,
-      };
+      const action =
+        status === "yes" ? "approveTransaction" : "declineTransaction";
 
       try {
         this.handleClick(ref);
 
-        const response = await this.approveOrDeclineTransaction(payload);
+        const response = await this[action](id);
         this.handleClick(ref, ref, false);
         const type = response?.code === 200 ? "success" : "warning";
         this.pushToast(response?.message, type);

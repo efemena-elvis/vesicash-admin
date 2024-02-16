@@ -150,21 +150,18 @@ export default {
       const date = this.$date
         .formatDate(new Date(data?.created_at), false)
         .getSimpleFormatDate();
-      const sender_account_id = data?.sender_account_id || "-------";
-      const receiver_account_id = data?.receiver?.account_id;
-      const sender_name = data?.sender?.firstname
-        ? `${data?.sender?.firstname} ${data?.sender?.lastname}`
-        : "------ -------";
-      const receiver_name = data?.receiver
-        ? `${data?.receiver?.firstname} ${data?.receiver?.lastname}`
-        : "";
+      const sender_account_id = data?.user?.account_id || "-------";
+      const receiver_account_id = data?.user?.account_id;
+      const sender_name = data?.user?.firstname
+        ? `${data?.user?.firstname} ${data?.user?.lastname}`
+        : data?.user?.email_address || "------ -------";
+      const receiver_name = data?.user?.firstname
+        ? `${data?.user?.firstname} ${data?.user?.lastname}`
+        : data?.user?.email_address || "------ -------";
       const type = data?.type?.split("_")?.join(" ") || "--------";
-      const sender_amount = this.getCost(
-        data?.sender_currency,
-        data?.sender_amount
-      );
-      const receiver_amount = data?.receiver_amount
-        ? this.getCost(data?.receiver_currency, data?.receiver_amount)
+      const sender_amount = this.getCost(data?.currency, data?.total_amount);
+      const receiver_amount = data?.total_amount
+        ? this.getCost(data?.currency, data?.total_amount)
         : "";
       const status = data?.approved;
 

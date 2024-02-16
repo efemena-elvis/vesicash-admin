@@ -58,7 +58,7 @@
 
       <transition name="fade" v-if="show_approval_modal">
         <WithdrawalApprovalPromptModal
-          :id="`${data.id}`"
+          :id="`${data.disbursement_id}`"
           @refresh="refresh"
           @closeTriggered="toggleApprovalModal"
           :message="approvalMessage"
@@ -174,12 +174,16 @@ export default {
         yes: "success",
         pending: "progress",
         no: "error",
+        successful: "success",
+        approved: "success",
       },
 
       status_names: {
         yes: "Approved",
         pending: "Pending",
         no: "Rejected",
+        successful: "Approved",
+        approved: "Approved",
       },
     };
   },
