@@ -93,7 +93,9 @@ export default {
       if (!transactions?.length) return [];
       if (["funding", "escrow"].includes(this.paymentEntry))
         return transactions.map(this.fundingTxnMap);
-      if (this.paymentEntry === "transfer")
+      if (this.paymentEntry === "transfer_wallet")
+        return transactions.map(this.transferTxnMap);
+      if (this.paymentEntry === "transfer_third_party")
         return transactions.map(this.transferTxnMap);
       return transactions.map((data) => this.fxTxnMap(data, this.txType));
     },
