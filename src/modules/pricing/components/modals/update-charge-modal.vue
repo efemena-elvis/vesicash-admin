@@ -15,22 +15,26 @@
     <template slot="modal-cover-body">
       <div class="modal-cover-body">
         <div>
-          <div class="tertiary-2-text text-grey-900 mgb-5">Amount range</div>
-          <DropSelectInput
-            placeholder="Select charge range"
-            :pre_select="rangeDefault"
-            :options="ranges"
-            @optionSelected="range_id = $event.id"
-            :disabled="rangeDisabled"
-          />
-
-          <div class="tertiary-2-text text-grey-900 mgb-5 mgt-30">Currency</div>
+          <div class="tertiary-2-text text-grey-900 mgb-5">Currency</div>
           <DropSelectInput
             placeholder="Select currency"
             :pre_select="defaultCurrency"
             :options="currencies"
             @optionSelected="currency = $event.id"
             :disabled="currencyDisabled"
+          />
+
+          <div class="tertiary-2-text text-grey-900 mgb-5 mgt-30">
+            Amount range
+          </div>
+          <DropSelectInput
+            placeholder="Select charge range"
+            :pre_select="rangeDefault"
+            :options="ranges"
+            @optionSelected="range_id = $event.id"
+            :disabled="rangeDisabled"
+            empty_message="Please select a currency first"
+            :clear_selection="clear_range"
           />
 
           <div class="form-container mgy-30">
@@ -171,6 +175,14 @@ export default {
         this.card_currency_types[0].description = title;
         this.transfer_currency_types[0].title = title;
         this.transfer_currency_types[0].description = title;
+
+        const range_id = this.range_id;
+        const valid_id = this.ranges?.some((range) => range.id == range_id);
+
+        if (!!range_id && !valid_id) {
+          this.clear_range = true;
+          this.range_id = "";
+        }
       },
     },
   },
@@ -236,11 +248,24 @@ export default {
     },
 
     ranges() {
-      return this.getChargeRanges?.map((range) => {
+      if (!this.defaultCurrency && !this.currency) return [];
+
+      const foreign_currencies = ["GBP", "USD"];
+
+      const filtered_range = this.getChargeRanges?.filter(
+        (range) =>
+          foreign_currencies.includes(this.currency) ||
+          Number(range.max_value) >= 1000
+      );
+
+      return filtered_range?.map((range) => {
         return {
-          name: `${this.$money.addComma(
-            range.min_value
-          )} - ${this.$money.addComma(range.max_value)}`,
+          name:
+            range.max_value > 0
+              ? `${this.$money.addComma(
+                  range.min_value
+                )} - ${this.$money.addComma(range.max_value)}`
+              : `> ${this.$money.addComma(range.min_value - 1)}`,
           ...range,
         };
       });
@@ -263,6 +288,7 @@ export default {
 
   data() {
     return {
+      clear_range: false,
       range_id: this.charge_details?.range_id,
       currency: this.charge_details?.currency,
       selected_merchant: "",
