@@ -83,10 +83,13 @@ export default {
           `${this.$money.getSign(currency)}${this.$money?.addComma(amount)}`;
         const currency = charge?.currency;
 
-        const range = `${fmt(currency, charge.min_value)} - ${fmt(
-          currency,
-          charge.max_value
-        )}`;
+        const range =
+          charge.max_value > 0
+            ? `${fmt(currency, charge.min_value)} - ${fmt(
+                currency,
+                charge.max_value
+              )}`
+            : `> ${fmt(currency, charge.min_value - 1)}`;
 
         const getFee = (cost, percent, cap) => {
           const amount = percent ? `${cost}%` : fmt(currency, cost);
@@ -200,10 +203,13 @@ export default {
         const fmt = (currency, amount) =>
           `${this.$money.getSign(currency)}${this.$money?.addComma(amount)}`;
 
-        const range = `${fmt(currency, charge.min_value)} - ${fmt(
-          currency,
-          charge.max_value
-        )}`;
+        const range =
+          charge.max_value > 0
+            ? `${fmt(currency, charge.min_value)} - ${fmt(
+                currency,
+                charge.max_value
+              )}`
+            : `> ${fmt(currency, charge.min_value - 1)}`;
 
         const range_id =
           this.getChargeRanges?.find((range) => {
