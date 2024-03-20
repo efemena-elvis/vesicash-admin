@@ -90,6 +90,8 @@ export default {
             },
           ],
         },
+        aspectRatio: 1.5,
+        responsive: true,
       }
     );
   },
@@ -111,5 +113,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
