@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pdb-40">
     <div class="metric-container">
       <!-- METRICS CONTAINER -->
       <template>
@@ -49,8 +49,12 @@
           </div>
 
           <div class="metric-cards-container pdy-30" v-else>
-            <template v-for="metric in dashboardMetrics1">
-              <MetricCard :key="metric.title" :metric="metric" />
+            <template>
+              <MetricCard
+                v-for="metric in dashboardMetrics1"
+                :key="metric.title"
+                :metric="metric"
+              />
             </template>
 
             <MetricCard
@@ -86,8 +90,12 @@
               </div>
             </MetricCard>
 
-            <template v-for="metric in dashboardMetrics2">
-              <MetricCard :key="metric.title" :metric="metric" />
+            <template>
+              <MetricCard
+                v-for="metric in dashboardMetrics2"
+                :key="metric.title"
+                :metric="metric"
+              />
             </template>
           </div>
           <div></div>
@@ -99,31 +107,42 @@
         <div>
           <div class="page-title mgb-25">Graphical metrics</div>
 
-          <div class="metric-graphs-container pdy-20">
+          <div class="metric-graphs-container">
             <div
-              class="neutral-10-bg pd-10 position-relative"
+              class="position-relative"
               :class="
-                loading_txn_metric || !getTxnVolumeMetrics.length
+                loading_metrics ||
+                loading_txn_metric ||
+                !getTxnVolumeMetrics.length
                   ? 'graph-wrapper'
                   : ''
               "
             >
-              <div
-                class="d-flex justify-content-between align-items-center mgb-25 mgt-10"
-              >
-                <div class="secondary-2-text pdl-4">Transaction Volume</div>
+              <div class="graph-top-row mgb-25 mgt-10">
+                <select
+                  name="volume-date-type"
+                  class="form-control inline"
+                  v-model="txn_vol_filter_type"
+                >
+                  <option value="" disabled>Filter by</option>
+                  <option value="year">Year</option>
+                  <option value="month">Month</option>
+                  <option value="week">Week</option>
+                </select>
                 <div class="year-filter-wrapper position-relative">
                   <DatePicker
-                    v-model="txn_vol_year"
+                    v-model="txn_vol_date"
                     prefix-class="xmx"
                     class="pointer year-range"
-                    valueType="format"
-                    formt="YYYY"
-                    type="year"
+                    valueType="date"
+                    :type="txnVolFilterType"
                     :disabled-date="disabledDate"
                     :clearable="false"
                     :popup-style="{ right: '0', top: '40px', left: 'auto' }"
                     :append-to-body="false"
+                    :formatter="txnVolDateFormatter"
+                    :editable="false"
+                    :shortcuts="txnVolumeShortcuts"
                   >
                     <span
                       slot="icon-calendar"
@@ -133,44 +152,60 @@
                 </div>
               </div>
 
-              <div class="graph-loading-container" v-if="loading_txn_metric">
+              <div
+                class="graph-loading-container"
+                v-if="loading_txn_metric || loading_metrics"
+              >
                 <div class="skeleton-loader" v-for="i in 6" :key="i"></div>
               </div>
 
-              <MetricGraph
+              <div
+                class="neutral-10-bg pd-10"
                 v-else-if="getTxnVolumeMetrics.length"
-                :dataset="getTxnVolumeMetrics"
-              />
-
-              <div class="h5-text text-center mgt-40" v-else>
-                NO TRANSACTION VOLUME DATA FOR THIS YEAR
+              >
+                <div class="secondary-1-text mgb-20">Transaction Volume</div>
+                <MetricGraph
+                  :dataset="getTxnVolumeMetrics"
+                  :labels="txnVolLabels"
+                />
               </div>
             </div>
 
             <div
-              class="neutral-10-bg pd-10 position-relative"
+              class="position-relative"
               :class="
-                loading_users_metric || !getUserVolumeMetrics.length
+                loading_metrics ||
+                loading_users_metric ||
+                !getUserVolumeMetrics.length
                   ? 'graph-wrapper'
                   : ''
               "
             >
-              <div
-                class="d-flex justify-content-between align-items-center mgb-25 mgt-10"
-              >
-                <div class="secondary-2-text pdl-4">No. of users</div>
+              <div class="graph-top-row mgb-25 mgt-10">
+                <select
+                  name="volume-date-type"
+                  class="form-control inline"
+                  v-model="users_vol_filter_type"
+                >
+                  <option value="" disabled>Filter by</option>
+                  <option value="year">Year</option>
+                  <option value="month">Month</option>
+                  <option value="week">Week</option>
+                </select>
                 <div class="year-filter-wrapper position-relative">
                   <DatePicker
-                    v-model="user_vol_year"
+                    v-model="users_vol_date"
                     prefix-class="xmx"
                     class="pointer year-range"
-                    valueType="format"
-                    formt="YYYY"
-                    type="year"
+                    valueType="date"
+                    :type="usersVolFilterType"
                     :disabled-date="disabledDate"
                     :clearable="false"
                     :popup-style="{ right: '0', top: '40px', left: 'auto' }"
                     :append-to-body="false"
+                    :editable="false"
+                    :formatter="usersVolDateFormatter"
+                    :shortcuts="txnUsersShortcuts"
                   >
                     <span
                       slot="icon-calendar"
@@ -180,19 +215,89 @@
                 </div>
               </div>
 
-              <div class="graph-loading-container" v-if="loading_users_metric">
+              <div
+                class="graph-loading-container"
+                v-if="loading_users_metric || loading_metrics"
+              >
                 <div class="skeleton-loader" v-for="i in 6" :key="i"></div>
               </div>
 
-              <MetricGraph
+              <div
+                class="neutral-10-bg pd-10"
                 v-else-if="getUserVolumeMetrics.length"
-                :dataset="getUserVolumeMetrics"
-                barColor="#0B618F"
-                label="Users"
-              />
+              >
+                <div class="secondary-1-text mgb-20">No. of users</div>
+                <MetricGraph
+                  :dataset="getUserVolumeMetrics"
+                  barColor="#0B618F"
+                  label="Users"
+                  :labels="usersVolLabels"
+                />
+              </div>
+            </div>
 
-              <div class="h5-text text-center mgt-40" v-else>
-                NO USER VOLUME DATA FOR THIS YEAR
+            <div
+              class="position-relative"
+              :class="
+                loading_metrics ||
+                loading_txn_unit_metric ||
+                !getTxnUnitMetrics.length
+                  ? 'graph-wrapper'
+                  : ''
+              "
+            >
+              <div class="graph-top-row mgb-25 mgt-10">
+                <select
+                  name="volume-date-type"
+                  class="form-control inline"
+                  v-model="txn_unit_filter_type"
+                >
+                  <option value="" disabled>Filter by</option>
+                  <option value="year">Year</option>
+                  <option value="month">Month</option>
+                  <option value="week">Week</option>
+                </select>
+                <div class="year-filter-wrapper position-relative">
+                  <DatePicker
+                    v-model="txn_unit_date"
+                    prefix-class="xmx"
+                    class="pointer year-range"
+                    valueType="date"
+                    :type="txnUnitFilterType"
+                    :disabled-date="disabledDate"
+                    :clearable="false"
+                    :popup-style="{ right: '0', top: '40px', left: 'auto' }"
+                    :append-to-body="false"
+                    :editable="false"
+                    :formatter="txnUnitDateFormatter"
+                    :shortcuts="txnUnitShortcuts"
+                  >
+                    <span
+                      slot="icon-calendar"
+                      class="icon icon-caret-fill-down h5-text"
+                    ></span>
+                  </DatePicker>
+                </div>
+              </div>
+
+              <div
+                class="graph-loading-container"
+                v-if="loading_txn_unit_metric || loading_metrics"
+              >
+                <div class="skeleton-loader" v-for="i in 6" :key="i"></div>
+              </div>
+
+              <div
+                class="neutral-10-bg pd-10"
+                v-else-if="getTxnUnitMetrics.length"
+              >
+                <div class="secondary-1-text mgb-20">Transaction Unit</div>
+                <MetricGraph
+                  :dataset="getTxnUnitMetrics"
+                  barColor="#b3e4fb"
+                  label="Transaction Unit"
+                  :labels="txnUnitLabels"
+                />
               </div>
             </div>
           </div>
@@ -226,14 +331,31 @@ export default {
   mounted() {
     this.syncDateFilter();
     this.fetchDashboardMetrics(this.filterQuery);
-    this.fetchTxnMetrics(`${new Date().getFullYear()}`);
-    this.fetchUserMetrics(`${new Date().getFullYear()}`);
+    this.initialMetrics();
   },
 
   watch: {
     txn_vol_year: {
       handler(year) {
         this.fetchTxnMetrics(year);
+      },
+    },
+
+    txnVolFilter: {
+      handler(filter) {
+        this.fetchTxnMetrics(filter);
+      },
+    },
+
+    usersVolFilter: {
+      handler(filter) {
+        this.fetchUserMetrics(filter);
+      },
+    },
+
+    txnUnitFilter: {
+      handler(filter) {
+        this.fetchTxnUnitMetrics(filter);
       },
     },
 
@@ -273,42 +395,29 @@ export default {
     ...mapGetters({ getDashboardStats: "dashboard/getDashboardStats" }),
 
     getTxnVolumeMetrics() {
-      const year_range = [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ];
+      const type = this.txnVolFilterType;
+      const range = this.date_ranges[type];
+
       return this.txn_volume_metrics
-        ? year_range.map((index) => this.txn_volume_metrics[index])
+        ? range.map((index) => this.txn_volume_metrics[index])
         : [];
     },
 
     getUserVolumeMetrics() {
-      const year_range = [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ];
+      const type = this.usersVolFilterType;
+      const range = this.date_ranges[type];
+
       return this.user_metrics
-        ? year_range.map((index) => this.user_metrics[index])
+        ? range.map((index) => this.user_metrics[index])
+        : [];
+    },
+
+    getTxnUnitMetrics() {
+      const type = this.txnUnitFilterType;
+      const range = this.date_ranges[type];
+
+      return this.txn_unit_metrics
+        ? range.map((index) => this.txn_unit_metrics[index])
         : [];
     },
 
@@ -475,6 +584,152 @@ export default {
     filterQuery() {
       return this.queryStrings(this.$route?.query);
     },
+
+    txnVolFilterType() {
+      const type = this.txn_vol_filter_type;
+      return type ? type : "year";
+    },
+
+    usersVolFilterType() {
+      const type = this.users_vol_filter_type;
+      return type ? type : "year";
+    },
+
+    txnUnitFilterType() {
+      const type = this.txn_unit_filter_type;
+      return type ? type : "year";
+    },
+
+    txnVolFilter() {
+      const date = this.txn_vol_date;
+
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const weekOfMonth = Math.ceil(
+        (date.getDate() + (date.getDay() + 1) - 1) / 7
+      );
+
+      const type = this.txnVolFilterType;
+
+      switch (type) {
+        case "year":
+          return `year=${year}`;
+        case "month":
+          return `year=${year}&month=${month}`;
+        case "week":
+          return `year=${year}&month=${month}&week${weekOfMonth}`;
+        default:
+          return `year=${year}`;
+      }
+    },
+
+    usersVolFilter() {
+      const date = this.users_vol_date;
+
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const weekOfMonth = Math.ceil(
+        (date.getDate() + (date.getDay() + 1) - 1) / 7
+      );
+
+      const type = this.usersVolFilterType;
+
+      switch (type) {
+        case "year":
+          return `year=${year}`;
+        case "month":
+          return `year=${year}&month=${month}`;
+        case "week":
+          return `year=${year}&month=${month}&week${weekOfMonth}`;
+        default:
+          return `year=${year}`;
+      }
+    },
+
+    txnUnitFilter() {
+      const date = this.txn_unit_date;
+
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const weekOfMonth = Math.ceil(
+        (date.getDate() + (date.getDay() + 1) - 1) / 7
+      );
+
+      const type = this.txnUnitFilterType;
+
+      switch (type) {
+        case "year":
+          return `year=${year}`;
+        case "month":
+          return `year=${year}&month=${month}`;
+        case "week":
+          return `year=${year}&month=${month}&week${weekOfMonth}`;
+        default:
+          return `year=${year}`;
+      }
+    },
+
+    dateFormatter() {
+      return {
+        stringify: (date) => {
+          return date ? this.formatDate(date) : "";
+        },
+      };
+    },
+
+    txnVolDateFormatter() {
+      const type = this.txnVolFilterType;
+      return {
+        stringify: (date) => {
+          return date ? this.formatDate(date, type) : "";
+        },
+      };
+    },
+
+    usersVolDateFormatter() {
+      const type = this.usersVolFilterType;
+      return {
+        stringify: (date) => {
+          return date ? this.formatDate(date, type) : "";
+        },
+      };
+    },
+
+    txnUnitDateFormatter() {
+      const type = this.txnUnitFilterType;
+      return {
+        stringify: (date) => {
+          return date ? this.formatDate(date, type) : "";
+        },
+      };
+    },
+
+    txnVolLabels() {
+      const type = this.txnVolFilterType;
+      return this.date_labels[type];
+    },
+
+    usersVolLabels() {
+      const type = this.usersVolFilterType;
+      return this.date_labels[type];
+    },
+
+    txnUnitLabels() {
+      const type = this.txnUnitFilterType;
+      return this.date_labels[type];
+    },
+
+    txnVolumeShortcuts() {
+      return this.generateDateShortcut("txn_vol_filter_type");
+    },
+
+    txnUsersShortcuts() {
+      return this.generateDateShortcut("users_vol_filter_type");
+    },
+
+    txnUnitShortcuts() {
+      return this.generateDateShortcut("txn_unit_filter_type");
+    },
   },
 
   data() {
@@ -486,10 +741,60 @@ export default {
       dollar_pound: false,
       user_metrics: null,
       txn_volume_metrics: null,
+      txn_unit_metrics: null,
       loading_txn_metric: false,
       loading_users_metric: false,
+      loading_txn_unit_metric: false,
+      loading_metrics: false,
       txn_vol_year: `${new Date().getFullYear()}`,
       user_vol_year: `${new Date().getFullYear()}`,
+
+      txn_vol_date: new Date(),
+      txn_vol_filter_type: "year",
+
+      users_vol_date: new Date(),
+      users_vol_filter_type: "year",
+
+      txn_unit_date: new Date(),
+      txn_unit_filter_type: "year",
+
+      date_labels: {
+        year: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sept",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        month: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
+        week: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"],
+      },
+
+      date_ranges: {
+        year: [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "10",
+          "11",
+          "12",
+        ],
+        month: ["01", "02", "03", "04", "05"],
+        week: ["01", "02", "03", "04", "05", "06", "07"],
+      },
     };
   },
 
@@ -502,19 +807,106 @@ export default {
       fetchGraphMetrics: "dashboard/fetchGraphMetrics",
     }),
 
-    async fetchTxnMetrics(year) {
+    generateDateShortcut(metric_filter_type) {
+      return [
+        {
+          text: "This Year",
+          onClick: () => {
+            this[metric_filter_type] = "year";
+            return this.today;
+          },
+        },
+        {
+          text: "Last Year",
+          onClick: () => {
+            this[metric_filter_type] = "year";
+            return this.lastYear;
+          },
+        },
+        {
+          text: "This Month",
+          onClick: () => {
+            this[metric_filter_type] = "month";
+            return this.today;
+          },
+        },
+        {
+          text: "Last Month",
+          onClick: () => {
+            this[metric_filter_type] = "month";
+            return this.lastMonth;
+          },
+        },
+        {
+          text: "This Week",
+          onClick: () => {
+            this[metric_filter_type] = "week";
+            return this.today;
+          },
+        },
+        {
+          text: "Last Week",
+          onClick: () => {
+            this[metric_filter_type] = "week";
+            return this.lastWeek;
+          },
+        },
+      ];
+    },
+
+    formatDate(date, type = "year") {
+      const formattedDate = this.$date?.formatDate(date, false);
+      const year = date.getFullYear();
+      const month = formattedDate.getMonth("m4");
+      const weekOfMonth = Math.ceil(
+        (date.getDate() + (date.getDay() + 1) - 1) / 7
+      );
+
+      switch (type) {
+        case "year":
+          return year;
+        case "month":
+          return `${month} ${year}`;
+        case "week":
+          return `Week ${weekOfMonth}, ${month} ${year}`;
+        default:
+          return year;
+      }
+    },
+
+    async initialMetrics() {
+      const filter = `year=${new Date().getFullYear()}`;
+      this.loading_metrics = true;
+      const response = await this.fetchGraphMetrics(filter);
+      this.loading_metrics = false;
+      if (response?.code === 200) {
+        this.txn_volume_metrics = response?.data?.transaction_volume;
+        this.user_metrics = response?.data?.users;
+        this.txn_unit_metrics = response?.data?.transaction_unit;
+      }
+    },
+
+    async fetchTxnMetrics(filter) {
       this.loading_txn_metric = true;
-      const response = await this.fetchGraphMetrics(`year=${year}`);
+      const response = await this.fetchGraphMetrics(filter);
       this.loading_txn_metric = false;
       if (response?.code === 200)
         this.txn_volume_metrics = response?.data?.transaction_volume;
     },
 
-    async fetchUserMetrics(year) {
+    async fetchUserMetrics(filter) {
       this.loading_users_metric = true;
-      const response = await this.fetchGraphMetrics(`year=${year}`);
+      const response = await this.fetchGraphMetrics(filter);
       this.loading_users_metric = false;
       if (response?.code === 200) this.user_metrics = response?.data?.users;
+    },
+
+    async fetchTxnUnitMetrics(filter) {
+      this.loading_txn_unit_metric = true;
+      const response = await this.fetchGraphMetrics(filter);
+      this.loading_txn_unit_metric = false;
+      if (response?.code === 200)
+        this.txn_unit_metrics = response?.data?.transaction_unit;
     },
 
     sign(currency) {
@@ -611,6 +1003,8 @@ export default {
     align-items: flex-end;
     gap: 0 toRem(35);
     height: 100%;
+    padding: toRem(10);
+    background-color: getColor("neutral-10");
 
     & > div {
       height: 50%;
@@ -643,13 +1037,37 @@ export default {
   }
 
   .year-filter-wrapper {
-    width: toRem(130);
+    width: 100%;
   }
 
   .metric-graphs-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: toRem(30);
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: toRem(80) toRem(30);
+
+    .graph-top-row {
+      @include flex-row-start-nowrap;
+      justify-content: flex-end;
+      gap: 0 toRem(25);
+      margin-bottom: toRem(20);
+
+      & > div {
+        width: toRem(180);
+      }
+
+      select.form-control {
+        width: toRem(120);
+        height: toRem(35);
+      }
+
+      // @include breakpoint-down(md) {
+      //   grid-template-columns: 100%;
+
+      //   .graph-title {
+      //     order: 3;
+      //   }
+      // }
+    }
   }
 }
 </style>
