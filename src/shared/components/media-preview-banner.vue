@@ -29,7 +29,13 @@
           <button
             class="btn btn-sm btn-alert mgr-10"
             ref="Reject"
-            @click="content.mor ? updateMORDoc(false) : rejectDoc"
+            @click="
+              content.mor
+                ? updateMORDoc(false)
+                : type === 'business'
+                ? approveBusiness('reject')
+                : rejectDoc
+            "
           >
             Reject
           </button>
@@ -37,7 +43,13 @@
           <button
             class="btn btn-sm btn-primary mgr-20"
             ref="Approve"
-            @click="content.mor ? updateMORDoc(true) : approveDoc"
+            @click="
+              content.mor
+                ? updateMORDoc(true)
+                : type === 'business'
+                ? approveBusiness('accept')
+                : approveDoc
+            "
           >
             Approve
           </button>
@@ -61,11 +73,21 @@
 
     <div class="content-wrapper pointer">
       <div class="doc-wrapper" v-if="isPdf">
-        <pdf :src="content.meta" :style="docViewStyles" />
+        <pdf :src="content.meta[active_meta_index]" :style="docViewStyles" />
       </div>
 
       <div class="image-wrapper" v-else>
-        <img :src="content.meta" :alt="`${content.type} - Document`" />
+        <img
+          :src="meta"
+          :alt="`${content.type} - Document`"
+          v-for="(meta, index) in content.meta"
+          :key="meta + index"
+          :class="index === active_meta_index ? 'hidden-meta' : 'active-meta'"
+        />
+        <div class="control" v-if="content.meta?.length > 1">
+          <span class="icon icon-caret-left" @click="navigate(-1)"></span>
+          <span class="icon icon-caret-right" @click="navigate(1)"></span>
+        </div>
       </div>
 
       <div class="doc-wrapper" v-if="isDoc && !isPdf">
@@ -93,6 +115,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    type: {
+      type: String,
+      default: "",
+    },
   },
 
   computed: {
@@ -112,7 +138,9 @@ export default {
 
     isPdf() {
       // return false;
-      return this.fileType(this.content?.meta) === "pdf";
+      return (
+        this.fileType(this.content?.meta?.[this.active_meta_index]) === "pdf"
+      );
     },
 
     isDoc() {
@@ -122,6 +150,7 @@ export default {
 
   data() {
     return {
+      active_meta_index: 0,
       test: "https://cdn.pixabay.com/photo/2023/02/04/09/20/castle-7766794_640.jpg",
       // test: "https://gradly.s3.eu-west-2.amazonaws.com/dev/files/test/zceojwqfdcffqrrunjhxpppmveleie9qf40kddwqksj7i90w10.pdf",
     };
@@ -132,12 +161,47 @@ export default {
       approveUserDoc: "users/approveUserDoc",
       rejectUserDoc: "users/rejectUserDoc",
       approveMORDoc: "mor/approveMORDoc",
+      approveBusinessDoc: "mor/approveBusinessDoc",
     }),
 
     fileType(url) {
       const filename = url.substring(url.lastIndexOf("/") + 1);
       const extension = filename.substring(filename.lastIndexOf(".") + 1);
       return extension;
+    },
+
+    async approveBusiness(action) {
+      const button = action === "accept" ? "Approve" : "Reject";
+      const id = this.content?.id;
+
+      const payload = {
+        action,
+        id,
+      };
+
+      try {
+        this.handleClick(button);
+        const response = await this.approveBusinessDoc(payload);
+
+        this.handleClick(button, button, false);
+
+        const type = [200, 201].includes(response?.code)
+          ? "success"
+          : "warning";
+
+        const message = response?.message;
+
+        this.pushToast(message, type);
+
+        if ([200, 201].includes(response?.code)) {
+          this.$emit("close");
+          this.$bus?.$emit("refresh_business");
+        }
+      } catch (err) {
+        console.log("ERROR APPROVING DOC", err);
+        this.handleClick(button, button, false);
+        this.pushToast("Failed", "error");
+      }
     },
 
     async updateMORDoc(approve = true) {
@@ -243,12 +307,25 @@ export default {
 
     downloadContent() {
       let link = document.createElement("a");
-      link.setAttribute("href", this.content?.meta);
+      link.setAttribute("href", this.content?.meta?.[this.active_meta_index]);
       link.setAttribute(
         "download",
         `${this.content?.username} ${this.content?.type} document`
       );
       link.click();
+    },
+
+    navigate(direction) {
+      if (direction < 0 && this.active_meta_index > 0) {
+        this.active_meta_index--;
+        console.log(this.active_meta_index);
+      }
+      if (
+        direction > 0 &&
+        this.active_meta_index < this.content?.meta?.length - 1
+      ) {
+        this.active_meta_index++;
+      }
     },
   },
 };
@@ -364,11 +441,38 @@ export default {
   .image-wrapper {
     max-height: 100%;
     max-width: 100%;
+    position: relative;
 
     img {
-      max-width: 100%;
-      max-height: 100%;
+      max-width: 95%;
+      max-height: 95%;
       object-fit: cover;
+    }
+
+    img.hidden-meta {
+      opacity: 0;
+      position: absolute;
+    }
+
+    img.active-meta {
+      opacity: 1;
+    }
+
+    .control {
+      position: absolute;
+      bottom: -10px;
+      @include flex-row-center-nowrap;
+      width: 100%;
+      font-size: 2.5rem;
+      color: getColor("grey-400");
+      gap: 0 toRem(15);
+
+      .icon {
+        transition: transform ease 0.2s;
+        &:hover {
+          transform: scale(1.06);
+        }
+      }
     }
   }
 

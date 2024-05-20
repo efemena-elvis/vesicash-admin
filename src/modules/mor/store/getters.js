@@ -23,5 +23,7 @@ export default {
 
   getMORVerifications: (state) => state.mor_verifications,
 
+  getBusinessVerifications: (state) => state.business_verifications,
+
   getPendingMORVerifications: (state) => state.pending_mor_verifications,
 };

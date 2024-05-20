@@ -29,7 +29,11 @@ const routes = {
 
     approve_mor_doc: (id) => `/admin/settings/${id}/document`,
 
-    complete_mor_withdrawal: (id)=>`/admin/withdrawal/complete/${id}`
+    complete_mor_withdrawal: (id)=>`/admin/withdrawal/complete/${id}`,
+
+    business_verifications:(query)=>`/admin/manual-cac-verifications?${query}`,
+
+    approve_business_doc: (id, action)=>`/admin/verifications/${id}/${action}`
 };
 
 export default {
@@ -109,7 +113,14 @@ export default {
     fetchMORVerifications:async({commit},query)=>{
         const _query = decodeURIComponent(location.search)
         const response = await $api.use('mor','v2').fetch(routes.mor_verifications(query));
-        if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_VERIFICATIONS', response?.data || response?.data || []);
+        if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_MOR_VERIFICATIONS', response?.data ? response?.data : []);
+        return response;
+    },
+
+    fetchBusinessVerifications:async({commit},query)=>{
+        const _query = decodeURIComponent(location.search)
+        const response = await $api.use('verification','v2').fetch(routes.business_verifications(query));
+        if(response?.code === 200 && _query === decodeURIComponent(location.search)) commit('SAVE_BUSINESS_VERIFICATIONS', response?.data ? response?.data : []);
         return response;
     },
 
@@ -132,6 +143,10 @@ export default {
     
     approveMORDoc:async(_, {payload, id})=>{
       return await $api.use('mor','v2').push(routes.approve_mor_doc(id),{payload});
+    },
+
+    approveBusinessDoc:async(_, {id, action})=>{
+       return await $api.use('verification','v2').patch(routes.approve_business_doc(id,action),{});
     },
 
     completeMORWithdrawal:async(_, id)=>{

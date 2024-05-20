@@ -25,6 +25,9 @@ export default {
 
   SAVE_MOR_VERIFICATIONS: (state, data) => (state.mor_verifications = data),
 
+  SAVE_BUSINESS_VERIFICATIONS: (state, data) =>
+    (state.business_verifications = data),
+
   SAVE_PENDING_MOR_VERIFICATIONS: (state, count) =>
     (state.pending_mor_verifications = count),
 };
