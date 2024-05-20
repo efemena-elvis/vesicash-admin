@@ -153,7 +153,7 @@ export default {
     },
 
     docMeta() {
-      return this.docVerification?.verification_doc?.meta;
+      return [this.docVerification?.verification_doc?.meta];
     },
 
     docID() {

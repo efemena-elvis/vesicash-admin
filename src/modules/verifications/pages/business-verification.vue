@@ -1,15 +1,18 @@
 <template>
   <div>
-    <div class="h5-text green-600 mgt-40 text-center">
-      BUSINESS VERIFICATION
-    </div>
-    <div class="secondary-2-text text-center">Coming soon</div>
+    <VerificationTable class="mgt-40" />
   </div>
 </template>
 
 <script>
+import VerificationTable from "@/modules/verifications/components/business-verification-table";
+
 export default {
   name: "BusinessVerification",
+
+  components: {
+    VerificationTable,
+  },
 };
 </script>
 

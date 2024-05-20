@@ -15,5 +15,6 @@ export default () => ({
   mor_users: [],
   mor_countries: [],
   mor_verifications: [],
+  business_verifications: [],
   pending_mor_verifications: 0,
 });
