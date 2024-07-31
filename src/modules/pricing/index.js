@@ -85,6 +85,19 @@ const pricingRoutes = [
               name: "Escrow Pricing",
             },
           },
+          {
+            name: "WireTransfer",
+            path: "wire-transfer",
+            component: () =>
+              import(
+                /* webpackChunkName: "pricing-module" */
+                "@/modules/pricing/pages/wire-transfer-page"
+              ),
+            meta: {
+              requiresAuth: true,
+              name: "Wire Transfer",
+            },
+          },
         ],
       },
     ],

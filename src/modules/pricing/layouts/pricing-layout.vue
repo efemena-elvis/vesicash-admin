@@ -48,6 +48,10 @@ export default {
           name: "ESCROW",
           route: "escrow",
         },
+        {
+          name: "WIRE TRANSFER",
+          route: "wire-transfer",
+        },
       ];
     },
 
