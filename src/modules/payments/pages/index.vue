@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="top-row">
-      <div class="page-title">Transactions</div>
+      <div class="page-title" v-if="isWireTransfer">Wire Transfers</div>
+      <div class="page-title" v-else>Transactions</div>
     </div>
 
     <RouteTabSwitcher
@@ -13,6 +14,7 @@
     <div
       class="filter-row mgt-20 mgb-40"
       :class="isPending ? 'pending-filter-row' : ''"
+      v-if="!isWireTransfer"
     >
       <input
         type="text"
@@ -105,7 +107,7 @@
     </div>
 
     <PendingTransactionTable v-if="isPending" />
-
+    <PendingWireTransferTable v-else-if="isWireTransfer" />
     <TransactionTable v-else />
   </div>
 </template>
@@ -116,6 +118,7 @@ import DatePicker from "vue2-datepicker";
 import { MixinDateFilter } from "@/shared/mixins/mixin-date-filter";
 import TransactionTable from "@/modules/payments/components/transaction-table";
 import PendingTransactionTable from "@/modules/payments/components/pending-transaction-table";
+import PendingWireTransferTable from "@/modules/payments/components/pending-wire-transfer-table";
 import "vue2-datepicker/index.css";
 export default {
   name: "Payments",
@@ -127,11 +130,16 @@ export default {
     DatePicker,
     TransactionTable,
     PendingTransactionTable,
+    PendingWireTransferTable,
   },
 
   computed: {
     isPending() {
       return this.$route?.query?.tx_type === "pending";
+    },
+
+    isWireTransfer() {
+      return this.$route?.query?.tx_type === "wire-transfers";
     },
 
     paymentEntryNames() {
@@ -204,6 +212,12 @@ export default {
           name: "pending",
           active: this.$route?.query?.tx_type === "pending",
         },
+
+        {
+          title: "wire transfers",
+          name: "wire-transfers",
+          active: this.$route?.query?.tx_type === "wire-transfers",
+        },
       ];
     },
   },
@@ -217,7 +231,8 @@ export default {
           this.status = "pending";
         } else {
           this.wallet_type = "NGN";
-          (this.payment_entry = "funding"), (this.status = this.search = "");
+          this.payment_entry = "funding";
+          this.status = this.search = "";
           this.time = [];
         }
       },

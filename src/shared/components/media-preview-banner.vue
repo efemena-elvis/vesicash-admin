@@ -26,40 +26,42 @@
 
       <div class="right-items d-flex align-items-center neutral-100">
         <template v-if="!content.approved">
-          <button
-            class="btn btn-sm btn-alert mgr-10"
-            ref="Reject"
-            @click="
-              content.mor
-                ? updateMORDoc(false)
-                : type === 'business'
-                ? approveBusiness('reject')
-                : rejectDoc
-            "
-          >
-            Reject
-          </button>
+          <slot>
+            <button
+              class="btn btn-sm btn-alert mgr-10"
+              ref="Reject"
+              @click="
+                content.mor
+                  ? updateMORDoc(false)
+                  : type === 'business'
+                  ? approveBusiness('reject')
+                  : rejectDoc
+              "
+            >
+              Reject
+            </button>
 
-          <button
-            class="btn btn-sm btn-primary mgr-20"
-            ref="Approve"
-            @click="
-              content.mor
-                ? updateMORDoc(true)
-                : type === 'business'
-                ? approveBusiness('accept')
-                : approveDoc
-            "
-          >
-            Approve
-          </button>
+            <button
+              class="btn btn-sm btn-primary mgr-20"
+              ref="Approve"
+              @click="
+                content.mor
+                  ? updateMORDoc(true)
+                  : type === 'business'
+                  ? approveBusiness('accept')
+                  : approveDoc
+              "
+            >
+              Approve
+            </button>
+          </slot>
         </template>
 
-        <!-- <span
+        <span
           title="Download"
-          class="icon icon-caret-fill-down pointer"
+          class="icon icon-caret-fill-down pointer mx-3"
           @click="downloadContent"
-        ></span> -->
+        ></span>
 
         <div class="divider pointer mx-2"></div>
 
@@ -76,21 +78,24 @@
         <pdf :src="content.meta[active_meta_index]" :style="docViewStyles" />
       </div>
 
-      <div class="image-wrapper" v-else>
-        <img
-          :src="meta"
-          :alt="`${content.type} - Document`"
-          v-for="(meta, index) in content.meta"
-          :key="meta + index"
-          :class="index === active_meta_index ? 'hidden-meta' : 'active-meta'"
-        />
+      <template v-else>
+        <div class="image-wrapper">
+          <img
+            :src="meta"
+            :alt="`${content.type} - Document`"
+            v-for="(meta, index) in content.meta"
+            :key="meta + index"
+            :class="index === active_meta_index ? 'active-meta' : 'hidden-meta'"
+          />
+        </div>
+
         <div class="control" v-if="content.meta?.length > 1">
           <span class="icon icon-caret-left" @click="navigate(-1)"></span>
           <span class="icon icon-caret-right" @click="navigate(1)"></span>
         </div>
-      </div>
+      </template>
 
-      <div class="doc-wrapper" v-if="isDoc && !isPdf">
+      <div class="doc-wrapper" v-if="false">
         <VueDocPreview :style="docViewStyles" :url="test" type="office" />
       </div>
     </div>
@@ -306,13 +311,12 @@ export default {
     },
 
     downloadContent() {
-      let link = document.createElement("a");
-      link.setAttribute("href", this.content?.meta?.[this.active_meta_index]);
-      link.setAttribute(
-        "download",
-        `${this.content?.username} ${this.content?.type} document`
-      );
+      const link = document.createElement("a");
+      link.href = this.content?.meta?.[this.active_meta_index];
+      link.download = `${this.content?.username} ${this.content?.type} wire payment receipt`; // You can set any name you want for the downloaded file
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     },
 
     navigate(direction) {
@@ -410,7 +414,7 @@ export default {
 
     &::before {
       position: relative;
-      left: -0.4px;
+      left: -0.1px;
       top: 0.7px;
     }
   }
@@ -433,10 +437,28 @@ export default {
   width: 800px;
   max-width: 95%;
   height: calc(100% - 150px);
+  min-height: 400px;
   max-height: calc(100% - 150px);
   top: -0px;
   margin: auto;
   @include flex-column-center;
+
+  .control {
+    position: absolute;
+    bottom: -10px;
+    @include flex-row-center-nowrap;
+    width: 100%;
+    font-size: 2.5rem;
+    color: getColor("grey-400");
+    gap: 0 toRem(15);
+
+    .icon {
+      transition: transform ease 0.2s;
+      &:hover {
+        transform: scale(1.06);
+      }
+    }
+  }
 
   .image-wrapper {
     max-height: 100%;
@@ -456,23 +478,6 @@ export default {
 
     img.active-meta {
       opacity: 1;
-    }
-
-    .control {
-      position: absolute;
-      bottom: -10px;
-      @include flex-row-center-nowrap;
-      width: 100%;
-      font-size: 2.5rem;
-      color: getColor("grey-400");
-      gap: 0 toRem(15);
-
-      .icon {
-        transition: transform ease 0.2s;
-        &:hover {
-          transform: scale(1.06);
-        }
-      }
     }
   }
 

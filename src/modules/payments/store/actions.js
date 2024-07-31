@@ -7,6 +7,14 @@ const routes = {
     "/list-wallet-transactions?count=yes&status=pending",
   approve_transaction: (id) => `/withdrawal/resume/${id}`,
   decline_transaction: (id) => `/withdrawal/cancel/${id}`,
+  load_country_banks: "/banks",
+  create_wire_account: "/wire-transfer/accounts",
+  update_wire_account: (id) => `/wire-transfer/accounts/${id}`,
+  load_wire_accounts: "/wire-transfer/accounts",
+  delete_wire_account: (id) => `wire-transfer/accounts/${id}`,
+  load_wire_transfers: (page) => `wire-transfer/payments?page=${page}`,
+  update_wire_payment: (ref, action) =>
+    `wire-transfer/payments/${ref}/${action}`,
 };
 
 export default {
@@ -56,5 +64,43 @@ export default {
       .push(routes.decline_transaction(id), {});
 
     return response;
+  },
+
+  loadCountryBanks: async (_, country_code) => {
+    return await $api
+      .use("payment")
+      .push(routes.load_country_banks, { payload: { country_code } });
+  },
+
+  createWireAccount: async (_, payload) => {
+    return await $api
+      .use("payment")
+      .push(routes.create_wire_account, { payload });
+  },
+
+  updateWireAccount: async (_, { payload, id }) => {
+    return await $api
+      .use("payment")
+      .patch(routes.update_wire_account(id), { payload });
+  },
+
+  loadWireAccounts: async () => {
+    return await $api.use("payment").fetch(routes.load_wire_accounts, {});
+  },
+
+  deleteWireAccount: async (_, id) => {
+    return await $api.use("payment").remove(routes.delete_wire_account(id), {});
+  },
+
+  loadWireTransfers: async (_, page) => {
+    return await $api
+      .use("payment")
+      .fetch(routes.load_wire_transfers(page), {});
+  },
+
+  async updateWirePayment(_, { ref, action }) {
+    return await $api
+      .use("payment")
+      .patch(routes.update_wire_payment(ref, action), {});
   },
 };
