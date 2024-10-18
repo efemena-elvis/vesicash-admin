@@ -277,7 +277,7 @@ export default {
         })
         .filter((item) => {
           const autos = ["email", "phone"];
-          return !autos.includes(item.verification_type);
+          return !autos.includes(item?.item?.verification_type);
         });
     },
 
