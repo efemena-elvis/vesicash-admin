@@ -29,25 +29,33 @@
       <template v-else>
         <DetailsCard
           v-for="(verification, index) in userVerifications"
-          :key="index"
+          :key="'AUTOS' + index"
           :metas="verification"
         />
 
-        <DetailsCard :metas="docMetas">
-          <div class="doc-actions" v-if="docType">
+        <DetailsCard
+          v-for="(item, index) in uploadedVerifications"
+          :key="'MANUALS' + index"
+          :metas="item.doc"
+        >
+          <div class="doc-actions" v-if="item.item?.verification_doc_id">
             <button
               class="btn btn-sm btn-alert"
-              ref="reject"
-              @click="rejectDoc"
-              v-if="isDocVerified"
+              @click="updateVerificationDoc(item.item)"
+              v-if="item?.item?.is_verified"
+              :disabled="updating[item.item?.verification_type]"
             >
-              Reject
+              <div
+                class="icon-spinner animate"
+                v-if="updating[item.item?.verification_type]"
+              ></div>
+              <div v-else>Reject</div>
             </button>
 
             <button
               class="btn btn-sm btn-tertiary"
               :content="docContent"
-              v-if="docMeta"
+              v-if="false"
               @click="toggleMediaPreview"
             >
               View
@@ -55,11 +63,15 @@
 
             <button
               class="btn btn-sm btn-primary"
-              ref="approve"
-              @click="approveDoc"
-              v-if="!isDocVerified"
+              @click="updateVerificationDoc(item.item)"
+              v-if="!item?.item?.is_verified"
+              :disabled="updating[item.item?.verification_type]"
             >
-              Approve
+              <div
+                class="icon-spinner animate"
+                v-if="updating[item.item.verification_type]"
+              ></div>
+              <div v-else>Approve</div>
             </button>
           </div>
         </DetailsCard>
@@ -239,6 +251,36 @@ export default {
       ];
     },
 
+    uploadedVerifications() {
+      return this.verifications
+        .map((item) => {
+          const doc = [
+            {
+              name: "DOCUMENT TYPE",
+              value: item?.verification_type?.toUpperCase() ?? "----------",
+            },
+            {
+              name: "STATUS",
+              value: item?.is_verified
+                ? "Verified"
+                : item?.verification_doc_id
+                ? "Pending"
+                : "Yet To upload",
+              status: item?.is_verified ? "success" : "progress",
+            },
+            {
+              name: "DOCUMENT ID",
+              value: item?.verification_doc_id ?? "-------",
+            },
+          ];
+          return { doc, item };
+        })
+        .filter((item) => {
+          const autos = ["email", "phone"];
+          return !autos.includes(item.verification_type);
+        });
+    },
+
     docMetas() {
       return [
         {
@@ -298,18 +340,18 @@ export default {
               : "progress",
           },
         ],
-        [
-          {
-            name: "BVN",
-            value: "**********",
-          },
+        // [
+        //   {
+        //     name: "BVN",
+        //     value: "**********",
+        //   },
 
-          {
-            name: "STATUS",
-            value: this.bvnVerification?.is_verified ? "Verified" : "Pending",
-            status: this.bvnVerification?.is_verified ? "success" : "progress",
-          },
-        ],
+        //   {
+        //     name: "STATUS",
+        //     value: this.bvnVerification?.is_verified ? "Verified" : "Pending",
+        //     status: this.bvnVerification?.is_verified ? "success" : "progress",
+        //   },
+        // ],
       ];
     },
   },
@@ -328,6 +370,7 @@ export default {
     return {
       preview_doc: false,
       loading_mor: false,
+      updating: {},
       mor_users: [],
       doc_types: [
         "cac",
@@ -365,6 +408,51 @@ export default {
       } catch (err) {
         this.pushToast("Failed to load mor user details", "error");
         console.log("FAILED TO GET MOR DETAILS", err);
+      }
+    },
+
+    async updateVerificationDoc(item) {
+      try {
+        const button = item.is_verified
+          ? `reject-${item.verification_type}`
+          : `approve-${item.verification_type}`;
+        this.updating = {
+          ...this.updating,
+          [item.verification_type]: true,
+        };
+
+        // const button_text = item.is_verified ? "Reject" : "Approve";
+        // this.handleClick(button);
+        const payload = {
+          business_id: this.$route?.params?.userID,
+          verification_type: item?.verification_type,
+        };
+
+        const response = item.is_verified
+          ? await this.rejectUserDoc(payload)
+          : await this.approveUserDoc(payload);
+        // this.handleClick(button, button_text, false);
+        this.updating = {
+          ...this.updating,
+          [item.verification_type]: false,
+        };
+        const type = response?.code === 200 ? "success" : "warning";
+
+        const message =
+          response?.code === 200
+            ? response?.message
+            : response?.message || `Failed to ${button} document`;
+
+        this.pushToast(message, type);
+        if (response?.code === 200) this.$bus?.$emit("refresh_users");
+      } catch (e) {
+        console.log("ERROR UPDATING DOC", err);
+        this.updating = {
+          ...this.updating,
+          [item.verification_type]: false,
+        };
+        // this.handleClick(button, button_text, false);
+        this.pushToast("Failed to update document", "error");
       }
     },
 
@@ -461,7 +549,7 @@ export default {
       max-height: toRem(35);
 
       .icon-spinner {
-        font-size: toRem(12);
+        font-size: toRem(16);
       }
     }
   }
