@@ -9,7 +9,7 @@
           v-else
           class="avatar-wrapper font-weight-600 neutral-10 tertiary-2-text teal-600-bg"
         >
-          {{ $string.getStringInitials(content.username) }}
+          {{ $string.getStringInitials(`${content.username}`) }}
         </div>
 
         <div class="mgl-8">
@@ -313,7 +313,7 @@ export default {
     downloadContent() {
       const link = document.createElement("a");
       link.href = this.content?.meta?.[this.active_meta_index];
-      link.download = `${this.content?.username} ${this.content?.type} wire payment receipt`; // You can set any name you want for the downloaded file
+      link.download = `${this.content?.username} ${this.content?.type}`; // You can set any name you want for the downloaded file
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

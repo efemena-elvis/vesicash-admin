@@ -54,9 +54,8 @@
 
             <button
               class="btn btn-sm btn-tertiary"
-              :content="docContent"
-              v-if="false"
-              @click="toggleMediaPreview"
+              v-if="item?.metaInfo?.meta"
+              @click="previewDoc(item.metaInfo)"
             >
               View
             </button>
@@ -84,7 +83,7 @@
         <MediaPreviewBanner
           @close="toggleMediaPreview"
           v-if="preview_doc"
-          :content="docContent"
+          :content="selected_doc"
         />
       </transition>
     </portal>
@@ -270,10 +269,21 @@ export default {
             },
             {
               name: "DOCUMENT ID",
-              value: item?.verification_doc_id ?? "-------",
+              value: item?.value ?? item?.verification_doc_id ?? "-------",
             },
           ];
-          return { doc, item };
+          const metaInfo = {
+            meta: [item.meta],
+            username: item.account_id,
+            id: item?.value,
+            setting_id: item.account_id,
+            type: `${item?.type} document`,
+            country_id: "",
+            account_id: item.account_id,
+            mor: false,
+            approved: true,
+          };
+          return { doc, item, metaInfo };
         })
         .filter((item) => {
           const autos = ["email", "phone"];
@@ -368,6 +378,7 @@ export default {
 
   data() {
     return {
+      selected_doc: null,
       preview_doc: false,
       loading_mor: false,
       updating: {},
@@ -390,6 +401,13 @@ export default {
       rejectUserDoc: "users/rejectUserDoc",
       fetchMORUser: "mor/fetchMORUser",
     }),
+
+    previewDoc(doc) {
+      if (doc) {
+        this.selected_doc = doc;
+        this.preview_doc = true;
+      }
+    },
 
     toggleMediaPreview() {
       this.preview_doc = !this.preview_doc;
